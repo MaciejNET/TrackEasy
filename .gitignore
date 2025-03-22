@@ -1,0 +1,74 @@
+cmake-build-debug/
+.idea/
+.vs/
+out/
+.DS_Store
+src/.DS_Store
+src/.vs/
+src/out/
+src/.idea/
+.vscode/
+src/.vscode/
+appsettings.Development.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+.history/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build directories
+dist/
+out/
+bin/
+obj/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/

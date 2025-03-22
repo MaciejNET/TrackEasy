@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TrackEasy.Domain\TrackEasy.Domain.csproj" />
+      <ProjectReference Include="..\TrackEasy.Shared.Application.Abstractions\TrackEasy.Shared.Application.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.2" />
+    </ItemGroup>
+
+</Project>
