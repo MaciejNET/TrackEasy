@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TrackEasy.Domain.Users;
+using TrackEasy.Infrastructure.Behaviors;
 using TrackEasy.Infrastructure.Database;
+using TrackEasy.Infrastructure.Exceptions;
 using TrackEasy.Mails;
 
 namespace TrackEasy.Infrastructure;
@@ -18,6 +21,7 @@ public static class Extensions
     {
         services.AddControllers();
         services.AddMails();
+        services.AddExceptionHandlers();
         services.AddIdentityCore<User>(options =>
         {
             options.SignIn.RequireConfirmedAccount = true;
@@ -63,22 +67,25 @@ public static class Extensions
         services.AddDataProtection();
         
         services.AddDbContext<TrackEasyDbContext>(options =>
-            options.UseSqlServer(
+            options.UseAzureSql(
                 services.BuildServiceProvider().GetRequiredService<IConfiguration>()
                     .GetConnectionString("DefaultConnection"),
                 sqlOptions =>
                 {
-                    sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(30), null);
                     sqlOptions.MigrationsAssembly(typeof(TrackEasyDbContext).Assembly.FullName);
-                    sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "database/migrations");
+                    sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
                 }));
-        
-           services.AddMediatR(cfg =>
-           {
-               cfg.RegisterServicesFromAssembly(typeof(Extensions).Assembly);
-           });
+
+        services.AddScoped<DomainEventDispatcher>();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(Extensions).Assembly);
+            cfg.AddOpenBehavior(typeof(DomainEventBehavior<,>));
+            cfg.AddOpenBehavior(typeof(TransactionalBehavior<,>));
+        });
            
-           services.AddRepositories();
+        services.AddRepositories();
+        //services.AddHostedService<SeedData>();
            
         return services;
     }
@@ -86,15 +93,25 @@ public static class Extensions
     public static WebApplication UseInfrastructure(this WebApplication app)
     {
         app.MapIdentityApi<User>();
+        app.UseExceptionHandlers();
         
         return app;
     }
     
     private static void AddRepositories(this IServiceCollection services)
     {
-        services.Scan(scan =>
-            scan.FromAssemblies(typeof(Extensions).Assembly)
-                .AddClasses(x => x.Where(c => c.Name.EndsWith("Repository")))
-                .AsMatchingInterface());
+        var assembly = Assembly.GetExecutingAssembly();
+
+        foreach (var type in assembly.GetTypes().Where(type => !type.IsAbstract))
+        {
+            var interfaces = type.GetInterfaces();
+            foreach (var @interface in interfaces)
+            {
+                if (@interface.Name.EndsWith("Repository"))
+                {
+                    services.AddScoped(@interface, type);
+                }
+            }
+        }
     }
 }

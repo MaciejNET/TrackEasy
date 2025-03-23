@@ -20,6 +20,7 @@ internal sealed class TrackEasyDbContextFactory : IDesignTimeDbContextFactory<Tr
         {
             sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(30), null);
             sqlOptions.MigrationsAssembly(typeof(TrackEasyDbContext).Assembly.FullName);
+            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
         });
 
         return new TrackEasyDbContext(optionsBuilder.Options);

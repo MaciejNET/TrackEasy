@@ -1,6 +1,7 @@
 using Scalar.AspNetCore;
+using TrackEasy.Api.Endpoints;
+using TrackEasy.Application;
 using TrackEasy.Infrastructure;
-using TrackEasy.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +12,11 @@ builder.Configuration
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddInfrastructure();
+builder.Services
+    .AddApplication()
+    .AddInfrastructure();
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    await SeedData.Initialize(services);
-}
 
 if (app.Environment.IsDevelopment())
 {
@@ -38,6 +35,10 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.MapEndpoints();
+
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
