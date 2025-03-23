@@ -1,20 +1,22 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TrackEasy.Domain.Users;
 
 namespace TrackEasy.Infrastructure.Database;
 
-public static class SeedData
+internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedService
 {
-    public static async Task Initialize(IServiceProvider serviceProvider)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var context = serviceProvider.GetRequiredService<TrackEasyDbContext>();
-        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        using var scope = serviceProvider.CreateScope();
         
-        await context.Database.EnsureCreatedAsync();
-        await context.Database.MigrateAsync();
+        var context = scope.ServiceProvider.GetRequiredService<TrackEasyDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        
+        await context.Database.MigrateAsync(cancellationToken);
 
         List<string> roles = ["Admin", "Manager", "Passenger"];
         foreach (var role in roles)
@@ -39,6 +41,8 @@ public static class SeedData
         {
             await userManager.CreateAsync(adminUser, "Admin1234!");
             await userManager.AddToRoleAsync(adminUser, "Admin");
-        }
+        }       
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

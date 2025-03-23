@@ -14,5 +14,5 @@
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Infrastructure\TrackEasy.Infrastructure.csproj" />
     </ItemGroup>
-
+    
 </Project>
