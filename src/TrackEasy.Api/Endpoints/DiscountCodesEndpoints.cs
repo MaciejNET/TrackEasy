@@ -13,6 +13,7 @@ public static class DiscountCodesEndpoints
 {
     public static void MapDiscountCodesEndpoints(this IEndpointRouteBuilder app)
     {
+        // localhost:5522/discount-codes
         var group = app.MapGroup("/discount-codes").WithTags("Discount Codes");
 
         group.MapGet("/", async ([AsParameters] GetDiscountCodesQuery query, ISender sender, CancellationToken cancellationToken) 
