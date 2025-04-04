@@ -4,17 +4,34 @@ import {useForm} from "react-hook-form";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {ModalType} from "@/components/types/modals.ts";
+import {useEffect} from "react";
 
 type AddEditDiscountFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   onSubmit: (discount: Discount) => void;
   modalType: ModalType;
+  discount: Discount | null;
 }
 
 export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
-  const {register, handleSubmit, formState: {errors}} = useForm<Discount>({mode: "onChange"})
-  const {open, setOpen, onSubmit, modalType} = props;
+  const {open, setOpen, onSubmit, modalType, discount} = props;
+  const {register, handleSubmit, formState: {errors}, reset} = useForm<Discount>({
+    mode: "onChange",
+    defaultValues: {
+      id: discount?.id,
+      name: discount?.name,
+      percentage: discount?.percentage
+    }
+  })
+
+  useEffect(() => {
+    reset({
+      id: discount?.id,
+      name: discount?.name,
+      percentage: discount?.percentage
+    });
+  }, [discount, reset]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -44,7 +61,7 @@ export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
             {errors.percentage && <p className="text-red-500 text-sm">{errors.percentage.message}</p>}
           </div>
           <div className="flex flex-col">
-            <Button type="submit">Add</Button>
+            <Button type="submit">Save</Button>
           </div>
         </form>
       </DialogContent>

@@ -5,10 +5,12 @@ import {Discount} from "@/components/types/discount.ts";
 
 type DiscountListProps = {
   discounts: Discount[];
+  onEdit: (discount: Discount) => void;
+  onDelete: (discount: Discount) => void;
 }
 
 export function DiscountsList(props: DiscountListProps) {
-  const {discounts} = props;
+  const {discounts, onEdit, onDelete} = props;
 
   return (
     <Table>
@@ -26,8 +28,8 @@ export function DiscountsList(props: DiscountListProps) {
             <TableCell className="w-2/5">{discount.percentage}</TableCell>
             <TableCell className="w-1/5">
               <div className="flex gap-x-2">
-                <Button className="cursor-pointer" size="icon"><Settings2Icon/></Button>
-                <Button className="cursor-pointer" size="icon"><DeleteIcon/></Button>
+                <Button size="icon" onClick={() => onEdit(discount)}><Settings2Icon/></Button>
+                <Button size="icon" onClick={() => onDelete(discount)}><DeleteIcon/></Button>
               </div>
             </TableCell>
           </TableRow>

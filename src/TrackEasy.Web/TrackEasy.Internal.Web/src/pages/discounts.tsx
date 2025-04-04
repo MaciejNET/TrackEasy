@@ -5,6 +5,7 @@ import {Loader2} from "lucide-react";
 import {AddEditDiscountForm} from "@/components/discounts/add-edit-discount-form.tsx";
 import {Discount} from "@/components/types/discount.ts";
 import {ModalType} from "@/components/types/modals.ts";
+import {DeleteDiscount} from "@/components/discounts/delete-discount.tsx";
 
 export default function Discounts() {
   const discountsInit: Discount[] = [
@@ -37,9 +38,11 @@ export default function Discounts() {
 
   const [isSearched, setIsSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalType, setModalType] = useState<ModalType>("Add");
   const [discounts, setDiscounts] = useState<Discount[]>(discountsInit);
+  const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
 
   async function onSearch(data?: { name: string; amount: string; }) {
     setIsSearched(false);
@@ -68,15 +71,53 @@ export default function Discounts() {
 
   function onAdd() {
     setModalType("Add");
-    setIsModalOpen(true);
+    setSelectedDiscount(null);
+    setIsAddEditModalOpen(true);
   }
 
-  async function onSubmit(discount: Discount) {
+  function onEdit(discount: Discount) {
+    setModalType("Edit");
+    setSelectedDiscount(discount);
+    setIsAddEditModalOpen(true);
+  }
+
+  function onDelete(discount: Discount) {
+    setSelectedDiscount(discount);
+    setIsDeleteModalOpen(true);
+  }
+
+  function onCancel() {
+    setIsDeleteModalOpen(false);
+  }
+
+  async function addDiscount(discount: Discount) {
     discount.id = Math.random().toString(36);
     const newDiscounts = [...discounts, discount];
     setDiscounts(newDiscounts);
-    setIsModalOpen(false);
-    await onSearch();
+    setIsAddEditModalOpen(false);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
+  async function editDiscount(discount: Discount) {
+    const newDiscounts = discounts.map(d => d.id === discount.id ? discount : d);
+    setDiscounts(newDiscounts);
+    setIsAddEditModalOpen(false);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
+  async function onSubmit(discount: Discount) {
+    if (modalType === "Add") {
+      await addDiscount(discount);
+    } else if (modalType === "Edit") {
+      await editDiscount(discount);
+    }
+  }
+
+  async function deleteDiscount(id: string) {
+    const newDiscounts = discounts.filter(discount => discount.id !== id);
+    setDiscounts(newDiscounts);
+    setIsDeleteModalOpen(false);
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   return (
@@ -89,10 +130,23 @@ export default function Discounts() {
       }
       {isSearched &&
         (discounts.length > 0 ?
-          <DiscountsList discounts={discounts}/>
+          <DiscountsList discounts={discounts} onEdit={onEdit} onDelete={onDelete}/>
           : <h2 className="text-center">No results</h2>)
       }
-      <AddEditDiscountForm open={isModalOpen} setOpen={setIsModalOpen} onSubmit={onSubmit} modalType={modalType}/>
+      <AddEditDiscountForm
+        open={isAddEditModalOpen}
+        setOpen={setIsAddEditModalOpen}
+        onSubmit={onSubmit}
+        modalType={modalType}
+        discount={selectedDiscount}
+      />
+      <DeleteDiscount
+        open={isDeleteModalOpen}
+        setOpen={setIsDeleteModalOpen}
+        discountId={selectedDiscount ? selectedDiscount.id : ""}
+        onDelete={deleteDiscount}
+        onCancel={onCancel}
+      />
     </>
   );
 }
