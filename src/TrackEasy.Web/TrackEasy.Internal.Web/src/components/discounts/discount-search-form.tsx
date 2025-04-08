@@ -1,23 +1,33 @@
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useForm} from "react-hook-form";
-
-type FormData = {
-  name: string;
-  amount: string;
-};
+import {useDiscountStore} from "@/stores/discount-store.ts";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {DiscountSearchData, discountSearchSchema} from "@/schemas/discount-search-schema.ts";
 
 type DiscountSearchFormProps = {
-  onSearch: (data: FormData) => void,
   onAdd: () => void,
-}
+};
 
 export function DiscountSearchForm(props: DiscountSearchFormProps) {
-  const {register, handleSubmit, formState: {errors}} = useForm<FormData>({mode: "onChange"});
-  const {onSearch, onAdd} = props;
+  const {setSearchParams} = useDiscountStore();
+  const {onAdd} = props;
 
-  const onSubmit = (data: FormData) => {
-    onSearch(data);
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<DiscountSearchData>({
+    mode: "onChange",
+    resolver: zodResolver(discountSearchSchema),
+  });
+
+  const onSubmit = (values: DiscountSearchData) => {
+    setSearchParams({
+      name: values.name,
+      percentage: values.percentage,
+      pageNumber: 1
+    });
   };
 
   return (
@@ -30,25 +40,27 @@ export function DiscountSearchForm(props: DiscountSearchFormProps) {
           <Input
             id="name"
             placeholder="Name"
-            {...register("name", {
-              pattern: {value: /^[A-Za-z]+$/, message: "Name must only contain letters"}
-            })}
+            {...register("name")}
           />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
         </div>
         <div className="col-span-4 col-start-6">
           <Input
-            id="amount"
-            placeholder="Amount"
-            {...register("amount", {
-              pattern: {value: /^[0-9]+$/, message: "Amount must be a non-floating point number"}
-            })}
+            id="percentage"
+            placeholder="Percentage"
+            {...register("percentage")}
           />
-          {errors.amount && <p className="text-red-500 text-sm">{errors.amount.message}</p>}
+          {errors.percentage && (
+            <p className="text-red-500 text-sm">{errors.percentage.message}</p>
+          )}
         </div>
         <div className="col-span-2 col-start-11 space-y-2 flex flex-col">
           <Button type="submit">Search</Button>
-          <Button type="button" variant="outline" onClick={onAdd}>Add</Button>
+          <Button type="button" variant="outline" onClick={onAdd}>
+            Add
+          </Button>
         </div>
       </div>
     </form>

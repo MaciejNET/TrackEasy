@@ -4,13 +4,12 @@ import {Button} from "@/components/ui/button.tsx";
 type DeleteDiscountProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  discountId: string;
-  onDelete: (id: string) => void;
+  onDelete: () => void;
   onCancel: () => void;
 }
 
 export function DeleteDiscount(props: DeleteDiscountProps) {
-  const {open, setOpen, discountId, onDelete, onCancel} = props;
+  const {open, setOpen, onDelete, onCancel} = props;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -22,7 +21,7 @@ export function DeleteDiscount(props: DeleteDiscountProps) {
           <p>Are you sure you want to delete this discount?</p>
           <div className="flex gap-x-2 mt-2">
             <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="button" onClick={() => onDelete(discountId)}>Delete</Button>
+            <Button type="button" onClick={onDelete}>Delete</Button>
           </div>
         </div>
       </DialogContent>

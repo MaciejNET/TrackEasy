@@ -1,37 +1,49 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
-import {Discount} from "@/components/types/discount.ts";
 import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {ModalType} from "@/components/types/modals.ts";
+import {ModalType} from "@/types/modals.ts";
 import {useEffect} from "react";
+import {Discount, discountSchema} from "@/schemas/discount-schema.ts";
 
 type AddEditDiscountFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onSubmit: (discount: Discount) => void;
-  modalType: ModalType;
+  handleSave: (discount: Discount) => void;
+  modalType: ModalType | null;
   discount: Discount | null;
-}
+};
 
 export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
-  const {open, setOpen, onSubmit, modalType, discount} = props;
-  const {register, handleSubmit, formState: {errors}, reset} = useForm<Discount>({
+  const {open, setOpen, handleSave, modalType, discount} = props;
+
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+    reset,
+  } = useForm<Discount>({
+    resolver: zodResolver(discountSchema),
     mode: "onChange",
     defaultValues: {
-      id: discount?.id,
-      name: discount?.name,
-      percentage: discount?.percentage
-    }
-  })
+      id: discount?.id || "",
+      name: discount?.name || "",
+      percentage: discount?.percentage ?? 0,
+    },
+  });
 
   useEffect(() => {
-    reset({
-      id: discount?.id,
-      name: discount?.name,
-      percentage: discount?.percentage
-    });
-  }, [discount, reset]);
+    const defaults =
+      modalType === "Add"
+        ? {name: "", percentage: 0}
+        : {
+          id: discount?.id || "",
+          name: discount?.name || "",
+          percentage: discount?.percentage ?? 0,
+        };
+    reset(defaults);
+  }, [discount, modalType, reset]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -39,24 +51,17 @@ export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
         <DialogHeader>
           <DialogTitle>{modalType} Discount</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(handleSave)} className="space-y-6">
           <div className="flex flex-col">
-            <Input
-              id="name"
-              placeholder="Name"
-              {...register("name", {
-                pattern: {value: /^[A-Za-z]+$/, message: "Name must only contain letters"}
-              })}
-            />
+            <Input id="name" placeholder="Name" {...register("name")} />
             {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
           </div>
           <div className="flex flex-col">
             <Input
               id="percentage"
+              type="number"
               placeholder="Percentage"
-              {...register("percentage", {
-                pattern: {value: /^[0-9]+$/, message: "Amount must be a non-floating point number"}
-              })}
+              {...register("percentage", {valueAsNumber: true})}
             />
             {errors.percentage && <p className="text-red-500 text-sm">{errors.percentage.message}</p>}
           </div>
@@ -66,5 +71,5 @@ export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

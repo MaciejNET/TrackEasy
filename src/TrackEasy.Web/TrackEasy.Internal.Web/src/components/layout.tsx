@@ -5,6 +5,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {LogOut} from "lucide-react";
 import {ThemeProvider} from "@/components/theme-provider.tsx";
 import {ModeToggle} from "@/components/mode-toggler.tsx";
+import {Toaster} from "@/components/ui/sonner.tsx";
 
 export default function Layout() {
   return (
@@ -27,6 +28,7 @@ export default function Layout() {
 
             <main className="flex-1 p-4 overflow-auto">
               <Outlet/>
+              <Toaster/>
             </main>
           </div>
         </SidebarProvider>
