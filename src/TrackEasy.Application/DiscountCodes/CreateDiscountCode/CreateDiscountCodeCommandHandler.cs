@@ -4,7 +4,7 @@ using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Application.DiscountCodes.CreateDiscountCode;
 
-internal sealed class CreateDiscountCodeCommandHandler(IDiscountCodeRepository discountCodeRepository, TimeProvider timeProvider) 
+internal sealed class CreateDiscountCodeCommandHandler(IDiscountCodeRepository discountCodeRepository, TimeProvider timeProvider)
     : ICommandHandler<CreateDiscountCodeCommand>
 {
     public async Task Handle(CreateDiscountCodeCommand request, CancellationToken cancellationToken)

@@ -15,13 +15,14 @@ internal sealed class TrackEasyExceptionHandler(ILogger<TrackEasyExceptionHandle
             return false;
         }
         
-        logger.LogError("Track easy exception occured with code: {Code} and message: {Message}", trackEasyException.Code, trackEasyException.Message);
+        logger.LogError("Track easy exception occurred with code: {Code} and message: {Message}", trackEasyException.Code, trackEasyException.Message);
 
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
             Type = trackEasyException.Code,
-            Title = trackEasyException.Message
+            Title = trackEasyException.Message,
+            Detail = trackEasyException.Message
         };
 
         httpContext.Response.StatusCode = problemDetails.Status.Value;
