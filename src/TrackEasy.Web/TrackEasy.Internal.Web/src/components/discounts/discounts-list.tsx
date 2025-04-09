@@ -7,6 +7,8 @@ import {keepPreviousData, useQuery} from "@tanstack/react-query";
 import {fetchDiscounts} from "@/api/discounts-api.ts";
 import {Loader} from "@/components/loader.tsx";
 import {Paginator} from "@/components/paginator.tsx";
+import {NoData} from "@/components/no-data.tsx";
+import {ErrorDisplay} from "@/components/error-display.tsx";
 
 type DiscountListProps = {
   onEdit: (discount: Discount) => void;
@@ -31,7 +33,8 @@ export function DiscountsList(props: DiscountListProps) {
   }
 
   if (isLoading) return <Loader/>;
-  if (isError) return <div>Error</div>
+  if (isError) return <ErrorDisplay/>
+  if (data?.items.length === 0) return <NoData/>
 
   return (
     <>
