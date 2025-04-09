@@ -7,11 +7,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let errorMessage = res.statusText;
     try {
       const errorData = await res.json();
-      if (errorData.title && errorData.detail) {
-        errorMessage = `${errorData.title}: ${errorData.detail}`;
-      } else {
-        errorMessage = errorData.message || res.statusText;
-      }
+      errorMessage = errorData.detail || res.statusText;
       toast.error(errorMessage);
     } catch (err) {
       console.error('Error parsing error response:', err);

@@ -28,7 +28,7 @@ export default function Layout() {
 
             <main className="flex-1 p-4 overflow-auto">
               <Outlet/>
-              <Toaster/>
+              <Toaster richColors/>
             </main>
           </div>
         </SidebarProvider>
