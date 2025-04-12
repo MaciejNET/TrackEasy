@@ -15,7 +15,7 @@ internal sealed class DiscountCodeRepository(TrackEasyDbContext dbContext) : Bas
     {
         dbContext.DiscountCodes.Add(discountCode);
     }
-
+    
     public void Delete(DiscountCode discountCode)
     {
         dbContext.DiscountCodes.Remove(discountCode);
