@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using TrackEasy.Domain.Stations;
+using TrackEasy.Infrastructure.Repositories;
 
 namespace TrackEasy.Infrastructure.Exceptions;
 
@@ -11,6 +13,7 @@ public static class Extensions
         services.AddExceptionHandler<TrackEasyExceptionHandler>();
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddScoped<ICityRepository, CityRepository>();
 
         return services;
     }

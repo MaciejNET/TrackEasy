@@ -16,6 +16,9 @@ builder.Services
     .AddApplication()
     .AddInfrastructure();
 
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
