@@ -22,7 +22,7 @@ export function DiscountsList(props: DiscountListProps) {
   const {data, isLoading, isError} = useQuery({
     queryKey: ['discounts', searchParams],
     queryFn: () => fetchDiscounts(searchParams),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
   });
 
   const currentPage = searchParams.pageNumber;

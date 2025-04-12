@@ -1,4 +1,4 @@
-import {BASE_URL, baseAPI} from "@/constants/api.ts";
+import {BASE_URL, baseAPI} from "@/lib/api.ts";
 import {Discount} from "@/schemas/discount-schema.ts";
 import {PaginatedResult} from "@/types/paginated-result.ts";
 
@@ -24,7 +24,7 @@ export async function createDiscount(discount: Discount): Promise<string> {
 }
 
 export async function updateDiscount(discount: Discount): Promise<void> {
-  return baseAPI.put<void>(`${URL}/${discount.id}`, discount);
+  return baseAPI.patch<void>(`${URL}/${discount.id}`, discount);
 }
 
 export async function deleteDiscount(id: string): Promise<void> {
