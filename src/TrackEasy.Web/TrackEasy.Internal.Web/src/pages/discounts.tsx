@@ -35,7 +35,7 @@ export default function Discounts() {
         .then(() => queryClient.invalidateQueries({queryKey: ['discounts']}))
         .catch((error) => console.error(error));
     } else if (modalType === "Edit" && selectedDiscount) {
-      updateDiscount({...setSelectedDiscount, ...discount})
+      updateDiscount({...selectedDiscount, ...discount})
         .then(() => queryClient.invalidateQueries({queryKey: ['discounts']}))
         .catch((error) => console.error(error));
     }

@@ -10,6 +10,16 @@ builder.Configuration
     .AddJsonFile($"appsettings.Development.json")
     .AddEnvironmentVariables();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost5173", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 builder.Services
@@ -39,6 +49,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapEndpoints();
+
+app.UseCors("AllowLocalhost5173");
 
 app.MapControllers();
 
