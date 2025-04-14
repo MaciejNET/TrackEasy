@@ -7,6 +7,7 @@ public static class Extensions
         app.MapDiscountCodesEndpoints();
         app.MapDiscountsEndpoints();
         app.MapStationsEndpoints();
+        app.MapCitiesEndpoints();
         return app;
     }
 }
