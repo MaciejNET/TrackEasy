@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrackEasy.Infrastructure.Database;
 
@@ -11,13 +12,15 @@ using TrackEasy.Infrastructure.Database;
 namespace TrackEasy.Infrastructure.Migrations
 {
     [DbContext(typeof(TrackEasyDbContext))]
-    partial class TrackEasyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250414191325_AddCityTable")]
+    partial class AddCityTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -197,6 +200,7 @@ namespace TrackEasy.Infrastructure.Migrations
             modelBuilder.Entity("TrackEasy.Domain.Stations.City", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Country")
