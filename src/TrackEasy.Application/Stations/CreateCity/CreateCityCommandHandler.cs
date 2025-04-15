@@ -13,7 +13,7 @@ public sealed class CreateCityCommandHandler(ICityRepository cityRepository)
 
         if (exists)
         {
-            throw new TrackEasyException("CityAlreadyExists", $"City '{request.Name}' already exists.");
+            throw new TrackEasyException(Codes.CityAlreadyExists, $"City '{request.Name}' already exists.");
         }
 
         var city = City.Create(request.Name, request.Country);

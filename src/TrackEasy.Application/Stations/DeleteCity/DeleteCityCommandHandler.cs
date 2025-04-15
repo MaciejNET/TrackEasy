@@ -13,7 +13,7 @@ internal sealed class DeleteCityCommandHandler(ICityRepository cityRepository)
 
         if (city is null)
         {
-            throw new TrackEasyException("CityNotFound", $"City with id: {request.Id} does not exist.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"City with id: {request.Id} does not exist.");
         }
 
         cityRepository.Delete(city);

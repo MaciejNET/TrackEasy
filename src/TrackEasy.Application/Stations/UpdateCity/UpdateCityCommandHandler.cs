@@ -13,7 +13,7 @@ internal sealed class UpdateCityCommandHandler(ICityRepository cityRepository)
 
         if (city is null)
         {
-            throw new TrackEasyException("CityNotFound", $"City with id: {request.Id} does not exist.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"City with id: {request.Id} does not exist.");
         }
 
         city.Update(request.Name, request.Country);
