@@ -12,6 +12,9 @@ internal sealed class CityConfiguration : IEntityTypeConfiguration<City>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+
         builder.Property(x => x.Name)
             .HasMaxLength(50)
             .IsRequired();

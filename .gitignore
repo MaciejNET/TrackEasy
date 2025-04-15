@@ -10,6 +10,7 @@ src/.idea/
 .vscode/
 src/.vscode/
 appsettings.Development.json
+.sln.DotSettings.user
 
 # macOS
 .DS_Store
