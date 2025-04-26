@@ -8,6 +8,7 @@ public static class Extensions
         app.MapDiscountsEndpoints();
         app.MapStationsEndpoints();
         app.MapCitiesEndpoints();
+        app.MapOperatorsEndpoints();
         return app;
     }
 }
