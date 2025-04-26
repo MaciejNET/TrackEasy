@@ -1,6 +1,6 @@
 using TrackEasy.Shared.Application.Abstractions;
 
-namespace TrackEasy.Application.Stations.GetCountries;
+namespace TrackEasy.Application.Cities.GetCountries;
 
 public sealed record GetCountriesQuery : IQuery<IEnumerable<CountryDto>>;
 

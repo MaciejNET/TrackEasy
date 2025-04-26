@@ -1,7 +1,6 @@
 using FluentValidation;
-using TrackEasy.Domain.Stations;
 
-namespace TrackEasy.Domain.Stations;
+namespace TrackEasy.Domain.Cities;
 
 public sealed class CityValidator : AbstractValidator<City>
 {
@@ -17,5 +16,10 @@ public sealed class CityValidator : AbstractValidator<City>
 
         RuleFor(x => x.Country)
             .IsInEnum();
+
+        RuleForEach(x => x.FunFacts)
+            .NotEmpty()
+            .MinimumLength(3)
+            .MaximumLength(100);
     }
 }

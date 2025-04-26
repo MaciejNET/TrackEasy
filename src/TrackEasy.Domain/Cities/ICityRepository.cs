@@ -1,6 +1,6 @@
 using TrackEasy.Shared.Domain.Abstractions;
 
-namespace TrackEasy.Domain.Stations;
+namespace TrackEasy.Domain.Cities;
 
 public interface ICityRepository : IBaseRepository
 {

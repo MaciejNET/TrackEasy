@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 // ReSharper disable InconsistentNaming
 
-namespace TrackEasy.Domain.Stations;
+namespace TrackEasy.Domain.Cities;
 
 public enum Country
 {

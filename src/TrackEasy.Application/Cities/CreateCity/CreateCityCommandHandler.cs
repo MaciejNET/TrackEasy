@@ -1,8 +1,8 @@
-﻿using TrackEasy.Domain.Stations;
+﻿using TrackEasy.Domain.Cities;
 using TrackEasy.Shared.Application.Abstractions;
 using TrackEasy.Shared.Exceptions;
 
-namespace TrackEasy.Application.Stations.CreateCity;
+namespace TrackEasy.Application.Cities.CreateCity;
 
 public sealed class CreateCityCommandHandler(ICityRepository cityRepository)
     : ICommandHandler<CreateCityCommand>
@@ -16,7 +16,7 @@ public sealed class CreateCityCommandHandler(ICityRepository cityRepository)
             throw new TrackEasyException(Codes.CityAlreadyExists, $"City '{request.Name}' already exists.");
         }
 
-        var city = City.Create(request.Name, request.Country);
+        var city = City.Create(request.Name, request.Country, request.FunFacts);
         cityRepository.Add(city);
         await cityRepository.SaveChangesAsync(cancellationToken);
     }

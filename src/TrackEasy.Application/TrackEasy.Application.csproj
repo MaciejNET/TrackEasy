@@ -16,4 +16,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Stations\" />
+    </ItemGroup>
+
 </Project>

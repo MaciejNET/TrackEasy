@@ -1,13 +1,13 @@
-﻿using TrackEasy.Domain.Stations;
+﻿using TrackEasy.Domain.Cities;
 using TrackEasy.Shared.Application.Abstractions;
 using TrackEasy.Shared.Exceptions;
 
-namespace TrackEasy.Application.Stations.DeleteCity;
+namespace TrackEasy.Application.Cities.UpdateCity;
 
-internal sealed class DeleteCityCommandHandler(ICityRepository cityRepository)
-    : ICommandHandler<DeleteCityCommand>
+internal sealed class UpdateCityCommandHandler(ICityRepository cityRepository)
+    : ICommandHandler<UpdateCityCommand>
 {
-    public async Task Handle(DeleteCityCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateCityCommand request, CancellationToken cancellationToken)
     {
         var city = await cityRepository.GetByIdAsync(request.Id, cancellationToken);
 
@@ -16,7 +16,7 @@ internal sealed class DeleteCityCommandHandler(ICityRepository cityRepository)
             throw new TrackEasyException(SharedCodes.EntityNotFound, $"City with id: {request.Id} does not exist.");
         }
 
-        cityRepository.Delete(city);
+        city.Update(request.Name, request.Country, request.FunFacts);
         await cityRepository.SaveChangesAsync(cancellationToken);
     }
 }

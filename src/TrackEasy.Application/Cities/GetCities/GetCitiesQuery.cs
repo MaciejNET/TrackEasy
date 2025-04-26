@@ -1,7 +1,6 @@
-﻿using TrackEasy.Application.Stations.Shared;
-using TrackEasy.Shared.Application.Abstractions;
+﻿using TrackEasy.Shared.Application.Abstractions;
 using TrackEasy.Shared.Pagination.Abstractions;
 
-namespace TrackEasy.Application.Stations.GetCities;
+namespace TrackEasy.Application.Cities.GetCities;
 
 public sealed record GetCitiesQuery(int PageNumber, int PageSize) : IQuery<PaginatedResult<CityDto>>;

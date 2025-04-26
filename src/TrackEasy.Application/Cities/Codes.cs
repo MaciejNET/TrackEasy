@@ -1,4 +1,4 @@
-namespace TrackEasy.Application.Stations;
+namespace TrackEasy.Application.Cities;
 
 public static class Codes
 {

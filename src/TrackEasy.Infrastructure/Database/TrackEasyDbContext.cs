@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TrackEasy.Domain.Cities;
 using TrackEasy.Domain.DiscountCodes;
 using TrackEasy.Domain.Discounts;
 using TrackEasy.Domain.Operators;
-using TrackEasy.Domain.Stations;
 using TrackEasy.Domain.Users;
 
 namespace TrackEasy.Infrastructure.Database;
