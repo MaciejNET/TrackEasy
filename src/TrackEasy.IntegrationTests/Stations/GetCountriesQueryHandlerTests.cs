@@ -1,5 +1,6 @@
 using Shouldly;
-using TrackEasy.Application.Stations.GetCountries;
+using TrackEasy.Application.Cities.GetCountries;
+using TrackEasy.Domain.Cities;
 
 namespace TrackEasy.IntegrationTests.Stations;
 
@@ -15,6 +16,6 @@ public class GetCountriesQueryHandlerTests (DatabaseFixture databaseFixture) : I
         var countries = await Sender.Send(query);
 
         // Assert
-        countries.Count().ShouldBe(249);
+        countries.Count().ShouldBe(Enum.GetValues<Country>().Length);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TrackEasy.Domain.Stations;
+using TrackEasy.Domain.Cities;
 
 namespace TrackEasy.Infrastructure.Database.Repositories;
 
