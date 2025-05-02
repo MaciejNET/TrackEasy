@@ -32,4 +32,8 @@
         <InternalsVisibleTo Include="TrackEasy.IntegrationTests" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Queries\Stations\" />
+    </ItemGroup>
+
 </Project>

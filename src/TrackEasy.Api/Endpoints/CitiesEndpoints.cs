@@ -1,10 +1,10 @@
 using MediatR;
-using TrackEasy.Application.Stations.CreateCity;
-using TrackEasy.Application.Stations.DeleteCity;
-using TrackEasy.Application.Stations.FindCity;
-using TrackEasy.Application.Stations.GetCities;
-using TrackEasy.Application.Stations.Shared;
-using TrackEasy.Application.Stations.UpdateCity;
+using TrackEasy.Application.Cities.CreateCity;
+using TrackEasy.Application.Cities.DeleteCity;
+using TrackEasy.Application.Cities.FindCity;
+using TrackEasy.Application.Cities.GetCities;
+using TrackEasy.Application.Cities.GetCountries;
+using TrackEasy.Application.Cities.UpdateCity;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -15,6 +15,17 @@ public static class CitiesEndpoints
     {
         var group = app.MapGroup("/cities").WithTags("Cities");
 
+        group.MapGet("/countries", async (ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new GetCountriesQuery();
+                var countries = await sender.Send(query, cancellationToken);
+                return Results.Ok(countries);
+            })
+            .WithName("GetCountries")
+            .Produces<IEnumerable<CountryDto>>()
+            .WithDescription("Get all countries.")
+            .WithOpenApi();
+        
         group.MapGet("/", async ([AsParameters] GetCitiesQuery query, ISender sender, CancellationToken cancellationToken) =>
             await sender.Send(query, cancellationToken))
             .WithName("GetCities")

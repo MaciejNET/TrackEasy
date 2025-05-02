@@ -18,5 +18,9 @@ public sealed class OperatorValidator : AbstractValidator<Operator>
             .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(3);
+        
+        RuleFor(x => x.Trains)
+            .Must(x => x.Count == x.DistinctBy(t => t.Name).Count())
+            .WithMessage("Trains must have unique names.");
     }
 }

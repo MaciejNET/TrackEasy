@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TrackEasy.Domain.Stations;
+using TrackEasy.Domain.Cities;
 
 namespace TrackEasy.Infrastructure.Database.Configurations;
 
@@ -21,5 +21,7 @@ internal sealed class CityConfiguration : IEntityTypeConfiguration<City>
 
         builder.Property(x => x.Country)
             .IsRequired();
+
+        builder.Property(x => x.FunFacts);
     }
 }
