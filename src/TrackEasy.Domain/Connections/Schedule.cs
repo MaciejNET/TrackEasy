@@ -17,4 +17,6 @@ public sealed record Schedule
         _daysOfWeek = [..daysOfWeek];
         new ScheduleValidator().ValidateAndThrow(this);
     }
+    
+    private Schedule() {}
 };

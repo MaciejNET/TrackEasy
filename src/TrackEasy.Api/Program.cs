@@ -2,6 +2,7 @@ using Scalar.AspNetCore;
 using TrackEasy.Api.Endpoints;
 using TrackEasy.Application;
 using TrackEasy.Infrastructure;
+using TrackEasy.Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,8 @@ builder.Services.AddOpenApi();
 builder.Services
     .AddApplication()
     .AddInfrastructure();
+
+builder.Configuration.AddKeyVault();
 
 var app = builder.Build();
 

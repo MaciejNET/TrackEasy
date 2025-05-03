@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using TrackEasy.Shared.Infrastructure;
 
 namespace TrackEasy.Infrastructure.Database;
 
@@ -11,10 +12,11 @@ internal sealed class TrackEasyDbContextFactory : IDesignTimeDbContextFactory<Tr
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../TrackEasy.Api"))
             .AddJsonFile("appsettings.Development.json")
+            .AddKeyVault()
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<TrackEasyDbContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetValue<string>("cs-application");
 
         optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
         {

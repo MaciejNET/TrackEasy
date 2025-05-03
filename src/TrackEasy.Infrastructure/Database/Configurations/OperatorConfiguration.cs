@@ -22,5 +22,15 @@ internal sealed class OperatorConfiguration : IEntityTypeConfiguration<Operator>
         builder.Property(x => x.Code)
             .IsRequired()
             .HasMaxLength(3);
+
+        builder.HasMany(x => x.Coaches)
+            .WithOne();
+
+        builder.HasMany(x => x.Trains)
+            .WithOne();
+
+        builder.HasMany(x => x.Managers)
+            .WithOne(x => x.Operator)
+            .HasForeignKey(x => x.OperatorId);
     }
 }

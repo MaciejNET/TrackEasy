@@ -16,7 +16,11 @@ internal sealed class ConnectionValidator : AbstractValidator<Connection>
 
         RuleFor(x => x.Operator)
             .NotEmpty();
-
+        
+        RuleFor(x => x)
+            .Must(x => x.Operator.Trains.Contains(x.Train))
+            .WithMessage("Train must belong to the operator");
+        
         RuleFor(x => x.PricePerKilometer)
             .NotEmpty();
         

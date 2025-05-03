@@ -1,6 +1,7 @@
 using FluentValidation;
 using TrackEasy.Domain.Operators;
 using TrackEasy.Domain.Shared;
+using TrackEasy.Domain.Trains;
 using TrackEasy.Shared.Domain.Abstractions;
 using TrackEasy.Shared.Exceptions;
 
@@ -14,13 +15,14 @@ public sealed class Connection : AggregateRoot
     public string Name { get; private set; }
     public Operator Operator { get; private set; }
     public Money PricePerKilometer { get; private set; }
+    public Train Train { get; private set; }
     public Schedule Schedule { get; private set; }
     public IReadOnlyList<ConnectionStation> Stations => _stations.AsReadOnly();
     public ConnectionRequest? Request { get; private set; }
     public bool IsActivated { get; private set; }
 
     public static Connection Create(string name, Operator @operator, Money pricePerKilometer,
-        Schedule schedule, IEnumerable<ConnectionStation> stations)
+        Train train, Schedule schedule, IEnumerable<ConnectionStation> stations)
     {
         var connection = new Connection
         {
@@ -28,6 +30,7 @@ public sealed class Connection : AggregateRoot
             Name = name,
             Operator = @operator,
             PricePerKilometer = pricePerKilometer,
+            Train = train,
             Schedule = schedule,
             _stations = [..stations],
             Request = ConnectionRequest.CreateAddRequest(),

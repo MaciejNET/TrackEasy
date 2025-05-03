@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace TrackEasy.Domain.Ticket;
+namespace TrackEasy.Domain.Tickets;
 
 internal sealed class PersonValidator : AbstractValidator<Person>
 {

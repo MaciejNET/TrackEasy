@@ -10,11 +10,11 @@ internal sealed class EmailSender(IConfiguration configuration) : IEmailSender
 {
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        var smtpHost = configuration["Smtp:Host"];
-        var smtpPort = int.Parse(configuration["Smtp:Port"]!);
-        var smtpUser = configuration["Smtp:Username"];
-        var smtpPassword = configuration["Smtp:Password"];
-        var smtpFrom = configuration["Smtp:FromEmail"];
+        var smtpHost = configuration["smtp-host"];
+        var smtpPort = int.Parse(configuration["smtp-port"]!);
+        var smtpUser = configuration["smtp-username"];
+        var smtpPassword = configuration["smtp-password"];
+        var smtpFrom = configuration["smtp-fromemail"];
         
         using var client = new SmtpClient();
         await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);

@@ -1,4 +1,4 @@
-namespace TrackEasy.Domain.Ticket;
+namespace TrackEasy.Domain.Tickets;
 
 public sealed record TicketConnectionStation(
     string Name,
