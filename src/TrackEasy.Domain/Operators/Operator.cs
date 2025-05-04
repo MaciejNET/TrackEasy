@@ -41,24 +41,27 @@ public sealed class Operator : AggregateRoot
         new OperatorValidator().ValidateAndThrow(this);
     }
     
-    public void AddCoach(string code, IEnumerable<Seat> seats)
+    public void AddCoach(string code, IEnumerable<int> seatsNumbers)
     {
         if (_coaches.Any(x => x.Code == code))
         {
             throw new TrackEasyException(Codes.CoachCodeAlreadyExists, $"Coach with code {code} already exists.");
         }
-        var coach = Coach.Create(code, seats);
+
+        var seats = seatsNumbers.Select(Seat.Create);
+        var coach = Coach.Create(code, seats, Id);
         _coaches.Add(coach);
         new OperatorValidator().ValidateAndThrow(this);
     }
     
-    public void UpdateCoach(Guid coachId, string code, IEnumerable<Seat> seats)
+    public void UpdateCoach(Guid coachId, string code, IEnumerable<int> seatsNumbers)
     {
         var coach = _coaches.FirstOrDefault(x => x.Id == coachId);
         if (coach is null)
         {
             throw new TrackEasyException(Codes.CoachNotFound, $"Coach with ID {coachId} not found.");
         }
+        var seats = seatsNumbers.Select(Seat.Create);
         coach.Update(code, seats);
         new OperatorValidator().ValidateAndThrow(this);
     }

@@ -4,4 +4,4 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Application.Operators.GetOperators;
 
-public sealed record GetOperatorsQuery(int PageNumber, int PageSize) : IQuery<PaginatedResult<OperatorDto>>;
+public sealed record GetOperatorsQuery(string? Name, string? Code, int PageNumber, int PageSize) : IQuery<PaginatedResult<OperatorDto>>;

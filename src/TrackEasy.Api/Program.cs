@@ -1,6 +1,7 @@
 using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Api.Endpoints;
 using TrackEasy.Api.Filters;
+using TrackEasy.Api.Policies;
 using TrackEasy.Api.Swagger;
 using TrackEasy.Application;
 using TrackEasy.Infrastructure;
@@ -29,6 +30,7 @@ builder.Configuration.AddKeyVault();
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
+    .AddPolicies()
     .AddAuthorizationHandlers()
     .AddTESwagger();
 

@@ -11,12 +11,10 @@ public static class Extensions
             .RequireRole(Roles.Admin));
     }
     
-    public static RouteHandlerBuilder RequireManagerAccess(
-        this RouteHandlerBuilder builder,
-        Guid operatorId)
+    public static RouteHandlerBuilder RequireManagerAccess(this RouteHandlerBuilder builder)
     {
         return builder.RequireAuthorization(policy => policy
-            .AddRequirements(new OperatorAccessRequirement(operatorId))
+            .AddRequirements(new OperatorAccessRequirement())
             .RequireRole(Roles.Manager));
     }
     

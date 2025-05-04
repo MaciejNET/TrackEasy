@@ -3,4 +3,4 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Application.Cities.GetCities;
 
-public sealed record GetCitiesQuery(int PageNumber, int PageSize) : IQuery<PaginatedResult<CityDto>>;
+public sealed record GetCitiesQuery(string? Name, int PageNumber, int PageSize) : IQuery<PaginatedResult<CityDto>>;

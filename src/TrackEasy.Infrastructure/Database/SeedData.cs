@@ -32,8 +32,19 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
         if (await userManager.FindByEmailAsync(adminUser.Email!) is null)
         {
             await userManager.CreateAsync(adminUser, "Admin1234!");
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-        }       
+            await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+        }
+        
+        var dbContext = scope.ServiceProvider.GetRequiredService<TrackEasyDbContext>();
+
+        await dbContext.Database.ExecuteSqlAsync(
+            $"""
+             UPDATE AspNetUsers
+             SET 
+                 TwoFactorEnabled = 0,
+                 EmailConfirmed = 1
+             WHERE Email = 'admin@admin.com'
+             """, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

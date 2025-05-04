@@ -9,14 +9,16 @@ public sealed class Coach : AggregateRoot
     
     public Guid Id { get; private set; }
     public string Code { get; private set; }
+    public Guid OperatorId { get; private set; }
     public IReadOnlyCollection<Seat> Seats => _seats.AsReadOnly();
     
-    internal static Coach Create(string code, IEnumerable<Seat> seats)
+    internal static Coach Create(string code, IEnumerable<Seat> seats, Guid operatorId)
     {
         var coach = new Coach
         {
             Id = Guid.NewGuid(),
             Code = code,
+            OperatorId = operatorId,
             _seats = [..seats]
         };
 

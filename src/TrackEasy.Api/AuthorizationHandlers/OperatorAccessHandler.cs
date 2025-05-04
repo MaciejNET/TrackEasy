@@ -3,23 +3,32 @@ using TrackEasy.Application.Security;
 
 namespace TrackEasy.Api.AuthorizationHandlers;
 
-public sealed class OperatorAccessRequirement(Guid operatorId) : IAuthorizationRequirement
-{
-    public Guid OperatorId { get; } = operatorId;
-}
+public sealed class OperatorAccessRequirement : IAuthorizationRequirement;
 
-public sealed class OperatorAccessHandler : AuthorizationHandler<OperatorAccessRequirement>
+public sealed class OperatorAccessHandler(IHttpContextAccessor httpContextAccessor) : AuthorizationHandler<OperatorAccessRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OperatorAccessRequirement requirement)
     {
-        var operatorIdClaim = context.User.FindFirst(CustomClaims.OperatorId);
-        if (operatorIdClaim is not null &&
-            Guid.TryParse(operatorIdClaim.Value, out var operatorId) &&
-            operatorId == requirement.OperatorId)
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext == null) return Task.CompletedTask;
+
+        var routeId = httpContext.GetRouteValue("id")?.ToString();
+        if (!Guid.TryParse(routeId, out var operatorId))
+        {
+            return Task.CompletedTask;
+        }
+
+        var userOperatorId = context.User.FindFirst(CustomClaims.OperatorId)?.Value;
+        if (!Guid.TryParse(userOperatorId, out var userOperatorGuid))
+        {
+            return Task.CompletedTask;
+        }
+
+        if (userOperatorGuid == operatorId)
         {
             context.Succeed(requirement);
         }
-        
+
         return Task.CompletedTask;
     }
 }

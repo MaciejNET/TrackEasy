@@ -186,7 +186,7 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<Guid?>("OperatorId")
+                    b.Property<Guid>("OperatorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -615,7 +615,9 @@ namespace TrackEasy.Infrastructure.Migrations
                 {
                     b.HasOne("TrackEasy.Domain.Operators.Operator", null)
                         .WithMany("Coaches")
-                        .HasForeignKey("OperatorId");
+                        .HasForeignKey("OperatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsMany("TrackEasy.Domain.Coaches.Seat", "Seats", b1 =>
                         {

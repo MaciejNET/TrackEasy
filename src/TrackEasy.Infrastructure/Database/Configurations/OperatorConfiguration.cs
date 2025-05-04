@@ -24,7 +24,8 @@ internal sealed class OperatorConfiguration : IEntityTypeConfiguration<Operator>
             .HasMaxLength(3);
 
         builder.HasMany(x => x.Coaches)
-            .WithOne();
+            .WithOne()
+            .HasForeignKey(x => x.OperatorId);
 
         builder.HasMany(x => x.Trains)
             .WithOne();

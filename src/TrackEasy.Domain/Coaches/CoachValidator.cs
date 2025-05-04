@@ -15,6 +15,10 @@ internal sealed class CoachValidator : AbstractValidator<Coach>
             .MaximumLength(15);
 
         RuleFor(x => x.Seats)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(seats => seats.Count > 0)
+            .WithMessage("At least one seat is required.")
+            .Must(seats => seats.Distinct().Count() == seats.Count)
+            .WithMessage("Seats must be unique.");
     }
 }

@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Shared.Domain.Abstractions\TrackEasy.Shared.Domain.Abstractions.csproj" />
+      <ProjectReference Include="..\TrackEasy.Shared.Pagination.Abstractions\TrackEasy.Shared.Pagination.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
