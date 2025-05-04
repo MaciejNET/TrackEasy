@@ -340,6 +340,32 @@ namespace TrackEasy.Infrastructure.Migrations
                     b.ToTable("Operators", (string)null);
                 });
 
+            modelBuilder.Entity("TrackEasy.Domain.RefundRequests.RefundRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("RefundRequests", (string)null);
+                });
+
             modelBuilder.Entity("TrackEasy.Domain.Stations.Station", b =>
                 {
                     b.Property<Guid>("Id")
@@ -806,6 +832,17 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TrackEasy.Domain.RefundRequests.RefundRequest", b =>
+                {
+                    b.HasOne("TrackEasy.Domain.Tickets.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("TrackEasy.Domain.Stations.Station", b =>

@@ -1,4 +1,5 @@
 using MediatR;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.DiscountCodes.CreateDiscountCode;
 using TrackEasy.Application.DiscountCodes.DeleteDiscountCode;
 using TrackEasy.Application.DiscountCodes.FindDiscountCode;
@@ -9,14 +10,15 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
 
-public static class DiscountCodesEndpoints
+public class DiscountCodesEndpoints : IEndpoints
 {
-    public static void MapDiscountCodesEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoints(RouteGroupBuilder rootGroup)
     {
-        var group = app.MapGroup("/discount-codes").WithTags("Discount Codes");
+        var group = rootGroup.MapGroup("/discount-codes").WithTags("Discount Codes");
 
         group.MapGet("/", async ([AsParameters] GetDiscountCodesQuery query, ISender sender, CancellationToken cancellationToken) 
                 => await sender.Send(query, cancellationToken))
+            .RequireAdminAccess()
             .WithName("GetDiscountCodes")
             .Produces<PaginatedResult<DiscountCodeDto>>()
             .WithDescription("Get all discount codes.")
@@ -39,6 +41,7 @@ public static class DiscountCodesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.Created($"/discount-codes/{command.Code}", command);
             })
+            .RequireAdminAccess()
             .WithName("CreateDiscountCode")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
@@ -51,6 +54,7 @@ public static class DiscountCodesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("UpdateDiscountCode")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -63,6 +67,7 @@ public static class DiscountCodesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("DeleteDiscountCode")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)

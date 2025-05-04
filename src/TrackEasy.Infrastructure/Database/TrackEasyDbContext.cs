@@ -9,6 +9,7 @@ using TrackEasy.Domain.Discounts;
 using TrackEasy.Domain.Managers;
 using TrackEasy.Domain.Notifications;
 using TrackEasy.Domain.Operators;
+using TrackEasy.Domain.RefundRequests;
 using TrackEasy.Domain.Stations;
 using TrackEasy.Domain.Tickets;
 using TrackEasy.Domain.Trains;
@@ -30,6 +31,7 @@ public sealed class TrackEasyDbContext(DbContextOptions<TrackEasyDbContext> opti
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Station> Stations { get; set; }
     public DbSet<Train> Trains { get; set; }
+    public DbSet<RefundRequest> RefundRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

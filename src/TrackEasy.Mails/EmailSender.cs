@@ -1,12 +1,15 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using TrackEasy.Mails.Abstractions;
+using TrackEasy.Mails.Abstractions.Models;
+using TrackEasy.Mails.Templates;
+using TrackEasy.Shared.Infrastructure;
 
 namespace TrackEasy.Mails;
 
-internal sealed class EmailSender(IConfiguration configuration) : IEmailSender
+internal sealed class EmailSender(RazorRenderer razorRenderer, IConfiguration configuration) : IEmailSender
 {
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
@@ -30,5 +33,27 @@ internal sealed class EmailSender(IConfiguration configuration) : IEmailSender
         message.Body = bodyBuilder.ToMessageBody();
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
+    }
+
+    public async Task SendAccountConfirmationEmailAsync(string email, ActivateEmailModel model)
+    {
+        const string subject = "Account confirmation";
+        var parameters = new Dictionary<string, object?>()
+        {
+            { "Model", model }
+        };
+        var html = await razorRenderer.RenderHtmlToString<ActivateEmail>(parameters);
+        await SendEmailAsync(email, subject, html);
+    }
+
+    public async Task SendTwoFactorEmailAsync(string email, TwoFactorEmailModel model)
+    {
+        const string subject = "Two-factor authentication";
+        var parameters = new Dictionary<string, object?>()
+        {
+            { "Model", model }
+        };
+        var html = await razorRenderer.RenderHtmlToString<TwoFactorEmail>(parameters);
+        await SendEmailAsync(email, subject, html);
     }
 }

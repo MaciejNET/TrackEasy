@@ -63,17 +63,6 @@ public sealed class Operator : AggregateRoot
         new OperatorValidator().ValidateAndThrow(this);
     }
     
-    public void RemoveCoach(Guid coachId)
-    {
-        var coach = _coaches.FirstOrDefault(x => x.Id == coachId);
-        if (coach is null)
-        {
-            throw new TrackEasyException(Codes.CoachNotFound, $"Coach with ID {coachId} not found.");
-        }
-        _coaches.Remove(coach);
-        new OperatorValidator().ValidateAndThrow(this);
-    }
-    
     public void AddTrain(string name, IEnumerable<(Guid CoachId, int Number)> coaches)
     {
         if (_trains.Any(x => x.Name == name))
@@ -116,7 +105,7 @@ public sealed class Operator : AggregateRoot
         new OperatorValidator().ValidateAndThrow(this);
     }
     
-    public void AddManager(string firstName, string lastName, string email, DateOnly dateOfBirth, TimeProvider timeProvider)
+    public Manager AddManager(string firstName, string lastName, string email, DateOnly dateOfBirth, TimeProvider timeProvider)
     {
         if (_managers.Any(x => x.User.Email == email))
         {
@@ -126,6 +115,7 @@ public sealed class Operator : AggregateRoot
         var manager = Manager.Create(user, this);
         _managers.Add(manager);
         new OperatorValidator().ValidateAndThrow(this);
+        return manager;
     }
     
 #pragma warning disable CS8618, CS9264

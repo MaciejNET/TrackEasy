@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Domain\TrackEasy.Domain.csproj" />
+      <ProjectReference Include="..\TrackEasy.Mails.Abstractions\TrackEasy.Mails.Abstractions.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Application.Abstractions\TrackEasy.Shared.Application.Abstractions.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Pagination.Abstractions\TrackEasy.Shared.Pagination.Abstractions.csproj" />
     </ItemGroup>

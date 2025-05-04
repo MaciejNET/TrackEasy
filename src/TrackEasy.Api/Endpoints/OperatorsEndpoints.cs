@@ -1,5 +1,5 @@
 using MediatR;
-using TrackEasy.Application.DiscountCodes.Shared;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Operators.CreateOperator;
 using TrackEasy.Application.Operators.DeleteOperator;
 using TrackEasy.Application.Operators.FindOperator;
@@ -10,16 +10,17 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
 
-public static class OperatorsEndpoints
+public class OperatorsEndpoints : IEndpoints
 {
-    public static void MapOperatorsEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoints(RouteGroupBuilder rootGroup)
     {
-        var group = app.MapGroup("/operators").WithTags("Operators");
+        var group = rootGroup.MapGroup("/operators").WithTags("Operators");
 
         group.MapGet("/", async ([AsParameters] GetOperatorsQuery query, ISender sender, CancellationToken cancellationToken) 
                 => await sender.Send(query, cancellationToken))
+            .RequireAdminAccess()
             .WithName("GetOperators")
-            .Produces<PaginatedResult<DiscountCodeDto>>()
+            .Produces<PaginatedResult<OperatorDto>>()
             .WithDescription("Get all operators.")
             .WithOpenApi();
 
@@ -29,6 +30,7 @@ public static class OperatorsEndpoints
                 var @operator = await sender.Send(query, cancellationToken);
                 return @operator is null ? Results.NotFound() : Results.Ok(@operator);
             })
+            .RequireAdminAccess()
             .WithName("FindOperator")
             .Produces<OperatorDto>()
             .Produces(StatusCodes.Status404NotFound)
@@ -40,6 +42,7 @@ public static class OperatorsEndpoints
                 var id = await sender.Send(command, cancellationToken);
                 return Results.Created($"/operators/{id}", command);
             })
+            .RequireAdminAccess()
             .WithName("CreateOperator")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
@@ -52,6 +55,7 @@ public static class OperatorsEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("UpdateOperator")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -64,6 +68,7 @@ public static class OperatorsEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("DeleteOperator")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)

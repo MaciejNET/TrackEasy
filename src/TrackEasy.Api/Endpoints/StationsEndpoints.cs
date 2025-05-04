@@ -1,9 +1,9 @@
 namespace TrackEasy.Api.Endpoints;
 
-public static class StationsEndpoints
+public class StationsEndpoints : IEndpoints
 {
-    public static void MapStationsEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoints(RouteGroupBuilder rootGroup)
     {
-        var group = app.MapGroup("/stations").WithTags("Stations");
+        var group = rootGroup.MapGroup("/stations").WithTags("Stations");
     }
 }

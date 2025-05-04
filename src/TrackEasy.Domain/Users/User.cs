@@ -20,36 +20,24 @@ public sealed class User : IdentityUser<Guid>, IAggregateRoot
         string lastName,
         string email,
         DateOnly dateOfBirth,
-        TimeProvider timeProvider)
-    {
-        var user = CreateUser(firstName, lastName, email, dateOfBirth, false, timeProvider);
-        user.AddDomainEvent(new PassengerCreatedEvent(user));
-        return user;
-    }
+        TimeProvider timeProvider) =>
+        CreateUser(firstName, lastName, email, dateOfBirth, false, timeProvider);
 
     public static User CreateManager(
         string firstName,
         string lastName,
         string email,
         DateOnly dateOfBirth,
-        TimeProvider timeProvider)
-    {
-        var user = CreateUser(firstName, lastName, email, dateOfBirth, true, timeProvider);
-        user.AddDomainEvent(new ManagerCreatedEvent(user));
-        return user;
-    }
+        TimeProvider timeProvider) =>
+        CreateUser(firstName, lastName, email, dateOfBirth, true, timeProvider);
 
     public static User CreateAdmin(
         string firstName,
         string lastName,
         string email,
         DateOnly dateOfBirth,
-        TimeProvider timeProvider)
-    {
-        var user = CreateUser(firstName, lastName, email, dateOfBirth, true, timeProvider);
-        user.AddDomainEvent(new AdminCreatedEvent(user));
-        return user;
-    }
+        TimeProvider timeProvider) =>
+        CreateUser(firstName, lastName, email, dateOfBirth, true, timeProvider);
 
     private static User CreateUser(
         string firstName,
@@ -67,10 +55,12 @@ public sealed class User : IdentityUser<Guid>, IAggregateRoot
             UserName = email,
             Email = email,
             DateOfBirth = dateOfBirth,
-            TwoFactorEnabled = twoFactorEnabled
+            TwoFactorEnabled = twoFactorEnabled,
+            EmailConfirmed = false,
         };
-
+        
         new UserValidator(timeProvider).ValidateAndThrow(user);
+        user.AddDomainEvent(new UserCreatedEvent(user));
         return user;
     }
     

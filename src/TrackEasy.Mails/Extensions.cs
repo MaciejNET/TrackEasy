@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using TrackEasy.Mails.Abstractions;
 
 namespace TrackEasy.Mails;
 

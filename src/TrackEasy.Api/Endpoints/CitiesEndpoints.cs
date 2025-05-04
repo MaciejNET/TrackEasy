@@ -1,4 +1,5 @@
 using MediatR;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Cities.CreateCity;
 using TrackEasy.Application.Cities.DeleteCity;
 using TrackEasy.Application.Cities.FindCity;
@@ -9,11 +10,11 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
 
-public static class CitiesEndpoints
+public class CitiesEndpoints : IEndpoints
 {
-    public static void MapCitiesEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoints(RouteGroupBuilder rootGroup)
     {
-        var group = app.MapGroup("/cities").WithTags("Cities");
+        var group = rootGroup.MapGroup("/cities").WithTags("Cities");
 
         group.MapGet("/countries", async (ISender sender, CancellationToken cancellationToken) =>
             {
@@ -21,6 +22,7 @@ public static class CitiesEndpoints
                 var countries = await sender.Send(query, cancellationToken);
                 return Results.Ok(countries);
             })
+            .RequireAdminAccess()
             .WithName("GetCountries")
             .Produces<IEnumerable<CountryDto>>()
             .WithDescription("Get all countries.")
@@ -28,6 +30,7 @@ public static class CitiesEndpoints
         
         group.MapGet("/", async ([AsParameters] GetCitiesQuery query, ISender sender, CancellationToken cancellationToken) =>
             await sender.Send(query, cancellationToken))
+            .RequireAdminAccess()
             .WithName("GetCities")
             .Produces<PaginatedResult<CityDto>>()
             .WithDescription("Get all cities.")
@@ -38,6 +41,7 @@ public static class CitiesEndpoints
                 var city = await sender.Send(new FindCityQuery(id), cancellationToken);
                 return city is null ? Results.NotFound() : Results.Ok(city);
             })
+            .RequireAdminAccess()
             .WithName("FindCity")
             .Produces<CityDto>()
             .Produces(StatusCodes.Status404NotFound)
@@ -49,6 +53,7 @@ public static class CitiesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.Created("/cities", command);
             })
+            .RequireAdminAccess()
             .WithName("CreateCity")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
@@ -61,6 +66,7 @@ public static class CitiesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("UpdateCity")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -73,6 +79,7 @@ public static class CitiesEndpoints
                 await sender.Send(command, cancellationToken);
                 return Results.NoContent();
             })
+            .RequireAdminAccess()
             .WithName("DeleteCity")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)

@@ -1,4 +1,5 @@
 using MediatR;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Discounts.CreateDiscount;
 using TrackEasy.Application.Discounts.DeleteDiscount;
 using TrackEasy.Application.Discounts.FindDiscount;
@@ -6,19 +7,18 @@ using TrackEasy.Application.Discounts.GetDiscounts;
 using TrackEasy.Application.Discounts.Shared;
 using TrackEasy.Application.Discounts.UpdateDiscount;
 using TrackEasy.Shared.Pagination.Abstractions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 
 namespace TrackEasy.Api.Endpoints;
 
-public static class DiscountsEndpoints
+public class DiscountsEndpoints : IEndpoints
 {
-    public static void MapDiscountsEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoints(RouteGroupBuilder rootGroup)
     {
-        var group = app.MapGroup("/discounts").WithTags("Discounts");
+        var group = rootGroup.MapGroup("/discounts").WithTags("Discounts");
 
         group.MapGet("/", async ([AsParameters] GetDiscountsQuery query, ISender sender, CancellationToken cancellationToken) =>
             await sender.Send(query, cancellationToken))
+            .RequireAdminAccess()
             .WithName("GetDiscounts")
             .Produces<PaginatedResult<DiscountDto>>()
             .WithDescription("Get all discounts.")
@@ -30,6 +30,7 @@ public static class DiscountsEndpoints
             var discount = await sender.Send(query, cancellationToken);
             return discount is null ? Results.NotFound() : Results.Ok(discount);
         })
+            .RequireAdminAccess()
             .WithName("FindDiscount")
             .Produces<DiscountDto>()
             .Produces(StatusCodes.Status404NotFound)
@@ -41,6 +42,7 @@ public static class DiscountsEndpoints
             await sender.Send(command, cancellationToken);
             return Results.Created("/discounts", command);
         })
+            .RequireAdminAccess()
             .WithName("CreateDiscount")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
@@ -53,6 +55,7 @@ public static class DiscountsEndpoints
             await sender.Send(command, cancellationToken);
             return Results.NoContent();
         })
+            .RequireAdminAccess()
             .WithName("UpdateDiscount")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -65,6 +68,7 @@ public static class DiscountsEndpoints
             await sender.Send(command, cancellationToken);
             return Results.NoContent();
         })
+            .RequireAdminAccess()
             .WithName("DeleteDiscount")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)

@@ -67,7 +67,7 @@ public sealed class Ticket : AggregateRoot
         AddDomainEvent(new TicketCanceledEvent(Id));
     }
     
-    public void Refund(TimeProvider timeProvider)
+    internal void Refund(TimeProvider timeProvider)
     {
         TicketStatus = TicketStatus.REFUNDED;
         RefundedAt = timeProvider.GetUtcNow().DateTime;

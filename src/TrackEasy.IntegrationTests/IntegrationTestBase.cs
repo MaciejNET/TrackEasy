@@ -22,7 +22,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         
         var configurationDictionary = new Dictionary<string, string>
         {
-            {"ConnectionStrings:DefaultConnection", databaseFixture.ConnectionString}
+            {"cs-application", databaseFixture.ConnectionString}
         };
         
         var configuration = new ConfigurationBuilder()
@@ -32,7 +32,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         
         services
             .AddApplication()
-            .AddInfrastructure();
+            .AddInfrastructure(configuration);
         
         ConfigureServices(services);
         
