@@ -15,6 +15,7 @@ internal sealed class GetCitiesQueryHandler(TrackEasyDbContext dbContext)
     {
         return await dbContext.Cities
             .AsNoTracking()
+            .WithName(request.Name)
             .Select(x => new CityDto(x.Id, x.Name, x.Country.GetEnumDescription()))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

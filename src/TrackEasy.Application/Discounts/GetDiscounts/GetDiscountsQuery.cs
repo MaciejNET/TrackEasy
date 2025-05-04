@@ -4,5 +4,5 @@ using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Application.Discounts.GetDiscounts;
 
-public sealed record GetDiscountsQuery(int PageNumber, int PageSize) 
+public sealed record GetDiscountsQuery(string? Name, int? Percentage, int PageNumber, int PageSize) 
     : IQuery<PaginatedResult<DiscountDto>>;

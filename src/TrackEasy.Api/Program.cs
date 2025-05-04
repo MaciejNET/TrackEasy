@@ -1,7 +1,11 @@
-using Scalar.AspNetCore;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Api.Endpoints;
+using TrackEasy.Api.Filters;
+using TrackEasy.Api.Policies;
+using TrackEasy.Api.Swagger;
 using TrackEasy.Application;
 using TrackEasy.Infrastructure;
+using TrackEasy.Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,20 +25,23 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddOpenApi();
+builder.Configuration.AddKeyVault();
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure();
+    .AddInfrastructure(builder.Configuration)
+    .AddPolicies()
+    .AddAuthorizationHandlers()
+    .AddTESwagger();
+
+builder.Services.AddScoped<Global2FAFilter>();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options.DarkMode = true;
-    });
+    app.UseTESwagger();
 }
 
 app.UseInfrastructure();

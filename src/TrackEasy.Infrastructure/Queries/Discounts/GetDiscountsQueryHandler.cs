@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using TrackEasy.Application.Discounts.GetDiscounts;
 using TrackEasy.Application.Discounts.Shared;
 using TrackEasy.Infrastructure.Database;
@@ -15,6 +14,8 @@ internal sealed class GetDiscountsQueryHandler(TrackEasyDbContext dbContext) : I
     {
         return await dbContext.Discounts
             .AsNoTracking()
+            .WithName(request.Name)
+            .WithPercentage(request.Percentage)
             .Select(x => new DiscountDto(x.Id, x.Name, x.Percentage))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

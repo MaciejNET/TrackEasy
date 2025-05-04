@@ -1,75 +1,79 @@
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using TrackEasy.Application.Security;
 using TrackEasy.Domain.Users;
 using TrackEasy.Infrastructure.Behaviors;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Infrastructure.Exceptions;
+using TrackEasy.Infrastructure.Security;
 using TrackEasy.Mails;
+using TrackEasy.Shared.Infrastructure;
 
 namespace TrackEasy.Infrastructure;
 
 public static class Extensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
         services.AddMails();
         services.AddExceptionHandlers();
+        services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+        services.AddScoped<IJwtService, JwtService>();
         services.AddIdentityCore<User>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = true;
-            options.SignIn.RequireConfirmedEmail = true;
-            options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequiredLength = 8;
-            options.Password.RequiredUniqueChars = 1;
-            options.User.RequireUniqueEmail = true;
-            options.Tokens.EmailConfirmationTokenProvider = "Email";
-        })
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 1;
+                options.User.RequireUniqueEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = "Email";
+            })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<TrackEasyDbContext>()
-            .AddDefaultTokenProviders()
-            .AddTokenProvider<EmailTokenProvider<User>>("Email")
-            .AddApiEndpoints();
+            .AddDefaultTokenProviders();
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
-            options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
-        })
-        .AddCookie(IdentityConstants.BearerScheme)
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            var key = Encoding.ASCII.GetBytes(services.BuildServiceProvider().GetRequiredService<IConfiguration>()["Jwt:Key"]!);
+            var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]!);
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = services.BuildServiceProvider().GetRequiredService<IConfiguration>()["Jwt:Issuer"],
-                ValidAudience = services.BuildServiceProvider().GetRequiredService<IConfiguration>()["Jwt:Audience"],
+                ValidIssuer = configuration["Jwt:Issuer"],
+                ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
         });
         
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContext, UserContext>();
+        
         services.AddAuthorization();
         
         services.AddDataProtection();
+
+        services.AddScoped<HtmlRenderer>();
+        services.AddScoped<RazorRenderer>();
         
         services.AddDbContext<TrackEasyDbContext>(options =>
             options.UseAzureSql(
-                services.BuildServiceProvider().GetRequiredService<IConfiguration>()
-                    .GetConnectionString("DefaultConnection"),
+                configuration.GetValue<string>("cs-application"),
                 sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(typeof(TrackEasyDbContext).Assembly.FullName);
@@ -85,14 +89,13 @@ public static class Extensions
         });
            
         services.AddRepositories();
-        //services.AddHostedService<SeedData>();
+        services.AddHostedService<SeedData>();
            
         return services;
     }
     
     public static WebApplication UseInfrastructure(this WebApplication app)
     {
-        app.MapIdentityApi<User>();
         app.UseExceptionHandlers();
         
         return app;

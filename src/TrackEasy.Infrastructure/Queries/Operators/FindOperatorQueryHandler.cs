@@ -11,7 +11,8 @@ internal sealed class FindOperatorQueryHandler(TrackEasyDbContext dbContext) : I
     public async Task<OperatorDto?> Handle(FindOperatorQuery request, CancellationToken cancellationToken)
     {
         return await dbContext.Operators
-            .Where(x => x.Id == request.Id)
+            .AsNoTracking()
+            .WithOperatorId(request.Id)
             .Select(x => new OperatorDto(x.Id, x.Name, x.Code))
             .SingleOrDefaultAsync(cancellationToken);
     }

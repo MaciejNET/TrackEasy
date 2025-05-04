@@ -27,4 +27,6 @@ public sealed record ConnectionRequest
         
         new ConnectionRequestValidator().ValidateAndThrow(this);
     }
+    
+    private ConnectionRequest() { }
 }

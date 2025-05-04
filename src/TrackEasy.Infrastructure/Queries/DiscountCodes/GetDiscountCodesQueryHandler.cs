@@ -14,6 +14,8 @@ internal sealed class GetDiscountCodesQueryHandler(TrackEasyDbContext dbContext)
     {
         return await dbContext.DiscountCodes
             .AsNoTracking()
+            .WithCode(request.Code)
+            .WithPercentage(request.Percentage)
             .Select(x => new DiscountCodeDto(x.Id, x.Code, x.Percentage, x.From, x.To))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

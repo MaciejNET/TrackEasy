@@ -18,7 +18,7 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
         
         await context.Database.MigrateAsync(cancellationToken);
 
-        List<string> roles = ["Admin", "Manager", "Passenger"];
+        List<string> roles = [Roles.Admin, Roles.Manager, Roles.Passenger];
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
@@ -27,21 +27,24 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
             }
         }
 
-        var adminUser = new User
-        {
-            UserName = "admin@admin.com",
-            Email = "admin@admin.com",
-            EmailConfirmed = true,
-            TwoFactorEnabled = false,
-        };
+        var adminUser = User.CreateAdmin("Admin", "Admin", "admin@admin.com", new DateOnly(1990, 1, 1), TimeProvider.System);
         
-        adminUser.UpdatePersonalData("Admin", "Admin", new DateOnly(1990, 1, 1), TimeProvider.System);
-        
-        if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+        if (await userManager.FindByEmailAsync(adminUser.Email!) is null)
         {
             await userManager.CreateAsync(adminUser, "Admin1234!");
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-        }       
+            await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+        }
+        
+        var dbContext = scope.ServiceProvider.GetRequiredService<TrackEasyDbContext>();
+
+        await dbContext.Database.ExecuteSqlAsync(
+            $"""
+             UPDATE AspNetUsers
+             SET 
+                 TwoFactorEnabled = 0,
+                 EmailConfirmed = 1
+             WHERE Email = 'admin@admin.com'
+             """, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

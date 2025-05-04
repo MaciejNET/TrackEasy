@@ -4,7 +4,7 @@ using TrackEasy.Infrastructure.Database;
 namespace TrackEasy.Infrastructure.Behaviors;
 
 internal sealed class TransactionalBehavior<TRequest, TResponse>(TrackEasyDbContext dbContext) 
-    : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
@@ -13,19 +13,28 @@ internal sealed class TransactionalBehavior<TRequest, TResponse>(TrackEasyDbCont
             return await next();
         }
 
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var response = await next();
-            
-            await transaction.CommitAsync(cancellationToken);
-
-            return response;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        var executionStrategy = dbContext.Database.CreateExecutionStrategy();
+        
+        return await executionStrategy.ExecuteAsync(
+            state: (dbContext, next, request),
+            operation: async (context, state, ct) =>
+            {
+                var (currentDbContext, handler, _) = state;
+                await using var transaction = await currentDbContext.Database.BeginTransactionAsync(ct);
+                try
+                {
+                    var response = await handler();
+                    await transaction.CommitAsync(ct);
+                    return response;
+                }
+                catch
+                {
+                    await transaction.RollbackAsync(ct);
+                    throw;
+                }
+            },
+            verifySucceeded: null,
+            cancellationToken: cancellationToken
+        );
     }
 }

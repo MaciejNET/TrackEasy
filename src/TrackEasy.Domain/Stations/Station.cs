@@ -27,11 +27,9 @@ public sealed class Station : AggregateRoot
         return station;
     }
     
-    public void Update(string name, City city, GeographicalCoordinates geographicalCoordinates)
+    public void Update(string name, GeographicalCoordinates geographicalCoordinates)
     {
         Name = name;
-        CityId = city.Id;
-        City = city;
         GeographicalCoordinates = geographicalCoordinates;
 
         new StationValidator().ValidateAndThrow(this);

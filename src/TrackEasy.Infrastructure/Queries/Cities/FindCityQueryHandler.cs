@@ -14,7 +14,7 @@ internal sealed class FindCityQueryHandler(TrackEasyDbContext dbContext)
     {
         return await dbContext.Cities
             .AsNoTracking()
-            .Where(x => x.Id == request.Id)
+            .WithCityId(request.Id)
             .Select(x => new CityDetailsDto(
                 x.Id,
                 x.Name,

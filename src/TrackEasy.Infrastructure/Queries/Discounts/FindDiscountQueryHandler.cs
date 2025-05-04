@@ -12,7 +12,7 @@ internal sealed class FindDiscountQueryHandler(TrackEasyDbContext dbContext) : I
     {
         return await dbContext.Discounts
             .AsNoTracking()
-            .Where(x => x.Id == request.Id)
+            .WithDiscountId(request.Id)
             .Select(x => new DiscountDto(x.Id, x.Name, x.Percentage))
             .SingleOrDefaultAsync(cancellationToken);
     }
