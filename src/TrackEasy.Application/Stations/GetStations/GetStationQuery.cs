@@ -1,4 +1,5 @@
 using TrackEasy.Shared.Application.Abstractions;
+using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Application.Stations.GetStations;
 
@@ -7,4 +8,4 @@ public sealed record GetStationsQuery(
     string? CityName,
     int PageNumber,
     int PageSize
-    ) : IQuery<StationDto>;
+    ) : IQuery<PaginatedResult<StationDto>>;

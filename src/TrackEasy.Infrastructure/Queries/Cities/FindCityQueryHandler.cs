@@ -19,8 +19,8 @@ internal sealed class FindCityQueryHandler(TrackEasyDbContext dbContext)
                 x.Id,
                 x.Name,
                 new CountryDto(x.Country.GetEnumId(), x.Country.GetEnumDescription()),
-                x.FunFacts.ToList()
+                x.FunFacts
                 ))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

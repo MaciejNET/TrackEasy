@@ -43,9 +43,9 @@ public class DatabaseReadyWaitStrategy : IWaitUntil
 
         try
         {
-            using var connection = new SqlConnection(connectionString);
+            await using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
-            using var command = new SqlCommand("SELECT 1;", connection);
+            await using var command = new SqlCommand("SELECT 1;", connection);
             await command.ExecuteScalarAsync();
             return true;
         }

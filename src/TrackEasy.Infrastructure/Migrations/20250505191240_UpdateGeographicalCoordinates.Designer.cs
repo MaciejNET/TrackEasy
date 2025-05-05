@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrackEasy.Infrastructure.Database;
 
@@ -12,9 +13,11 @@ using TrackEasy.Infrastructure.Database;
 namespace TrackEasy.Infrastructure.Migrations
 {
     [DbContext(typeof(TrackEasyDbContext))]
-    partial class TrackEasyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505191240_UpdateGeographicalCoordinates")]
+    partial class UpdateGeographicalCoordinates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

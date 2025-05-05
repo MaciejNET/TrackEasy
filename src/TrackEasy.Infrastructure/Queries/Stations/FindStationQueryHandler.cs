@@ -6,7 +6,7 @@ namespace TrackEasy.Infrastructure.Queries.Stations;
 
 internal sealed class FindStationQueryHandler(TrackEasyDbContext dbContext) : IQueryHandler<FindStationQuery, StationDetailsDto?>
 {
-    public Task<StationDetailsDto> Handle(FindStationQuery request, CancellationToken cancellationToken)
+    public Task<StationDetailsDto?> Handle(FindStationQuery request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

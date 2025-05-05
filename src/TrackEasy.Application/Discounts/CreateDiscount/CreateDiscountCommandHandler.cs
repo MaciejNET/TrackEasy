@@ -5,9 +5,9 @@ using TrackEasy.Shared.Exceptions;
 namespace TrackEasy.Application.Discounts.CreateDiscount;
 
 internal sealed class CreateDiscountCommandHandler(IDiscountRepository discountRepository)
-    : ICommandHandler<CreateDiscountCommand>
+    : ICommandHandler<CreateDiscountCommand, Guid>
 {
-    public async Task Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
     {
         var exists = await discountRepository.ExistsAsync(request.Name, cancellationToken);
 
@@ -19,5 +19,7 @@ internal sealed class CreateDiscountCommandHandler(IDiscountRepository discountR
         var discount = Discount.Create(request.Name, request.Percentage);
         discountRepository.Add(discount);
         await discountRepository.SaveChangesAsync(cancellationToken);
+        
+        return discount.Id;
     }
 }
