@@ -12,7 +12,7 @@ internal sealed class DeleteOperatorCommandHandler(IOperatorRepository operatorR
 
         if (@operator is null)
         {
-            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Operator with id: {request.Id} does not exits.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Operator with id: {request.Id} does not exists.");
         }
         
         operatorRepository.Delete(@operator);

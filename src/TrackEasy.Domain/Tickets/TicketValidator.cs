@@ -9,9 +9,6 @@ internal sealed class TicketValidator : AbstractValidator<Ticket>
         RuleFor(x => x.Id)
             .NotEmpty();
 
-        RuleFor(x => x.TicketNumber)
-            .GreaterThan(0);
-
         RuleFor(x => x.Price)
             .NotNull();
 

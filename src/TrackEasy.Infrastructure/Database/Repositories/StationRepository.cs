@@ -10,6 +10,9 @@ internal sealed class StationRepository(TrackEasyDbContext dbContext) : BaseRepo
     public Task<bool> ExistsAsync(string name, CancellationToken cancellationToken)
         => _dbContext.Stations.AnyAsync(x => x.Name == name, cancellationToken);
 
+    public Task<bool> ExistsAsync(Guid id, string name, CancellationToken cancellationToken)
+        => _dbContext.Stations.AnyAsync(x => x.Id != id && x.Name == name, cancellationToken);
+
     public async Task<Station?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _dbContext.Stations.FindAsync([id], cancellationToken);
 

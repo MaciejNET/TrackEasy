@@ -12,7 +12,7 @@ internal sealed class StationValidator : AbstractValidator<Station>
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(3)
-            .MinimumLength(50);
+            .MaximumLength(50);
 
         RuleFor(x => x.CityId)
             .NotEmpty();

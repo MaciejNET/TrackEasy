@@ -4,10 +4,10 @@ namespace TrackEasy.Domain.Stations;
 
 public sealed record GeographicalCoordinates
 {
-    public int Latitude { get; private set; }
-    public int Longitude { get; private set; }
+    public decimal Latitude { get; private set; }
+    public decimal Longitude { get; private set; }
     
-    public GeographicalCoordinates(int latitude, int longitude)
+    public GeographicalCoordinates(decimal latitude, decimal longitude)
     {
         Latitude = latitude;
         Longitude = longitude;

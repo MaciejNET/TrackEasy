@@ -5,9 +5,9 @@ using TrackEasy.Shared.Exceptions;
 namespace TrackEasy.Application.Cities.CreateCity;
 
 public sealed class CreateCityCommandHandler(ICityRepository cityRepository)
-    : ICommandHandler<CreateCityCommand>
+    : ICommandHandler<CreateCityCommand, Guid>
 {
-    public async Task Handle(CreateCityCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateCityCommand request, CancellationToken cancellationToken)
     {
         var exists = await cityRepository.ExistsAsync(request.Name, cancellationToken);
 
@@ -19,5 +19,7 @@ public sealed class CreateCityCommandHandler(ICityRepository cityRepository)
         var city = City.Create(request.Name, request.Country, request.FunFacts);
         cityRepository.Add(city);
         await cityRepository.SaveChangesAsync(cancellationToken);
+        
+        return city.Id;
     }
 }

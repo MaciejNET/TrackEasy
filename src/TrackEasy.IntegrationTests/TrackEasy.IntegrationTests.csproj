@@ -9,7 +9,6 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.2" />
-        <PackageReference Include="FluentAssertions" Version="8.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.3.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
@@ -29,6 +28,10 @@
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Api\TrackEasy.Api.csproj" />
       <ProjectReference Include="..\TrackEasy.Application\TrackEasy.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Coach\" />
     </ItemGroup>
 
 </Project>
