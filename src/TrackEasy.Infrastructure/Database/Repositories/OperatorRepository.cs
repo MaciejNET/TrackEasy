@@ -13,11 +13,10 @@ internal sealed class OperatorRepository(TrackEasyDbContext dbContext) : BaseRep
         => _dbContext.Operators.AnyAsync(x => x.Id != id && x.Name == name && x.Code == code, cancellationToken);
 
     public async Task<Operator?> FindAsync(Guid id, CancellationToken cancellationToken)
-        => await _dbContext.Operators.FindAsync([id], cancellationToken);
-
-    public Task<Operator?> FindWithCoachesAsync(Guid id, CancellationToken cancellationToken)
-        => _dbContext.Operators
+        => await _dbContext.Operators
             .Include(x => x.Coaches)
+            .Include(x => x.Managers)
+            .Include(x => x.Trains)
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
     public void Add(Operator @operator)

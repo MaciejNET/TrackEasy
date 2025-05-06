@@ -30,8 +30,4 @@
       <ProjectReference Include="..\TrackEasy.Application\TrackEasy.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Coach\" />
-    </ItemGroup>
-
 </Project>

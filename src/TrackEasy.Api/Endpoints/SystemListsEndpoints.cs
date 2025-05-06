@@ -18,7 +18,7 @@ public sealed class SystemListsEndpoints : IEndpoints
             .WithOpenApi();
 
         group.MapGet("/stations", async (ISender sender, CancellationToken cancellationToken) =>
-                await sender.Send(new GetStationListQuery(), cancellationToken))
+                await sender.Send(new GetStationsListQuery(), cancellationToken))
             .WithName("GetStationsList")
             .Produces<IEnumerable<SystemListItemDto>>()
             .WithDescription("Get list of stations.")
