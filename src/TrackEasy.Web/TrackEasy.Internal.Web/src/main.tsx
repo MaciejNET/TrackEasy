@@ -4,6 +4,7 @@ import './index.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import MainPage from "@/pages/main-page.tsx";
 import Discounts from "@/pages/discounts.tsx";
+import Cities from "@/pages/cities.tsx";
 import Layout from "@/components/layout.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/discounts",
         element: <Discounts/>
+      },
+      {
+        path: "/cities",
+        element: <Cities/>
       }
     ]
   }
