@@ -20,7 +20,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -48,13 +49,13 @@ app.UseInfrastructure();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowLocalhost5173");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapEndpoints();
-
-app.UseCors("AllowLocalhost5173");
 
 app.MapControllers();
 

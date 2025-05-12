@@ -1,13 +1,31 @@
 import {SidebarProvider} from "@/components/ui/sidebar.tsx";
 import {AppSidebar} from "@/components/app-sidebar.tsx";
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import {Button} from "@/components/ui/button.tsx";
-import {LogOut} from "lucide-react";
+import {LogOut, Loader2} from "lucide-react";
 import {ThemeProvider} from "@/components/theme-provider.tsx";
 import {ModeToggle} from "@/components/mode-toggler.tsx";
 import {Toaster} from "@/components/ui/sonner.tsx";
+import {useUserStore} from "@/stores/user-store.ts";
+import {useAuthStore} from "@/stores/auth-store.ts";
+import {useEffect} from "react";
 
 export default function Layout() {
+  const navigate = useNavigate();
+  const {user, fetchUser, isLoading} = useUserStore();
+  const {logout} = useAuthStore();
+
+  useEffect(() => {
+    // Fetch user data when component mounts
+    fetchUser();
+  }, [fetchUser]);
+
+  const handleLogout = () => {
+    logout();
+    useUserStore.getState().clearUser(); // Clear user data when logging out
+    navigate("/login");
+  };
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="flex h-screen">
@@ -19,8 +37,20 @@ export default function Layout() {
               <h1 className="font-semibold text-xl">Dashboard</h1>
               <div className="flex items-center gap-3">
                 <ModeToggle/>
-                <span className="text-sm">Username</span>
-                <Button variant="outline" className="cursor-pointer">
+                <span className="text-sm">
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : user ? (
+                    `${user.firstName} ${user.lastName}`
+                  ) : (
+                    "User"
+                  )}
+                </span>
+                <Button 
+                  variant="outline" 
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4"/> Logout
                 </Button>
               </div>

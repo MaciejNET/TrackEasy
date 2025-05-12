@@ -17,6 +17,9 @@ internal sealed class TicketConfiguration : IEntityTypeConfiguration<Ticket>
 
         builder.ComplexProperty(x => x.Price);
 
+        builder.Property(x => x.TicketNumber)
+            .ValueGeneratedOnAdd();
+
         builder.OwnsMany(x => x.Passengers, pb =>
         {
             pb.ToTable("People");

@@ -18,7 +18,7 @@ public class UserEndpoints : IEndpoints
     {
         var group = rootGroup.MapGroup("/users").WithTags("Users");
 
-        group.MapGet("/", async (ISender sender, CancellationToken cancellationToken) =>
+        group.MapGet("/me", async (ISender sender, CancellationToken cancellationToken) =>
             {
                 var query = new FindUserQuery();
                 var user = await sender.Send(query, cancellationToken);
