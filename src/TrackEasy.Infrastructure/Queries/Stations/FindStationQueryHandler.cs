@@ -11,22 +11,16 @@ internal sealed class FindStationQueryHandler(TrackEasyDbContext dbContext)
 {
     public async Task<StationDetailsDto?> Handle(FindStationQuery request, CancellationToken cancellationToken)
     {
-        var station = await dbContext.Stations
-            .Include(st => st.City)
+        return await dbContext.Stations
             .AsNoTracking()
-            .FirstOrDefaultAsync(st => st.Id == request.Id, cancellationToken);
-
-        if (station is null)
-            return null;
-
-        var coordsDto = new GeographicalCoordinatesDto(
-            station.GeographicalCoordinates.Latitude,
-            station.GeographicalCoordinates.Longitude);
-
-        return new StationDetailsDto(
-            station.Id,
-            station.Name,
-            station.City.Name,
-            coordsDto);
+            .Where(st => st.Id == request.Id)
+            .Select(st => new StationDetailsDto(
+                st.Id,
+                st.Name,
+                st.City.Name,
+                new GeographicalCoordinatesDto(
+                    st.GeographicalCoordinates.Latitude,
+                    st.GeographicalCoordinates.Longitude)))
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }
