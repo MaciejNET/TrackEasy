@@ -1,13 +1,26 @@
+using Microsoft.EntityFrameworkCore;
 using TrackEasy.Application.Stations.FindStation;
+using TrackEasy.Application.Stations.Shared;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Shared.Application.Abstractions;
 
 namespace TrackEasy.Infrastructure.Queries.Stations;
 
-internal sealed class FindStationQueryHandler(TrackEasyDbContext dbContext) : IQueryHandler<FindStationQuery, StationDetailsDto?>
+internal sealed class FindStationQueryHandler(TrackEasyDbContext dbContext)
+    : IQueryHandler<FindStationQuery, StationDetailsDto?>
 {
-    public Task<StationDetailsDto?> Handle(FindStationQuery request, CancellationToken cancellationToken)
+    public async Task<StationDetailsDto?> Handle(FindStationQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await dbContext.Stations
+            .AsNoTracking()
+            .Where(st => st.Id == request.Id)
+            .Select(st => new StationDetailsDto(
+                st.Id,
+                st.Name,
+                st.City.Name,
+                new GeographicalCoordinatesDto(
+                    st.GeographicalCoordinates.Latitude,
+                    st.GeographicalCoordinates.Longitude)))
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }
