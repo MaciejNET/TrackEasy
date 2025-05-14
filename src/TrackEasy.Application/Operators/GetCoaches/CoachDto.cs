@@ -1,3 +1,3 @@
 namespace TrackEasy.Application.Operators.GetCoaches;
 
-public sealed record CoachDto(Guid Id, string Name);
+public sealed record CoachDto(Guid Id, string Code);
