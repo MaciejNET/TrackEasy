@@ -1,6 +1,7 @@
 using FluentValidation;
 using TrackEasy.Domain.Tickets;
 using TrackEasy.Shared.Domain.Abstractions;
+using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Domain.RefundRequests;
 
@@ -15,6 +16,11 @@ public sealed class RefundRequest : AggregateRoot
 
     public static RefundRequest Create(Guid? userId, Ticket ticket, string reason, TimeProvider timeProvider)
     {
+        if (ticket.TicketStatus != TicketStatus.PAID)
+        {
+            throw new TrackEasyException(Codes.InvalidTicketStatus, "Ticket must be paid to request a refund.");
+        }
+        
         var refundRequest = new RefundRequest
         {
             Id = Guid.NewGuid(),
@@ -32,11 +38,19 @@ public sealed class RefundRequest : AggregateRoot
     
     public void Accept(TimeProvider timeProvider)
     {
+        if (Ticket.TicketStatus != TicketStatus.PAID)
+        {
+            throw new TrackEasyException(Codes.InvalidTicketStatus, "Ticket must be paid to accept a refund.");
+        }
         Ticket.Refund(timeProvider);
     }
     
     public void Reject()
     {
+        if (Ticket.TicketStatus != TicketStatus.PAID)
+        {
+            throw new TrackEasyException(Codes.InvalidTicketStatus, "Ticket must be paid to reject a refund.");
+        }
         AddDomainEvent(new RefundRejectedEvent(Id, TicketId));
     }
     
