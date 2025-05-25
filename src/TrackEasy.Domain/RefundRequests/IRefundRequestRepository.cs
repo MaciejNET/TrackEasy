@@ -1,6 +1,8 @@
 namespace TrackEasy.Domain.RefundRequests;
 
-public interface IRefundRequestRepository
+using TrackEasy.Shared.Domain.Abstractions;
+
+public interface IRefundRequestRepository : IBaseRepository
 {
     Task<RefundRequest?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
     void Add(RefundRequest refundRequest);
