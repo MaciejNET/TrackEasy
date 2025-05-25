@@ -3,10 +3,21 @@ using TrackEasy.Shared.Application.Abstractions;
 
 namespace TrackEasy.Application.Connections.ApproveConnectionRequest;
 
-internal sealed class ApproveConnectionRequestCommandHandler(IConnectionRepository connectionRepository) : ICommandHandler<ApproveConnectionRequestCommand>
+internal sealed class ApproveConnectionRequestCommandHandler(
+    IConnectionRepository connectionRepository
+) : ICommandHandler<ApproveConnectionRequestCommand>
 {
-    public Task Handle(ApproveConnectionRequestCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ApproveConnectionRequestCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var connection = await connectionRepository.FindByIdAsync(request.Id, cancellationToken);
+
+        if (connection is null)
+        {
+            throw new Exception($"Connection with ID {request.Id} was not found.");
+        }
+
+        connection.ApproveRequest();
+
+        await connectionRepository.SaveChangesAsync(cancellationToken);
     }
 }
