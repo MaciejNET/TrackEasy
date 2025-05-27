@@ -65,7 +65,20 @@ public sealed class Operator : AggregateRoot
         coach.Update(code, seats);
         new OperatorValidator().ValidateAndThrow(this);
     }
-    
+
+    public void DeleteCoach(Guid coachId)
+    {
+        var coach = _coaches.FirstOrDefault(x => x.Id == coachId);
+        if (coach is null)
+        {
+            throw new TrackEasyException(Codes.CoachNotFound, $"Coach with ID {coachId} not found.");
+        }
+
+        _coaches.Remove(coach);
+        new OperatorValidator().ValidateAndThrow(this);
+    }
+
+
     public void AddTrain(string name, IEnumerable<(Guid CoachId, int Number)> coaches)
     {
         if (_trains.Any(x => x.Name == name))
@@ -94,6 +107,10 @@ public sealed class Operator : AggregateRoot
         {
             throw new TrackEasyException(Codes.TrainNotFound, $"Train with ID {trainId} not found.");
         }
+        if (_trains.Any(x => x.Name == name && x.Id != trainId))
+        {
+            throw new TrackEasyException(Codes.TrainNameAlreadyExists, $"Train with name {name} already exists.");
+        }
         var trainCoaches = new List<(Coach Coach, int Number)>();
         foreach (var (coachId, number) in coaches)
         {
@@ -105,6 +122,17 @@ public sealed class Operator : AggregateRoot
             trainCoaches.Add((coach, number));
         }
         train.Update(name, trainCoaches);
+        new OperatorValidator().ValidateAndThrow(this);
+    }
+    
+    public void DeleteTrain(Guid trainId)
+    {
+        var train = _trains.FirstOrDefault(x => x.Id == trainId);
+        if (train is null)
+        {
+            throw new TrackEasyException(Codes.TrainNotFound, $"Train with ID {trainId} not found.");
+        }
+        _trains.Remove(train);
         new OperatorValidator().ValidateAndThrow(this);
     }
     

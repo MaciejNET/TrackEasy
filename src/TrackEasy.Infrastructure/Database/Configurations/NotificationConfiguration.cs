@@ -16,11 +16,11 @@ internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notif
         builder.Property(n => n.Id)
             .ValueGeneratedNever();
 
-        builder.Property(n => n.Message)
+        builder.Property(n => n.Title)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(n => n.Title)
+        builder.Property(n => n.Message)
             .IsRequired()
             .HasMaxLength(255);
 

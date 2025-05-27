@@ -1,13 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using TrackEasy.Application.SystemLists;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Shared.Application.Abstractions;
 
-namespace TrackEasy.Infrastructure.Queries.SystemLists;
-
-internal sealed class GetOperatorsListQueryHandler(TrackEasyDbContext dbContext) : IQueryHandler<GetOperatorsListQuery, IEnumerable<SystemListItemDto>>
+namespace TrackEasy.Infrastructure.Queries.SystemLists
 {
-    public Task<IEnumerable<SystemListItemDto>> Handle(GetOperatorsListQuery request, CancellationToken cancellationToken)
+    internal sealed class GetOperatorsListQueryHandler(TrackEasyDbContext dbContext) : IQueryHandler<GetOperatorsListQuery, IEnumerable<SystemListItemDto>>
     {
-        throw new NotImplementedException();
+        public async Task<IEnumerable<SystemListItemDto>> Handle(GetOperatorsListQuery request, CancellationToken cancellationToken)
+        {
+            var result = await dbContext.Operators
+                .AsNoTracking()
+                .Select(o => new SystemListItemDto(o.Id, o.Name))
+                .ToListAsync(cancellationToken);
+
+            return result;
+        }
     }
 }
