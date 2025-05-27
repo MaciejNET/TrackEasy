@@ -1,31 +1,21 @@
-using MediatR;
 using TrackEasy.Domain.Operators;
+using TrackEasy.Shared.Application.Abstractions;
 using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Application.Operators.DeleteTrain;
 
-public sealed class DeleteTrainCommandHandler : IRequestHandler<DeleteTrainCommand, Unit>
+public sealed class DeleteTrainCommandHandler(IOperatorRepository operatorRepository)
+    : ICommandHandler<DeleteTrainCommand>
 {
-    private readonly IOperatorRepository _operatorRepository;
-
-    public DeleteTrainCommandHandler(IOperatorRepository operatorRepository)
+    public async Task Handle(DeleteTrainCommand request, CancellationToken cancellationToken)
     {
-        _operatorRepository = operatorRepository;
-    }
-
-    public async Task<Unit> Handle(DeleteTrainCommand request, CancellationToken cancellationToken)
-    {
-        var operatorEntity = await _operatorRepository.FindAsync(request.OperatorId, cancellationToken);
-
+        var operatorEntity = await operatorRepository.FindAsync(request.OperatorId, cancellationToken);
         if (operatorEntity is null)
         {
             throw new TrackEasyException(SharedCodes.EntityNotFound, $"Operator with ID {request.OperatorId} not found.");
         }
 
         operatorEntity.DeleteTrain(request.TrainId);
-
-        await _operatorRepository.SaveChangesAsync(cancellationToken);
-
-        return Unit.Value;
+        await operatorRepository.SaveChangesAsync(cancellationToken);
     }
 }
