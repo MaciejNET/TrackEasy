@@ -15,6 +15,13 @@ internal sealed class StationRepository(TrackEasyDbContext dbContext) : BaseRepo
 
     public async Task<Station?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _dbContext.Stations.FindAsync([id], cancellationToken);
+    
+    public async Task<List<Station>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Stations
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
 
     public void Add(Station station)
     {

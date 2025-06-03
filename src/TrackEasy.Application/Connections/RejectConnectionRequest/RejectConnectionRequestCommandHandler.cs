@@ -1,5 +1,6 @@
 using TrackEasy.Domain.Connections;
 using TrackEasy.Shared.Application.Abstractions;
+using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Application.Connections.RejectConnectionRequest;
 
@@ -13,7 +14,7 @@ internal sealed class RejectConnectionRequestCommandHandler(
 
         if (connection is null)
         {
-            throw new Exception($"Connection with ID {request.Id} was not found.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Connection with ID {request.Id} was not found.");
         }
 
         connection.RejectRequest();

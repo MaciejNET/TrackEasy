@@ -9,12 +9,18 @@
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Domain\TrackEasy.Domain.csproj" />
       <ProjectReference Include="..\TrackEasy.Mails.Abstractions\TrackEasy.Mails.Abstractions.csproj" />
+      <ProjectReference Include="..\TrackEasy.Pdf.Abstractions\TrackEasy.Pdf.Abstractions.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Application.Abstractions\TrackEasy.Shared.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\TrackEasy.Shared.Files.Abstractions\TrackEasy.Shared.Files.Abstractions.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Pagination.Abstractions\TrackEasy.Shared.Pagination.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.2" />
+      <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.4" />
+      <PackageReference Include="QRCoder" Version="1.6.0" />
+      <PackageReference Include="Refit" Version="8.0.0" />
+      <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+      <PackageReference Include="Stripe.net" Version="48.2.0" />
     </ItemGroup>
 
 </Project>

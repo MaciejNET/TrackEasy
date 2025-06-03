@@ -32,7 +32,7 @@ public sealed class RefundRequest : AggregateRoot
         };
         
         new RefundRequestValidator().ValidateAndThrow(refundRequest);
-        refundRequest.AddDomainEvent(new RefundRequestCreated(ticket.OperatorId));
+        refundRequest.AddDomainEvent(new RefundRequestCreatedEvent(ticket.Id, ticket.OperatorId));
         return refundRequest;
     }
     

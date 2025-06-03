@@ -11,4 +11,11 @@ internal sealed class ManagerRepository(TrackEasyDbContext dbContext) : BaseRepo
             .Include(x => x.User)
             .Include(x => x.Operator)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+    public async Task<List<Manager>> GetByOperatorIdAsync(Guid operatorId, CancellationToken cancellationToken)
+        => await _dbContext.Managers
+            .Include(x => x.User)
+            .Include(x => x.Operator)
+            .Where(x => x.OperatorId == operatorId)
+            .ToListAsync(cancellationToken);
 }

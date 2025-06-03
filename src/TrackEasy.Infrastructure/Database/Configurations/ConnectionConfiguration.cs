@@ -30,6 +30,7 @@ internal sealed class ConnectionConfiguration : IEntityTypeConfiguration<Connect
         builder.OwnsOne(x => x.Schedule, sb =>
         {
             sb.ToTable("Schedules");
+            sb.Property(x => x.DaysOfWeek);
         });
 
         builder.OwnsMany(x => x.Stations, sb =>

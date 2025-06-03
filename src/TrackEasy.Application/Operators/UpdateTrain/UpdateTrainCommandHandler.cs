@@ -4,7 +4,7 @@ using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Application.Operators.UpdateTrain;
 
-public sealed class UpdateTrainCommandHandler(IOperatorRepository operatorRepository)
+internal sealed class UpdateTrainCommandHandler(IOperatorRepository operatorRepository)
     : ICommandHandler<UpdateTrainCommand>
 {
     public async Task Handle(UpdateTrainCommand request, CancellationToken cancellationToken)

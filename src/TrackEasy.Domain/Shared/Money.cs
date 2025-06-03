@@ -31,4 +31,20 @@ public sealed record Money
 
         return new Money(left.Amount - right.Amount, left.Currency);
     }
+
+    public long ToMinorUnits()
+    {
+        return (long)(Amount * 100);
+    }
+
+    public string GetCurrencyCode()
+    {
+        return Currency switch
+        {
+            Currency.USD => "usd",
+            Currency.EUR => "eur",
+            Currency.PLN => "pln",
+            _ => throw new NotSupportedException($"Currency {Currency} is not supported.")
+        };
+    }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using TrackEasy.Domain.Shared;
 using TrackEasy.Domain.Tickets;
+
 // Added for FakeTimeProvider
 
 // Added Xunit for Fact/Theory
@@ -45,7 +46,10 @@ public class TicketTests
             Guid.NewGuid(),
             "OP-CODE",
             "Operator Name",
+            "OP-1234",
             passengerId,
+            "mail@mail.com",
+            new DateOnly(2024, 1, 1),
             _fakeTimeProvider // Pass the class-level provider
         );
 
@@ -54,19 +58,22 @@ public class TicketTests
     {
         // Arrange
         var connectionId = Guid.NewGuid();
-        var connectionName = "InterCity 456";
+        const string connectionName = "InterCity 456";
         var stations = CreateValidStations();
         var passengers = CreateValidPassengers(2);
         var seatNumbers = new List<int> { 10, 11 };
         var price = CreateValidPrice();
         var operatorId = Guid.NewGuid();
-        var operatorCode = "OP-XYZ";
-        var operatorName = "Test Operator";
+        const string operatorCode = "OP-XYZ";
+        const string operatorName = "Test Operator";
+        const string trainName = "OP-1234";
+        var connectionDate = new DateOnly(2024, 1, 1);
         var passengerId = Guid.NewGuid();
+        const string passengerEmail = "mail@mail.com";
         var expectedCreationTime = _fakeTimeProvider.GetUtcNow();
 
         // Act
-        var ticket = Ticket.Create(connectionId, connectionName, stations, passengers, seatNumbers, price, operatorId, operatorCode, operatorName, passengerId, _fakeTimeProvider);
+        var ticket = Ticket.Create(connectionId, connectionName, stations, passengers, seatNumbers, price, operatorId, operatorCode, operatorName, trainName, passengerId, passengerEmail, connectionDate, _fakeTimeProvider);
 
         // Assert
         ticket.ShouldNotBeNull();
@@ -81,6 +88,7 @@ public class TicketTests
         ticket.OperatorCode.ShouldBe(operatorCode);
         ticket.OperatorName.ShouldBe(operatorName);
         ticket.PassengerId.ShouldBe(passengerId);
+        ticket.EmailAddress.ShouldBe(passengerEmail);
         ticket.TicketStatus.ShouldBe(TicketStatus.PENDING);
         ticket.CreatedAt.ShouldBe(expectedCreationTime.DateTime);
         ticket.PaidAt.ShouldBeNull();
@@ -101,7 +109,7 @@ public class TicketTests
 
         // Act & Assert
         Should.Throw<ValidationException>(() =>
-            Ticket.Create(Guid.NewGuid(), connectionName, stations, passengers, [1], price, Guid.NewGuid(), operatorCode, operatorName, null, _fakeTimeProvider));
+            Ticket.Create(Guid.NewGuid(), connectionName, stations, passengers, [1], price, Guid.NewGuid(), operatorCode, operatorName, "T-1234", null, "mail@mail.com", DateOnly.MaxValue, _fakeTimeProvider));
     }
 
     [Fact]
@@ -113,7 +121,7 @@ public class TicketTests
 
         // Act & Assert
         Should.Throw<ValidationException>(() =>
-            Ticket.Create(Guid.NewGuid(), "Valid Connection", [], passengers, [1], price, Guid.NewGuid(), "CODE", "Name", null, _fakeTimeProvider))
+            Ticket.Create(Guid.NewGuid(), "Valid Connection", [], passengers, [1], price, Guid.NewGuid(), "CODE", "Name", "T-123", null, "mail@mail.com", new DateOnly(2024, 1, 1), _fakeTimeProvider))
             .Message.ShouldContain("'Stations' must not be empty");
     }
 
@@ -126,7 +134,7 @@ public class TicketTests
 
         // Act & Assert
         Should.Throw<ValidationException>(() =>
-            Ticket.Create(Guid.NewGuid(), "Valid Connection", stations, [], [1], price, Guid.NewGuid(), "CODE", "Name", null, _fakeTimeProvider))
+            Ticket.Create(Guid.NewGuid(), "Valid Connection", stations, [], [1], price, Guid.NewGuid(), "CODE", "Name", "T-1234", null, "mail@mail.com", DateOnly.MaxValue, _fakeTimeProvider))
             .Message.ShouldContain("'Passengers' must not be empty");
     }
 
@@ -141,7 +149,7 @@ public class TicketTests
 
         // Act & Assert
         Should.Throw<ValidationException>(() =>
-            Ticket.Create(Guid.NewGuid(), "Valid Connection", stations, passengers, seatNumbers, price, Guid.NewGuid(), "CODE", "Name", null, _fakeTimeProvider));
+            Ticket.Create(Guid.NewGuid(), "Valid Connection", stations, passengers, seatNumbers, price, Guid.NewGuid(), "CODE", "Name", "T-1234", null, "mail@mail.com", DateOnly.MaxValue, _fakeTimeProvider));
     }
 
 
@@ -150,7 +158,7 @@ public class TicketTests
     {
         // Arrange
         var ticket = CreateValidTicket(); // Uses _fakeTimeProvider for creation time
-        var transactionId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid().ToString();
         var expectedPayTime = new DateTimeOffset(2024, 1, 1, 13, 0, 0, TimeSpan.Zero);
         _fakeTimeProvider.SetUtcNow(expectedPayTime); // Set time for Pay operation
         ticket.ClearDomainEvents();
@@ -164,7 +172,7 @@ public class TicketTests
         ticket.TransactionId.ShouldBe(transactionId);
         ticket.DomainEvents.Count.ShouldBe(1);
         ticket.DomainEvents.First().ShouldBeOfType<TicketPayedEvent>();
-        ((TicketPayedEvent)ticket.DomainEvents.First()).TicketId.ShouldBe(ticket.Id);
+        ((TicketPayedEvent)ticket.DomainEvents.First()).Ticket.Id.ShouldBe(ticket.Id);
     }
 
     [Fact]

@@ -28,10 +28,13 @@ internal sealed class OperatorConfiguration : IEntityTypeConfiguration<Operator>
             .HasForeignKey(x => x.OperatorId);
 
         builder.HasMany(x => x.Trains)
-            .WithOne();
+            .WithOne()
+            .HasForeignKey(x => x.OperatorId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasMany(x => x.Managers)
             .WithOne(x => x.Operator)
-            .HasForeignKey(x => x.OperatorId);
+            .HasForeignKey(x => x.OperatorId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

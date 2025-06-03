@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Refit;
+using TrackEasy.Application.Api;
 
 namespace TrackEasy.Application;
 
@@ -12,6 +14,12 @@ public static class Extensions
         });
 
         services.AddSingleton(TimeProvider.System);
+        
+        services.AddRefitClient<ICurrencyFreaksApi>()
+            .ConfigureHttpClient(c =>
+            {
+                c.BaseAddress = new Uri("https://api.currencyfreaks.com");
+            });
 
         return services;
     }

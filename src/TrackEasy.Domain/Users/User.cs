@@ -56,11 +56,14 @@ public sealed class User : IdentityUser<Guid>, IAggregateRoot
             Email = email,
             DateOfBirth = dateOfBirth,
             TwoFactorEnabled = twoFactorEnabled,
-            EmailConfirmed = false,
+            EmailConfirmed = !twoFactorEnabled,
         };
         
         new UserValidator(timeProvider).ValidateAndThrow(user);
-        user.AddDomainEvent(new UserCreatedEvent(user));
+        
+        if (twoFactorEnabled)
+            user.AddDomainEvent(new UserCreatedEvent(user));
+        
         return user;
     }
     

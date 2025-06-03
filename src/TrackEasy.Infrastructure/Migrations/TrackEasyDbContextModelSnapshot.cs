@@ -209,6 +209,9 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<bool>("NeedsSeatReservation")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("OperatorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -305,10 +308,16 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -405,6 +414,9 @@ namespace TrackEasy.Infrastructure.Migrations
                     b.Property<DateTime?>("CanceledAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateOnly>("ConnectionDate")
+                        .HasColumnType("date");
+
                     b.Property<Guid>("ConnectionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -414,6 +426,10 @@ namespace TrackEasy.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OperatorCode")
                         .IsRequired()
@@ -432,6 +448,9 @@ namespace TrackEasy.Infrastructure.Migrations
                     b.Property<Guid?>("PassengerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("QrCodeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("RefundedAt")
                         .HasColumnType("datetime2");
 
@@ -439,13 +458,20 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TicketNumber")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketNumber"));
 
                     b.Property<int>("TicketStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TransactionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TrainName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.ComplexProperty<Dictionary<string, object>>("Price", "TrackEasy.Domain.Tickets.Ticket.Price#Money", b1 =>
                         {
@@ -473,7 +499,7 @@ namespace TrackEasy.Infrastructure.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<Guid?>("OperatorId")
+                    b.Property<Guid>("OperatorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -663,6 +689,10 @@ namespace TrackEasy.Infrastructure.Migrations
                             b1.Property<Guid>("ConnectionId")
                                 .HasColumnType("uniqueidentifier");
 
+                            b1.PrimitiveCollection<string>("DaysOfWeek")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<DateOnly>("ValidFrom")
                                 .HasColumnType("date");
 
@@ -813,7 +843,7 @@ namespace TrackEasy.Infrastructure.Migrations
                     b.HasOne("TrackEasy.Domain.Operators.Operator", "Operator")
                         .WithMany("Managers")
                         .HasForeignKey("OperatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TrackEasy.Domain.Users.User", "User")
@@ -937,7 +967,9 @@ namespace TrackEasy.Infrastructure.Migrations
                 {
                     b.HasOne("TrackEasy.Domain.Operators.Operator", null)
                         .WithMany("Trains")
-                        .HasForeignKey("OperatorId");
+                        .HasForeignKey("OperatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.OwnsMany("TrackEasy.Domain.Trains.TrainCoach", "Coaches", b1 =>
                         {

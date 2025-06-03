@@ -11,14 +11,16 @@ public sealed class Train : AggregateRoot
     
     public Guid Id { get; private set; }
     public string Name { get; private set; }
+    public Guid OperatorId { get; private set; }
     public IReadOnlyList<TrainCoach> Coaches => _coaches.AsReadOnly();
 
-    internal static Train Create(string name, IEnumerable<(Coach Coach, int Number)> coaches)
+    internal static Train Create(string name, IEnumerable<(Coach Coach, int Number)> coaches, Guid operatorId)
     {
         var train = new Train
         {
             Id = Guid.NewGuid(),
             Name = name,
+            OperatorId = operatorId
         };
         
         foreach (var (coach, number) in coaches)

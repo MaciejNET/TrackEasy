@@ -7,6 +7,6 @@ internal sealed class MoneyValidator : AbstractValidator<Money>
     public MoneyValidator()
     {
         RuleFor(x => x.Amount)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(0);
     }
 }

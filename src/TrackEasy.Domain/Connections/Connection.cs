@@ -1,4 +1,5 @@
 using FluentValidation;
+using TrackEasy.Domain.Discounts;
 using TrackEasy.Domain.Operators;
 using TrackEasy.Domain.Shared;
 using TrackEasy.Domain.Trains;
@@ -19,10 +20,11 @@ public sealed class Connection : AggregateRoot
     public Schedule Schedule { get; private set; }
     public IReadOnlyList<ConnectionStation> Stations => _stations.AsReadOnly();
     public ConnectionRequest? Request { get; private set; }
+    public bool NeedsSeatReservation { get; private set; }
     public bool IsActivated { get; private set; }
 
     public static Connection Create(string name, Operator @operator, Money pricePerKilometer,
-        Train train, Schedule schedule, IEnumerable<ConnectionStation> stations)
+        Train train, Schedule schedule, IEnumerable<ConnectionStation> stations, bool needsSeatReservation)
     {
         var connection = new Connection
         {
@@ -34,6 +36,7 @@ public sealed class Connection : AggregateRoot
             Schedule = schedule,
             _stations = [..stations],
             Request = ConnectionRequest.CreateAddRequest(),
+            NeedsSeatReservation = needsSeatReservation,
             IsActivated = false
         };
         
@@ -102,6 +105,41 @@ public sealed class Connection : AggregateRoot
             AddDomainEvent(new ConnectionDeletedEvent(Id));
         }
         Request = null;
+    }
+    
+    public bool IsConnectionRunning(DateOnly connectionDate)
+    {
+        return IsActivated && Schedule.DaysOfWeek.Contains(connectionDate.DayOfWeek);
+    }
+
+    public Money CalculatePrice(Guid startStationId, Guid endStationId, Discount? discount)
+    {
+        var startStation = Stations.FirstOrDefault(s => s.StationId == startStationId);
+        var endStation = Stations.FirstOrDefault(s => s.StationId == endStationId);
+        
+        if (startStation is null || endStation is null)
+        {
+            throw new TrackEasyException(SharedCodes.EntityNotFound, "Start or end station not found in the connection.");
+        }
+        
+        var startStationCoordinates = startStation.Station.GeographicalCoordinates;
+        var endStationCoordinates = endStation.Station.GeographicalCoordinates;
+        
+        var distance = startStationCoordinates.CalculateDistanceTo(endStationCoordinates);
+        
+        if (distance <= 0)
+        {
+            throw new TrackEasyException(SharedCodes.InvalidInput, "Invalid distance between stations.");
+        }
+        
+        var price = PricePerKilometer.Amount * (decimal)distance;
+        
+        if (discount is not null)
+        {
+            price -= price * (discount.Percentage / 100m);
+        }
+        
+        return new Money(price, PricePerKilometer.Currency);
     }
     
 #pragma warning disable CS8618

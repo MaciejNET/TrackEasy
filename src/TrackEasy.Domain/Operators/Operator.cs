@@ -95,7 +95,7 @@ public sealed class Operator : AggregateRoot
             }
             trainCoaches.Add((coach, number));
         }
-        var train = Train.Create(name, trainCoaches);
+        var train = Train.Create(name, trainCoaches, Id);
         _trains.Add(train);
         new OperatorValidator().ValidateAndThrow(this);
     }

@@ -5,20 +5,12 @@ using TrackEasy.Domain.RefundRequests;
 using TrackEasy.Domain.Shared;
 using TrackEasy.Domain.Tickets;
 
-// Assuming Currency is here
-
 namespace TrackEasy.UnitTests.RefundRequests;
 
 public class RefundRequestTests
 {
-    private readonly FakeTimeProvider _fakeTimeProvider;
+    private readonly FakeTimeProvider _fakeTimeProvider = new(new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero));
 
-    public RefundRequestTests()
-    {
-        _fakeTimeProvider = new FakeTimeProvider(new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero));
-    }
-
-    // Helper methods to create valid Ticket components (similar to TicketTests)
     private static List<TicketConnectionStation> CreateValidStations() =>
     [
         new("Station A", null, new TimeOnly(10, 0), 1),
@@ -30,12 +22,11 @@ public class RefundRequestTests
             .Select(i => new Person($"First{i}", $"Last{i}", new DateOnly(1990 + i, 1, 1), null))
             .ToList();
 
-    private static Money CreateValidPrice() => new(100, Currency.USD); // Assuming Currency.USD
+    private static Money CreateValidPrice() => new(100, Currency.USD);
 
-    // Helper to create a valid, real Ticket instance
     private Ticket CreateValidTicket(Guid? passengerId = null, List<int>? seatNumbers = null, Guid? operatorId = null)
     {
-        return Ticket.Create(
+        var ticket = Ticket.Create(
             Guid.NewGuid(),
             "Express 123",
             CreateValidStations(),
@@ -45,9 +36,15 @@ public class RefundRequestTests
             operatorId ?? Guid.NewGuid(),
             "OP-CODE",
             "Operator Name",
+            "OP-1234",
             passengerId,
-            _fakeTimeProvider // Use the fake provider for creation
+            "mail@mail.com",
+            new DateOnly(2024, 1, 1),
+            _fakeTimeProvider
         );
+        
+        ticket.Pay(_fakeTimeProvider);
+        return ticket;
     }
 
 
@@ -68,11 +65,11 @@ public class RefundRequestTests
         refundRequest.Id.ShouldNotBe(Guid.Empty);
         refundRequest.UserId.ShouldBe(userId);
         refundRequest.TicketId.ShouldBe(validTicket.Id);
-        refundRequest.Ticket.ShouldBeSameAs(validTicket); // Check instance equality
+        refundRequest.Ticket.ShouldBeSameAs(validTicket); 
         refundRequest.Reason.ShouldBe(reason);
         refundRequest.CreatedAt.ShouldBe(expectedCreationTime.DateTime);
-        refundRequest.DomainEvents.ShouldContain(e => e is RefundRequestCreated);
-        ((RefundRequestCreated)refundRequest.DomainEvents.First()).OperatorId.ShouldBe(validTicket.OperatorId);
+        refundRequest.DomainEvents.ShouldContain(e => e is RefundRequestCreatedEvent);
+        ((RefundRequestCreatedEvent)refundRequest.DomainEvents.First()).OperatorId.ShouldBe(validTicket.OperatorId);
     }
 
     [Fact]
@@ -80,8 +77,8 @@ public class RefundRequestTests
     {
         // Arrange
         Guid? userId = null;
-        var validTicket = CreateValidTicket(); // Create a real ticket
-        var reason = "Flight got cancelled";
+        var validTicket = CreateValidTicket(); 
+        const string reason = "Flight got cancelled";
         var expectedCreationTime = _fakeTimeProvider.GetUtcNow();
 
         // Act
@@ -95,17 +92,17 @@ public class RefundRequestTests
         refundRequest.Ticket.ShouldBeSameAs(validTicket);
         refundRequest.Reason.ShouldBe(reason);
         refundRequest.CreatedAt.ShouldBe(expectedCreationTime.DateTime);
-        refundRequest.DomainEvents.ShouldContain(e => e is RefundRequestCreated);
+        refundRequest.DomainEvents.ShouldContain(e => e is RefundRequestCreatedEvent);
     }
 
     [Theory]
-    [InlineData("")] // Empty string is invalid due to MinimumLength(3)
-    [InlineData("AB")] // Too short (MinLength is 3)
+    [InlineData("")] 
+    [InlineData("AB")]
     public void Create_Should_ThrowValidationException_For_InvalidReason(string invalidReason)
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var validTicket = CreateValidTicket(); // Create a real ticket
+        var validTicket = CreateValidTicket();
         _fakeTimeProvider.SetUtcNow(DateTimeOffset.UtcNow);
 
         // Act & Assert
@@ -118,8 +115,8 @@ public class RefundRequestTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var validTicket = CreateValidTicket(); // Create a real ticket
-        var tooLongReason = new string('X', 256); // Max length is 255
+        var validTicket = CreateValidTicket(); 
+        var tooLongReason = new string('X', 256); 
 
         // Act & Assert
         Should.Throw<ValidationException>(() =>
@@ -130,9 +127,9 @@ public class RefundRequestTests
     public void Accept_Should_UpdateTicketStatusAndTimestamp()
     {
         // Arrange
-        var validTicket = CreateValidTicket(); // Create a real ticket
+        var validTicket = CreateValidTicket(); 
         var refundRequest = RefundRequest.Create(Guid.NewGuid(), validTicket, "Valid Reason", _fakeTimeProvider);
-        validTicket.ClearDomainEvents(); // Clear ticket creation events if any
+        validTicket.ClearDomainEvents(); 
 
         var expectedAcceptTime = _fakeTimeProvider.GetUtcNow();
 
@@ -140,10 +137,9 @@ public class RefundRequestTests
         refundRequest.Accept(_fakeTimeProvider);
 
         // Assert
-        // Verify the state of the real Ticket object
         validTicket.TicketStatus.ShouldBe(TicketStatus.REFUNDED);
         validTicket.RefundedAt.ShouldBe(expectedAcceptTime.DateTime);
-        validTicket.DomainEvents.Count.ShouldBe(1); // Should contain TicketRefundedEvent
+        validTicket.DomainEvents.Count.ShouldBe(1);
         validTicket.DomainEvents.First().ShouldBeOfType<TicketRefundedEvent>();
         ((TicketRefundedEvent)validTicket.DomainEvents.First()).TicketId.ShouldBe(validTicket.Id);
     }
@@ -152,9 +148,9 @@ public class RefundRequestTests
     public void Reject_Should_AddRefundRejectedEvent()
     {
         // Arrange
-        var validTicket = CreateValidTicket(); // Create a real ticket
+        var validTicket = CreateValidTicket(); 
         var refundRequest = RefundRequest.Create(Guid.NewGuid(), validTicket, "Valid Reason", _fakeTimeProvider);
-        refundRequest.ClearDomainEvents(); // Clear initial RefundRequestCreated event
+        refundRequest.ClearDomainEvents();
 
         // Act
         refundRequest.Reject();
@@ -164,7 +160,7 @@ public class RefundRequestTests
         var domainEvent = refundRequest.DomainEvents.First();
         domainEvent.ShouldBeOfType<RefundRejectedEvent>();
         var rejectedEvent = (RefundRejectedEvent)domainEvent;
-        rejectedEvent.Id.ShouldBe(refundRequest.Id); // Corrected property name
+        rejectedEvent.Id.ShouldBe(refundRequest.Id);
         rejectedEvent.TicketId.ShouldBe(validTicket.Id);
     }
 }
