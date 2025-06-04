@@ -21,7 +21,7 @@ public static class Extensions
     public static RouteHandlerBuilder RequirePassengerAccess(this RouteHandlerBuilder builder)
     {
         return builder.RequireAuthorization(policy => policy
-            .RequireRole(Roles.Admin));
+            .RequireRole(Roles.Passenger));
     }
     
     public static IServiceCollection AddAuthorizationHandlers(this IServiceCollection services)
