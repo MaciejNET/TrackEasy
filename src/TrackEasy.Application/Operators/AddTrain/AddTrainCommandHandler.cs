@@ -16,7 +16,6 @@ public sealed class AddTrainCommandHandler(IOperatorRepository operatorRepositor
         }
 
         operatorEntity.AddTrain(request.Name, request.Coaches);
-        operatorRepository.Add(operatorEntity);
         await operatorRepository.SaveChangesAsync(cancellationToken);
 
         return operatorEntity.Trains.First(x => x.Name == request.Name).Id;
