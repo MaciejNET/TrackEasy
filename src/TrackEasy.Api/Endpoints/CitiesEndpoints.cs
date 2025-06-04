@@ -41,9 +41,9 @@ public class CitiesEndpoints : IEndpoints
                 var city = await sender.Send(new FindCityQuery(id), cancellationToken);
                 return city is null ? Results.NotFound() : Results.Ok(city);
             })
-            .RequireAdminAccess()
+            .RequireAuthorization()
             .WithName("FindCity")
-            .Produces<CityDto>()
+            .Produces<CityDetailsDto>()
             .Produces(StatusCodes.Status404NotFound)
             .WithDescription("Find a city by ID.")
             .WithOpenApi();
