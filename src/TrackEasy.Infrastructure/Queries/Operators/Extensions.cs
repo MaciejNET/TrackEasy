@@ -1,5 +1,6 @@
 using TrackEasy.Domain.Coaches;
 using TrackEasy.Domain.Operators;
+using TrackEasy.Domain.Trains;
 
 namespace TrackEasy.Infrastructure.Queries.Operators;
 
@@ -51,5 +52,29 @@ public static class Extensions
             return queryable;
         
         return queryable.Where(c => c.OperatorId == operatorId);
+    }
+    
+    public static IQueryable<Train> WithOperatorId(this IQueryable<Train> queryable, Guid? operatorId)
+    {
+        if (operatorId == null || operatorId == Guid.Empty)
+            return queryable;
+        
+        return queryable.Where(c => c.OperatorId == operatorId);
+    }
+    
+    public static IQueryable<Train> WithTrainName(this IQueryable<Train> queryable, string? trainName)
+    {
+        if (string.IsNullOrWhiteSpace(trainName))
+            return queryable;
+
+        return queryable.Where(t => t.Name.Contains(trainName));
+    }
+    
+    public static IQueryable<Train> WithTrainId(this IQueryable<Train> queryable, Guid? trainId)
+    {
+        if (trainId == null || trainId == Guid.Empty)
+            return queryable;
+
+        return queryable.Where(t => t.Id == trainId);
     }
 }

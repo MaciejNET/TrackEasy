@@ -1,4 +1,5 @@
 using FluentValidation;
+using TrackEasy.Domain.Shared;
 using TrackEasy.Shared.Domain.Abstractions;
 
 namespace TrackEasy.Domain.DiscountCodes;
@@ -32,6 +33,17 @@ public sealed class DiscountCode : AggregateRoot
         From = from;
         To = to;
         new DiscountCodeValidator(timeProvider).ValidateAndThrow(this);
+    }
+
+    public bool IsActive(TimeProvider timeProvider)
+    {
+        return timeProvider.GetUtcNow().DateTime >= From && timeProvider.GetUtcNow().DateTime <= To;
+    }
+
+    public Money CalculateDiscount(Money price)
+    {
+        var discountAmount = price.Amount * (Percentage / 100m);
+        return new Money(price.Amount - discountAmount, price.Currency);
     }
     
 #pragma warning disable CS8618, CS9264

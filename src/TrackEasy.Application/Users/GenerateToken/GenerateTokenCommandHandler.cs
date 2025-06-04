@@ -28,8 +28,8 @@ internal sealed class GenerateTokenCommandHandler(
         {
             throw new TrackEasyException(Codes.EmailNotConfirmed, "Email address not confirmed");
         }
-
-        bool twoFactorVerified = !user.TwoFactorEnabled;
+        
+        var twoFactorVerified = !user.TwoFactorEnabled;
         if (user.TwoFactorEnabled)
         {
             await GenerateTwoFactor(user);

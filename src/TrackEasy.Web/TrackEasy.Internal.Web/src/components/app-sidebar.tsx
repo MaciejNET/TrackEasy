@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sidebar.tsx";
 import {Link, useLocation} from "react-router-dom";
 import {SidebarItem, sidebarItems} from "@/constants/sidebar-menu-items.ts";
+import {useUserStore} from "@/stores/user-store.ts";
 
 export function AppSidebar() {
   const location = useLocation();

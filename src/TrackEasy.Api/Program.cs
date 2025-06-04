@@ -5,20 +5,21 @@ using TrackEasy.Api.Policies;
 using TrackEasy.Api.Swagger;
 using TrackEasy.Application;
 using TrackEasy.Infrastructure;
+using TrackEasy.Infrastructure.Services;
 using TrackEasy.Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile($"appsettings.Development.json")
+    .AddJsonFile("appsettings.Development.json")
     .AddEnvironmentVariables();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost5173", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -38,23 +39,22 @@ builder.Services.AddScoped<Global2FAFilter>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseTESwagger();
-}
+app.MapOpenApi();
+app.UseTESwagger();
 
 app.UseInfrastructure();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapEndpoints();
+app.MapHub<NotificationHub>("/hubs/notification");
 
-app.UseCors("AllowLocalhost5173");
+app.MapEndpoints();
 
 app.MapControllers();
 

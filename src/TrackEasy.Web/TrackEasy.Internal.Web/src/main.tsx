@@ -4,14 +4,29 @@ import './index.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import MainPage from "@/pages/main-page.tsx";
 import Discounts from "@/pages/discounts.tsx";
+import Cities from "@/pages/cities.tsx";
 import Layout from "@/components/layout.tsx";
+import Login from "@/pages/login.tsx";
+import TwoFactor from "@/pages/two-factor.tsx";
+import ProtectedRoute from "@/components/protected-route.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {Roles} from "@/lib/roles.ts";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
+  // Public routes
   {
-    element: <Layout/>,
+    path: "/login",
+    element: <Login/>
+  },
+  {
+    path: "/two-factor",
+    element: <TwoFactor/>
+  },
+  // Protected routes
+  {
+    element: <ProtectedRoute><Layout/></ProtectedRoute>,
     children: [
       {
         path: "/",
@@ -19,7 +34,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/discounts",
-        element: <Discounts/>
+        element: <ProtectedRoute requiredRoles={[Roles.Admin]}><Discounts/></ProtectedRoute>
+      },
+      {
+        path: "/cities",
+        element: <ProtectedRoute requiredRoles={[Roles.Admin]}><Cities/></ProtectedRoute>
       }
     ]
   }

@@ -6,6 +6,7 @@ namespace TrackEasy.Domain.Connections;
 public sealed class ConnectionStation
 {
     public Guid Id { get; private set; }
+    public Guid StationId { get; private set; }
     public Station Station { get; private set; }
     public TimeOnly? ArrivalTime { get; private set; }
     public TimeOnly? DepartureTime { get; private set; }
@@ -17,6 +18,7 @@ public sealed class ConnectionStation
         var connectionStation = new ConnectionStation
         {
             Id = Guid.NewGuid(),
+            StationId = station.Id,
             Station = station,
             ArrivalTime = arrivalDate,
             DepartureTime = departureDate,

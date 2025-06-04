@@ -8,13 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using TrackEasy.Application.Security;
+using TrackEasy.Application.Services;
 using TrackEasy.Domain.Users;
 using TrackEasy.Infrastructure.Behaviors;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Infrastructure.Exceptions;
 using TrackEasy.Infrastructure.Security;
+using TrackEasy.Infrastructure.Services;
 using TrackEasy.Mails;
+using TrackEasy.Pdf;
+using TrackEasy.Shared.Files;
 using TrackEasy.Shared.Infrastructure;
 
 namespace TrackEasy.Infrastructure;
@@ -25,6 +30,8 @@ public static class Extensions
     {
         services.AddControllers();
         services.AddMails();
+        services.AddPdf();
+        services.AddFiles();
         services.AddExceptionHandlers();
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
         services.AddScoped<IJwtService, JwtService>();
@@ -44,7 +51,7 @@ public static class Extensions
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<TrackEasyDbContext>()
             .AddDefaultTokenProviders();
-
+        
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -87,9 +94,21 @@ public static class Extensions
             cfg.AddOpenBehavior(typeof(DomainEventBehavior<,>));
             cfg.AddOpenBehavior(typeof(TransactionalBehavior<,>));
         });
-           
+
+        services.AddSingleton(_ =>
+        {
+            var secretKey = configuration.GetValue<string>("stripe-secret-key");
+            return new StripeClient(secretKey);
+        });
+
+        services.AddTransient<IConnectionSeatsService, ConnectionSeatsService>();
+        services.AddTransient<ICurrencyService, CurrencyService>();
+        services.AddTransient<ITicketPriceService, TicketPriceService>();
+        services.AddTransient<INotificationService, NotificationService>();
+        services.AddMemoryCache();
         services.AddRepositories();
         services.AddHostedService<SeedData>();
+        services.AddSignalR();
            
         return services;
     }

@@ -44,5 +44,8 @@ internal sealed class TicketValidator : AbstractValidator<Ticket>
             RuleFor(x => x)
                 .Must(ticket => ticket.SeatNumbers!.Count == ticket.Passengers.Count);
         });
+
+        RuleFor(x => x.EmailAddress)
+            .EmailAddress();
     }
 }

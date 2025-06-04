@@ -1,9 +1,11 @@
 using MediatR;
 using TrackEasy.Api.AuthorizationHandlers;
+using TrackEasy.Application.Stations;
 using TrackEasy.Application.Stations.CreateStation;
 using TrackEasy.Application.Stations.DeleteStation;
 using TrackEasy.Application.Stations.FindStation;
 using TrackEasy.Application.Stations.GetStations;
+using TrackEasy.Application.Stations.Shared;
 using TrackEasy.Application.Stations.UpdateStation;
 using TrackEasy.Shared.Pagination.Abstractions;
 
@@ -34,6 +36,18 @@ public class StationsEndpoints : IEndpoints
         .Produces<StationDetailsDto>()
         .Produces(StatusCodes.Status404NotFound)
         .WithDescription("Find a station by id.")
+        .WithOpenApi();
+    
+    group.MapGet("/nearest", async ([AsParameters] GeographicalCoordinatesDto geographicalCoordinates, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var query = new GetNearestStationQuery(geographicalCoordinates);
+            var station = await sender.Send(query, cancellationToken);
+            return station is null ? Results.NotFound() : Results.Ok(station);
+        })
+        .WithName("GetNearestStation")
+        .Produces<StationDto>()
+        .Produces(StatusCodes.Status404NotFound)
+        .WithDescription("Get the nearest station based on geographical coordinates.")
         .WithOpenApi();
 
     group.MapPost("/", async (CreateStationCommand command, ISender sender, CancellationToken cancellationToken) =>

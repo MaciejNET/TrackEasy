@@ -9,12 +9,15 @@
     <ItemGroup>
       <ProjectReference Include="..\TrackEasy.Application\TrackEasy.Application.csproj" />
       <ProjectReference Include="..\TrackEasy.Mails\TrackEasy.Mails.csproj" />
+      <ProjectReference Include="..\TrackEasy.Pdf\TrackEasy.Pdf.csproj" />
+      <ProjectReference Include="..\TrackEasy.Shared.Files\TrackEasy.Shared.Files.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Infrastructure\TrackEasy.Shared.Infrastructure.csproj" />
       <ProjectReference Include="..\TrackEasy.Shared.Pagination.Infrastructure\TrackEasy.Shared.Pagination.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="9.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
         <PrivateAssets>all</PrivateAssets>
@@ -23,13 +26,17 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
       <PackageReference Include="Scrutor" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="TrackEasy.IntegrationTests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ using TrackEasy.Shared.Exceptions;
 
 namespace TrackEasy.Application.Operators.DeleteTrain;
 
-public sealed class DeleteTrainCommandHandler(IOperatorRepository operatorRepository)
+internal sealed class DeleteTrainCommandHandler(IOperatorRepository operatorRepository)
     : ICommandHandler<DeleteTrainCommand>
 {
     public async Task Handle(DeleteTrainCommand request, CancellationToken cancellationToken)

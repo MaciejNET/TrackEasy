@@ -1,0 +1,97 @@
+@using System.Globalization
+@using TrackEasy.Pdf.Abstractions.Models
+<style>
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    .ticket {
+        width: 210mm;
+        height: 99mm;
+        border: 2px solid #333;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: 1fr 120px;
+    }
+
+    .ticket-left {
+        padding: 16mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .ticket-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 4mm 0;
+        letter-spacing: 0.5px;
+    }
+
+    .ticket-info {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .label {
+        font-weight: 600;
+        margin-right: 2mm;
+    }
+
+    .ticket-right {
+        background: #f6f6f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ticket-right img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .ticket-number {
+        font-size: 12px;
+        margin-top: 4mm;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="ticket">
+    <div class="ticket-left">
+        <div>
+            <div class="ticket-title">@Model.ConnectionName</div>
+            <div class="ticket-info">
+                <span class="label">Train:</span>@Model.TrainName<br />
+                <span class="label">Operator:</span>@Model.OperatorName<br />
+                <span class="label">Date:</span>@Model.ConnectionDate.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture)<br />
+                <span class="label">Departure:</span>@Model.StartStation @Model.DepartureDate.ToString("HH:mm", CultureInfo.InvariantCulture)<br />
+                <span class="label">Arrival:</span>@Model.EndStation @Model.ArrivalDate.ToString("HH:mm", CultureInfo.InvariantCulture)<br />
+                @if (Model.SeatNumbers?.Any() == true)
+                {
+                    <span class="label">Seats:</span>@string.Join(", ", Model.SeatNumbers)<br />
+                }
+                <span class="label">Passengers:</span>@string.Join(", ", Model.Passengers.Select(p => $"{p.FirstName} {p.LastName}"))
+            </div>
+        </div>
+
+        <div class="ticket-info">
+            Price: @Model.Price.ToString("C", CultureInfo.InvariantCulture) @Model.Currency<br />
+            Status: @Model.TicketStatus
+        </div>
+    </div>
+
+    <div class="ticket-right">
+        <img src="data:image/png;base64,@Convert.ToBase64String(Model.QrCode)" alt="QR Code" />
+        <div class="ticket-number">#@Model.TicketNumber</div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required TicketModel Model { get; set; }
+}

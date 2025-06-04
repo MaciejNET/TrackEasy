@@ -20,10 +20,12 @@ public class NotificationTests
         const string message = "This is a valid notification message.";
         var userId = Guid.NewGuid();
         var expectedCreationTime = DateTime.UtcNow;
+        const NotificationType type = NotificationType.CONNECTION_REQUEST;
+        var objectId = Guid.NewGuid();
         _fakeTimeProvider.SetUtcNow(expectedCreationTime);
 
         // Act
-        var notification = Notification.Create(title, message, userId, _fakeTimeProvider);
+        var notification = Notification.Create(title, message, userId, type, objectId, _fakeTimeProvider);
 
         // Assert
         notification.ShouldNotBeNull();
@@ -47,7 +49,7 @@ public class NotificationTests
         var validUserId = Guid.NewGuid();
 
         // Act
-        var notification = Notification.Create(invalidTitle, validMessage, validUserId, _fakeTimeProvider);
+        var notification = Notification.Create(invalidTitle, validMessage, validUserId, NotificationType.CONNECTION_REQUEST, Guid.NewGuid(), _fakeTimeProvider);
 
         // Assert
         Should.Throw<ValidationException>(() => ValidateAndThrow(notification))
@@ -63,7 +65,7 @@ public class NotificationTests
         var validUserId = Guid.NewGuid();
 
         // Act
-        var notification = Notification.Create(tooLongTitle, validMessage, validUserId, _fakeTimeProvider);
+        var notification = Notification.Create(tooLongTitle, validMessage, validUserId, NotificationType.CONNECTION_REQUEST, Guid.NewGuid(), _fakeTimeProvider);
 
         // Assert
         Should.Throw<ValidationException>(() => ValidateAndThrow(notification))
@@ -80,7 +82,7 @@ public class NotificationTests
         var validUserId = Guid.NewGuid();
 
         // Act
-        var notification = Notification.Create(validTitle, invalidMessage, validUserId, _fakeTimeProvider);
+        var notification = Notification.Create(validTitle, invalidMessage, validUserId, NotificationType.CONNECTION_REQUEST, Guid.NewGuid(), _fakeTimeProvider);
 
         // Assert
         Should.Throw<ValidationException>(() => ValidateAndThrow(notification))
@@ -96,7 +98,7 @@ public class NotificationTests
         var validUserId = Guid.NewGuid();
 
         // Act
-        var notification = Notification.Create(validTitle, tooLongMessage, validUserId, _fakeTimeProvider);
+        var notification = Notification.Create(validTitle, tooLongMessage, validUserId, NotificationType.CONNECTION_REQUEST, Guid.NewGuid(), _fakeTimeProvider);
 
         // Assert
         Should.Throw<ValidationException>(() => ValidateAndThrow(notification))
@@ -112,7 +114,7 @@ public class NotificationTests
         var emptyUserId = Guid.Empty;
 
         // Act
-        var notification = Notification.Create(validTitle, validMessage, emptyUserId, _fakeTimeProvider);
+        var notification = Notification.Create(validTitle, validMessage, emptyUserId, NotificationType.CONNECTION_REQUEST, Guid.NewGuid(), _fakeTimeProvider);
 
         // Assert
         Should.Throw<ValidationException>(() => ValidateAndThrow(notification))

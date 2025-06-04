@@ -6,16 +6,27 @@ namespace TrackEasy.Api.Filters;
 
 public sealed class Global2FAFilter : IEndpointFilter
 {
+    private static readonly string[] ExcludedPaths =
+    [
+        "/users/token-2fa",
+        "/swagger",
+        "/swagger/index.html",
+        "/health"
+    ];
+
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
+        var path = context.HttpContext.Request.Path.Value;
+        if (ExcludedPaths.Any(p => path!.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+            return await next(context);
+
         var endpoint = context.HttpContext.GetEndpoint();
-        
         if (endpoint?.Metadata.GetMetadata<IAuthorizeData>() != null)
         {
             var userContext = context.HttpContext.RequestServices
                 .GetRequiredService<IUserContext>();
 
-            if (userContext is { IsAuthenticated: true, IsTwoFactorVerified: false or null })
+            if (userContext.IsAuthenticated && userContext.IsTwoFactorVerified != true)
             {
                 return new ProblemDetails
                 {
