@@ -5,6 +5,7 @@ using TrackEasy.Application.Stations.CreateStation;
 using TrackEasy.Application.Stations.DeleteStation;
 using TrackEasy.Application.Stations.FindStation;
 using TrackEasy.Application.Stations.GetStations;
+using TrackEasy.Application.Stations.Shared;
 using TrackEasy.Application.Stations.UpdateStation;
 using TrackEasy.Shared.Pagination.Abstractions;
 
@@ -37,8 +38,9 @@ public class StationsEndpoints : IEndpoints
         .WithDescription("Find a station by id.")
         .WithOpenApi();
     
-    group.MapGet("/nearest", async ([AsParameters] GetNearestStationQuery query, ISender sender, CancellationToken cancellationToken) =>
+    group.MapGet("/nearest", async ([AsParameters] GeographicalCoordinatesDto geographicalCoordinates, ISender sender, CancellationToken cancellationToken) =>
         {
+            var query = new GetNearestStationQuery(geographicalCoordinates);
             var station = await sender.Send(query, cancellationToken);
             return station is null ? Results.NotFound() : Results.Ok(station);
         })

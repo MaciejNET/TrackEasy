@@ -6,6 +6,7 @@ using TrackEasy.Mails.Abstractions.Models;
 using TrackEasy.Pdf.Abstractions;
 using TrackEasy.Pdf.Abstractions.Models;
 using TrackEasy.Shared.Application.Abstractions;
+using TrackEasy.Shared.Exceptions;
 using TrackEasy.Shared.Files.Abstractions;
 
 namespace TrackEasy.Application.Tickets.TicketPayed;
@@ -14,6 +15,7 @@ internal sealed class TicketPayedEventHandler(
     IPdfService pdfService,
     IEmailSender emailSender,
     IBlobService blobService,
+    ITicketRepository ticketRepository,
     IConfiguration configuration
     ) : IDomainEventHandler<TicketPayedEvent>
 {
@@ -22,7 +24,13 @@ internal sealed class TicketPayedEventHandler(
     
     public async Task Handle(TicketPayedEvent notification, CancellationToken cancellationToken)
     {
-        var ticket = notification.Ticket;
+        var ticket = await ticketRepository.FindByIdAsync(notification.Ticket.Id, cancellationToken);
+        
+        if (ticket is null)
+        {
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Ticket with ID {notification.Ticket.Id} was not found.");
+        }
+        
         var qrCode = GenerateQrCode(ticket.Id);
 
         var startStation = ticket.Stations.First(x => x.SequenceNumber == 1);
@@ -56,6 +64,8 @@ internal sealed class TicketPayedEventHandler(
         await blobService.SaveAsync(ticket.Id.ToString(), pdf, "application/pdf", _pdfContainerName, cancellationToken);
         
         await emailSender.SendTicketEmailAsync(ticket.EmailAddress, new TicketEmailModel(ticket.TicketNumber, pdf));
+        
+        await ticketRepository.SaveChangesAsync(cancellationToken);
     }
 
     private static byte[] GenerateQrCode(Guid ticketId)
