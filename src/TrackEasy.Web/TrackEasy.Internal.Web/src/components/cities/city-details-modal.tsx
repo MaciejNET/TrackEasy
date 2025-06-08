@@ -1,4 +1,4 @@
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {CityDetailsDto} from "@/schemas/city-schema.ts";
 import {Info} from "lucide-react";
 
@@ -18,6 +18,9 @@ export function CityDetailsModal(props: CityDetailsModalProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>City Details</DialogTitle>
+          <DialogDescription>
+            View detailed information about this city
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>

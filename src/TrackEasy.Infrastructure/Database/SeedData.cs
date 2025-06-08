@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TrackEasy.Domain.Cities;
 using TrackEasy.Domain.Connections;
+using TrackEasy.Domain.DiscountCodes;
 using TrackEasy.Domain.Discounts;
 using TrackEasy.Domain.Operators;
 using TrackEasy.Domain.Shared;
@@ -12,7 +13,7 @@ using TrackEasy.Domain.Users;
 
 namespace TrackEasy.Infrastructure.Database;
 
-internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedService
+internal sealed class SeedData(IServiceProvider serviceProvider, TimeProvider timeProvider) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -53,6 +54,7 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
              """, cancellationToken);
         
         await SeedDiscounts(dbContext, cancellationToken);
+        await SeedDiscountCodes(dbContext, cancellationToken);
         await SeedCities(dbContext, cancellationToken);
         await SeedStations(dbContext, cancellationToken);
         await SeedOperators(dbContext, cancellationToken);
@@ -79,6 +81,29 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
             if (!await context.Discounts.AnyAsync(d => d.Name == discount.Name, cancellationToken))
             {
                 context.Discounts.Add(discount);
+            }
+        }
+        
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private  async Task SeedDiscountCodes(TrackEasyDbContext context, CancellationToken cancellationToken)
+    {
+        var dateTimeNow = TimeProvider.System.GetLocalNow().DateTime;
+        
+        List<DiscountCode> discountCodes =
+        [
+            DiscountCode.Create("SUMMER2025", 25, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(5), timeProvider),
+            DiscountCode.Create("WINTER2025", 30, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(3), timeProvider),
+            DiscountCode.Create("SPRING2025", 20, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(4), timeProvider),
+            DiscountCode.Create("FALL2025", 15, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(6), timeProvider)
+        ];
+        
+        foreach (var code in discountCodes)
+        {
+            if (!await context.DiscountCodes.AnyAsync(dc => dc.Code == code.Code, cancellationToken))
+            {
+                context.DiscountCodes.Add(code);
             }
         }
         

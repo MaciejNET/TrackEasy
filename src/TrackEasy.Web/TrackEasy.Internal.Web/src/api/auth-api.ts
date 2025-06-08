@@ -1,4 +1,5 @@
-import {BASE_URL, baseAPI} from "@/lib/api.ts";
+import {baseAPI} from "@/lib/api.ts";
+import {BASE_URL} from "@/lib/api-constants.ts";
 
 const URL = `${BASE_URL}/users`;
 

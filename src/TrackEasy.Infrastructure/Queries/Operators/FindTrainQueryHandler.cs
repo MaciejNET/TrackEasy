@@ -31,7 +31,7 @@ internal sealed class FindTrainQueryHandler(TrackEasyDbContext dbContext) : IQue
             return null;
 
         var coaches = trainEntity.Coaches
-            .Select(c => (new CoachDto(c.CoachId, c.CoachCode), c.Number));
+            .Select(c => new TrainCoachDto(new CoachDto(c.CoachId, c.CoachCode), c.Number));
 
         return new TrainDetailsDto(trainEntity.Id, trainEntity.Name, coaches);
     }

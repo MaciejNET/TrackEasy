@@ -65,5 +65,5 @@
     [Parameter]
     public required ActivateEmailModel Model { get; set; }    
     
-    private string ActivateUrl => $"{Model.Url}?token={Model.Token}?email={Model.Email}";
+    private string ActivateUrl => $"{Model.Url}/confirm?token={Model.Token}?email={Model.Email}";
 }

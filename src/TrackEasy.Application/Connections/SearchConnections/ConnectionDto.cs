@@ -7,7 +7,9 @@ public sealed record ConnectionDto(
     string OperatorCode,
     TimeOnly DepartureTime,
     TimeOnly ArrivalTime,
+    Guid DepartureStationId,
     string DepartureStation,
+    Guid ArrivalStationId,
     string ArrivalStation,
     decimal Price)
 {

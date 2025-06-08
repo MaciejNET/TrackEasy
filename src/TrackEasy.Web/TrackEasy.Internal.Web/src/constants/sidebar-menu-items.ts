@@ -1,5 +1,5 @@
 import {ElementType} from "react";
-import { HomeIcon, TicketPercent, Building2 } from "lucide-react";
+import { HomeIcon, TicketPercent, Building2, Train, Tag, Users, UserCog, Bus } from "lucide-react";
 import { Roles } from "@/lib/roles";
 
 export type SidebarItem = {
@@ -17,6 +17,18 @@ export const sidebarItems: SidebarItem[] = [
     // No requiredRoles means all authenticated users can access
   },
   {
+    Title: "Coaches",
+    Icon: Bus,
+    Url: "/coaches",
+    requiredRoles: [Roles.Manager]
+  },
+  {
+    Title: "Trains",
+    Icon: Train,
+    Url: "/trains",
+    requiredRoles: [Roles.Manager]
+  },
+  {
     Title: "Discounts",
     Icon: TicketPercent,
     Url: "/discounts",
@@ -26,6 +38,30 @@ export const sidebarItems: SidebarItem[] = [
     Title: "Cities",
     Icon: Building2,
     Url: "/cities",
+    requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "Stations",
+    Icon: Train,
+    Url: "/stations",
+    requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "Discount Codes",
+    Icon: Tag,
+    Url: "/discount-codes",
+    requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "Operators",
+    Icon: Users,
+    Url: "/operators",
+    requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "User Management",
+    Icon: UserCog,
+    Url: "/user-management",
     requiredRoles: [Roles.Admin]
   }
 ]

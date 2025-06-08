@@ -1,4 +1,4 @@
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input.tsx";
@@ -18,7 +18,7 @@ import {useQuery} from "@tanstack/react-query";
 import {fetchCountries} from "@/api/cities-api.ts";
 import {Loader} from "@/components/loader.tsx";
 import {ErrorDisplay} from "@/components/error-display.tsx";
-import {X, Trash2} from "lucide-react";
+import {Trash2} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea.tsx";
 
 type AddEditCityFormProps = {
@@ -118,6 +118,9 @@ export function AddEditCityForm(props: AddEditCityFormProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{modalType} City</DialogTitle>
+          <DialogDescription>
+            {modalType === "Add" ? "Create a new city" : "Edit city details"}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleSave)} className="space-y-6">
           <div className="flex flex-col">
@@ -194,8 +197,8 @@ export function AddEditCityForm(props: AddEditCityFormProps) {
                 <div className="border rounded-md max-h-60 overflow-y-auto">
                   <ul className="divide-y">
                     {funFacts.map((fact, index) => (
-                      <li 
-                        key={index} 
+                      <li
+                        key={index}
                         className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
                       >
                         <span className="text-sm">{fact}</span>

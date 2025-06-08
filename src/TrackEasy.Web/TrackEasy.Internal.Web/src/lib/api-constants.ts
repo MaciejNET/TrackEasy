@@ -1,0 +1,1 @@
+export const BASE_URL = "https://trackeasy-api-axaaadhhapfvg8cx.polandcentral-01.azurewebsites.net/";

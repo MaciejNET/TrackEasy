@@ -25,6 +25,6 @@ internal sealed class GenerateTwoFactorTokenCommandHandler(UserManager<User> use
 
         var roles = await userManager.GetRolesAsync(user);
         
-        return jwtService.GenerateToken(user.Id, user.Email!, roles.First(), true);
+        return jwtService.GenerateToken(user.Id, user.Email!, roles.First(), true, userContext.OperatorId);
     }
 }

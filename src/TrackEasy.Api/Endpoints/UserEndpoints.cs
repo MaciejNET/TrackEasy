@@ -1,14 +1,19 @@
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Users.ConfirmEmail;
 using TrackEasy.Application.Users.CreateAdmin;
 using TrackEasy.Application.Users.CreatePassenger;
+using TrackEasy.Application.Users.DeleteUser;
 using TrackEasy.Application.Users.FindUser;
 using TrackEasy.Application.Users.GenerateResetPasswordToken;
 using TrackEasy.Application.Users.GenerateToken;
 using TrackEasy.Application.Users.GenerateTwoFactorToken;
 using TrackEasy.Application.Users.ResetPassword;
 using TrackEasy.Application.Users.UpdateUser;
+using TrackEasy.Domain.Users;
 
 namespace TrackEasy.Api.Endpoints;
 
@@ -123,6 +128,31 @@ public class UserEndpoints : IEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Update user.")
+            .WithOpenApi();
+        
+        group.MapPost("/logout", async ([FromServices] SignInManager<User> signInManager, HttpContext httpContext) =>
+        {
+            await signInManager.SignOutAsync();
+            await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            return Results.Ok();
+        })
+        .RequireAuthorization()
+        .WithName("Logout")
+        .Produces(StatusCodes.Status200OK)
+        .WithDescription("Logout user.")
+        .WithOpenApi();
+        
+        group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var command = new DeleteUserCommand(id);
+            await sender.Send(command, cancellationToken);
+            return Results.NoContent();
+        })
+            .RequireAuthorization()
+            .WithName("DeleteUser")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Delete user.")
             .WithOpenApi();
     }
 }

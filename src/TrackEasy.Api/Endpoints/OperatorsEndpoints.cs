@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Connections.CreateConnection;
+using TrackEasy.Application.Connections.FindConnection;
+using TrackEasy.Application.Connections.GetConnections;
 using TrackEasy.Application.Operators.AddCoach;
 using TrackEasy.Application.Operators.AddManager;
 using TrackEasy.Application.Operators.AddTrain;
@@ -104,7 +106,7 @@ public class OperatorsEndpoints : IEndpoints
         group.MapGet("/{id:guid}/coaches/{coachId:guid}",
             async (Guid id, Guid coachId, ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new FindCoachQuery(id, coachId);
+                var query = new FindCoachQuery(coachId, id);
                 var coach = await sender.Send(query, cancellationToken);
                 return coach is null ? Results.NotFound() : Results.Ok(coach);
             })
@@ -238,6 +240,33 @@ public class OperatorsEndpoints : IEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Add a new manager to an operator.")
+            .WithOpenApi();
+        
+        group.MapGet("/{id:guid}/connections", async (Guid id, [FromQuery] string? name, [FromQuery] string startStation, [FromQuery] string endStation,
+                [FromQuery] int pageNumber, [FromQuery] int pageSize, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var query = new GetConnectionsQuery(id, name, startStation, endStation, pageNumber, pageSize);
+            var connections = await sender.Send(query, cancellationToken);
+            return Results.Ok(connections);
+        })
+            .RequireManagerAccess()
+            .WithName("GetOperatorConnections")
+            .Produces<PaginatedResult<ConnectionDto>>()
+            .WithDescription("Get all connections for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapGet("/{id:guid}/connections/{connectionId:guid}",
+            async (Guid id, Guid connectionId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new FindConnectionQuery(connectionId);
+                var connection = await sender.Send(query, cancellationToken);
+                return connection is null ? Results.NotFound() : Results.Ok(connection);
+            })
+            .RequireManagerAccess()
+            .WithName("FindOperatorConnection")
+            .Produces<ConnectionDetailsDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .WithDescription("Find a connection by id for a specific operator.")
             .WithOpenApi();
         
         group.MapPost("/{id:guid}/connections", async (Guid id, CreateConnectionCommand command, ISender sender) =>

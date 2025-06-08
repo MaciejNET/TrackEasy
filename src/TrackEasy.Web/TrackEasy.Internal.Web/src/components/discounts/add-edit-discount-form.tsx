@@ -1,4 +1,4 @@
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input.tsx";
@@ -50,6 +50,9 @@ export function AddEditDiscountForm(props: AddEditDiscountFormProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{modalType} Discount</DialogTitle>
+          <DialogDescription>
+            {modalType === "Add" ? "Create a new discount" : "Edit discount details"}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleSave)} className="space-y-6">
           <div className="flex flex-col">

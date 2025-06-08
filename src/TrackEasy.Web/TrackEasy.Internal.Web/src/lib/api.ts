@@ -1,7 +1,7 @@
 import {toast} from "sonner";
-import {getToken} from "@/lib/auth-storage.ts";
-
-export const BASE_URL = "http://localhost:5222";
+import {getToken, removeToken} from "@/lib/auth-storage.ts";
+import {useAuthStore} from "@/stores/auth-store.ts";
+import {useUserStore} from "@/stores/user-store.ts";
 
 function getHeaders(contentType = true): HeadersInit {
   const headers: HeadersInit = {};
@@ -20,6 +20,22 @@ function getHeaders(contentType = true): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    // Handle authentication errors (401 Unauthorized, 403 Forbidden)
+    if (res.status === 401 || res.status === 403) {
+      // Clear authentication data
+      removeToken();
+
+      // Clear auth and user stores
+      await useAuthStore.getState().logout();
+      useUserStore.getState().clearUser();
+
+      // Redirect to login page
+      window.location.href = '/login';
+
+      throw new Error('Authentication required. Please log in.');
+    }
+
+    // Handle other errors
     let errorMessage = res.statusText;
     try {
       const errorData = await res.json();
@@ -38,7 +54,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
   }
 
   if (!text.startsWith('{') && !text.startsWith('[')) {
-    return text as unknown as T;
+    // For token responses, remove any quotes that might be present
+    let sanitizedText = text;
+    if (sanitizedText.startsWith('"')) {
+      sanitizedText = sanitizedText.substring(1);
+    }
+    if (sanitizedText.endsWith('"')) {
+      sanitizedText = sanitizedText.substring(0, sanitizedText.length - 1);
+    }
+    return sanitizedText as unknown as T;
   }
 
   try {

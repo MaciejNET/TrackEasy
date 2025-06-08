@@ -2,26 +2,28 @@ import {SidebarProvider} from "@/components/ui/sidebar.tsx";
 import {AppSidebar} from "@/components/app-sidebar.tsx";
 import {Outlet, useNavigate} from "react-router-dom";
 import {Button} from "@/components/ui/button.tsx";
-import {LogOut, Loader2} from "lucide-react";
+import {LogOut, Loader2, KeyRound} from "lucide-react";
 import {ThemeProvider} from "@/components/theme-provider.tsx";
 import {ModeToggle} from "@/components/mode-toggler.tsx";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import {useUserStore} from "@/stores/user-store.ts";
 import {useAuthStore} from "@/stores/auth-store.ts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import {ChangePasswordModal} from "@/components/change-password-modal.tsx";
 
 export default function Layout() {
   const navigate = useNavigate();
   const {user, fetchUser, isLoading} = useUserStore();
   const {logout} = useAuthStore();
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
   useEffect(() => {
     // Fetch user data when component mounts
     fetchUser();
   }, [fetchUser]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     useUserStore.getState().clearUser(); // Clear user data when logging out
     navigate("/login");
   };
@@ -49,6 +51,13 @@ export default function Layout() {
                 <Button 
                   variant="outline" 
                   className="cursor-pointer"
+                  onClick={() => setIsChangePasswordModalOpen(true)}
+                >
+                  <KeyRound className="mr-2 h-4 w-4"/> Change Password
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="cursor-pointer"
                   onClick={handleLogout}
                 >
                   <LogOut className="mr-2 h-4 w-4"/> Logout
@@ -63,6 +72,12 @@ export default function Layout() {
           </div>
         </SidebarProvider>
       </div>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal 
+        open={isChangePasswordModalOpen} 
+        setOpen={setIsChangePasswordModalOpen} 
+      />
     </ThemeProvider>
   );
 }

@@ -1,4 +1,5 @@
 using MediatR;
+using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.SystemLists;
 
 namespace TrackEasy.Api.Endpoints;
@@ -45,6 +46,14 @@ public sealed class SystemListsEndpoints : IEndpoints
             .WithName("GetManagersList")
             .Produces<IEnumerable<SystemListItemDto>>()
             .WithDescription("Get list of managers for an operator.")
+            .WithOpenApi();
+
+        group.MapGet("/admins", async (ISender sender, CancellationToken cancellationToken) =>
+                await sender.Send(new GetAdminsListQuery(), cancellationToken))
+            .RequireAdminAccess()
+            .WithName("GetAdminsList")
+            .Produces<IEnumerable<SystemListItemDto>>()
+            .WithDescription("Get list of admins.")
             .WithOpenApi();
     }
 }
