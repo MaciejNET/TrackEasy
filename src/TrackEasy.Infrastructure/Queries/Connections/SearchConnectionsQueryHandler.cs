@@ -216,7 +216,7 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
     {
         var legs = path.Legs;
 
-        var connDtos = legs.Select(l => new ConnectionDto(
+        var connDtos = legs.Select(l => new SearchConnectionDto(
                 l.ConnectionId,
                 l.ConnectionName,
                 l.OperatorName,

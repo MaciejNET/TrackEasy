@@ -1,6 +1,6 @@
 namespace TrackEasy.Application.Connections.SearchConnections;
 
-public sealed record ConnectionDto(
+public sealed record SearchConnectionDto(
     Guid Id,
     string Name,
     string OperatorName,

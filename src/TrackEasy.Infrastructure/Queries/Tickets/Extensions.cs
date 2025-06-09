@@ -14,7 +14,8 @@ public static class Extensions
         return type switch
         {
             TicketType.CURRENT => query.Where(x =>
-                x.ConnectionDate >= currentDate && x.Stations.Any(s => s.DepartureTime >= currentTime)),
+                x.ConnectionDate > currentDate
+                || (x.ConnectionDate == currentDate && x.Stations.Any(s => s.DepartureTime >= currentTime))),
             TicketType.ARCHIVED => query.Where(x => x.ConnectionDate < currentDate ||
                                                     (x.ConnectionDate == currentDate &&
                                                      x.Stations.Any(s => s.DepartureTime < currentTime))),
