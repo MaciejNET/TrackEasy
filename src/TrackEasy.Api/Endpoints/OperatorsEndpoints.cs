@@ -21,6 +21,8 @@ using TrackEasy.Application.Operators.Shared;
 using TrackEasy.Application.Operators.UpdateCoach;
 using TrackEasy.Application.Operators.UpdateOperator;
 using TrackEasy.Application.Operators.UpdateTrain;
+using TrackEasy.Application.RefundRequests.FindRefundRequest;
+using TrackEasy.Application.RefundRequests.GetRefundRequests;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -281,6 +283,34 @@ public class OperatorsEndpoints : IEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Create a new connection between two stations with specified legs")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/refund-requests",
+            async (Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize, ISender sender,
+                CancellationToken cancellationToken) =>
+            {
+                var query = new GetRefundRequestsQuery(id, pageNumber, pageSize);
+                var refundRequests = await sender.Send(query, cancellationToken);
+                return Results.Ok(refundRequests);
+            })
+            .RequireManagerAccess()
+            .WithName("GetOperatorRefundRequests")
+            .Produces<PaginatedResult<RefundRequestDto>>()
+            .WithDescription("Get paginated refund requests for a specific operator.")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/refund-requests/{refundRequestId:guid}",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new FindRefundRequestQuery(refundRequestId);
+                var refundRequest = await sender.Send(query, cancellationToken);
+                return refundRequest is null ? Results.NotFound() : Results.Ok(refundRequest);
+            })
+            .RequireManagerAccess()
+            .WithName("FindOperatorRefundRequest")
+            .Produces<RefundRequestDetailsDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .WithDescription("Find a refund request by id for a specific operator.")
             .WithOpenApi();
     }
 }
