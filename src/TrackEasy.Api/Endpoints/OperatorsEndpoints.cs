@@ -4,6 +4,8 @@ using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Connections.CreateConnection;
 using TrackEasy.Application.Connections.FindConnection;
 using TrackEasy.Application.Connections.GetConnections;
+using TrackEasy.Application.Connections.UpdateConnection;
+using TrackEasy.Application.Connections.UpdateSchedule;
 using TrackEasy.Application.Operators.AddCoach;
 using TrackEasy.Application.Operators.AddManager;
 using TrackEasy.Application.Operators.AddTrain;
@@ -283,6 +285,42 @@ public class OperatorsEndpoints : IEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Create a new connection between two stations with specified legs")
+            .WithOpenApi();
+
+        group.MapPatch("/{id:guid}/connections/{connectionId:guid}", async (
+                Guid id,
+                Guid connectionId,
+                UpdateConnectionCommand command,
+                ISender sender) =>
+            {
+                command = command with { Id = connectionId };
+                await sender.Send(command);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("UpdateConnection")
+            .WithSummary("Update connection basic information")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Update connection name and price")
+            .WithOpenApi();
+
+        group.MapPatch("/{id:guid}/connections/{connectionId:guid}/schedule", async (
+                Guid id,
+                Guid connectionId,
+                UpdateScheduleCommand command,
+                ISender sender) =>
+            {
+                command = command with { Id = connectionId };
+                await sender.Send(command);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("UpdateConnectionSchedule")
+            .WithSummary("Request schedule update for a connection")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Update connection schedule and stations")
             .WithOpenApi();
 
         group.MapGet("/{id:guid}/refund-requests",
