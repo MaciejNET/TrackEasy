@@ -108,6 +108,7 @@ public static class Extensions
         services.AddMemoryCache();
         services.AddRepositories();
         services.AddHostedService<SeedData>();
+        services.AddHostedService<OutboxProcessor>();
         services.AddSignalR();
            
         return services;

@@ -1,10 +1,10 @@
-using MediatR;
+using System.Text.Json;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Shared.Domain.Abstractions;
 
 namespace TrackEasy.Infrastructure.Behaviors;
 
-internal sealed class DomainEventDispatcher(TrackEasyDbContext dbContext, IMediator mediator)
+internal sealed class DomainEventDispatcher(TrackEasyDbContext dbContext, TimeProvider timeProvider)
 {
     public async Task DispatchEventsAsync(CancellationToken cancellationToken)
     {
@@ -22,7 +22,17 @@ internal sealed class DomainEventDispatcher(TrackEasyDbContext dbContext, IMedia
 
         foreach (var domainEvent in domainEvents)
         {
-            await mediator.Publish(domainEvent, cancellationToken);
+            var message = new OutboxMessage
+            {
+                Id = Guid.NewGuid(),
+                OccurredOn = timeProvider.GetUtcNow().DateTime,
+                Type = domainEvent.GetType().AssemblyQualifiedName!,
+                Content = JsonSerializer.Serialize(domainEvent, domainEvent.GetType())
+            };
+
+            dbContext.OutboxMessages.Add(message);
         }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

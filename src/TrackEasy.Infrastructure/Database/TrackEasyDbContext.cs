@@ -32,6 +32,7 @@ public sealed class TrackEasyDbContext(DbContextOptions<TrackEasyDbContext> opti
     public DbSet<Station> Stations { get; set; }
     public DbSet<Train> Trains { get; set; }
     public DbSet<RefundRequest> RefundRequests { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
