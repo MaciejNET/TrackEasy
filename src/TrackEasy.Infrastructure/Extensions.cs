@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
@@ -50,9 +51,15 @@ public static class Extensions
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<TrackEasyDbContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddSignInManager();
         
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddCookie(IdentityConstants.ExternalScheme)
         .AddJwtBearer(options =>
         {
             var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]!);
@@ -66,6 +73,18 @@ public static class Extensions
                 ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
+        })
+        .AddGoogle(options =>
+        {
+            options.ClientId = configuration["google-clientid"]!;
+            options.ClientSecret = configuration["google-clientsecret"]!;
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+        })
+        .AddMicrosoftAccount(options =>
+        {
+            options.ClientId = configuration["microsoft-clientid"]!;
+            options.ClientSecret = configuration["microsoft-clientsecret"]!;
+            options.SignInScheme = IdentityConstants.ExternalScheme;
         });
         
         services.AddHttpContextAccessor();

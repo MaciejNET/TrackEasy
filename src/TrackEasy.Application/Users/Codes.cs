@@ -14,4 +14,6 @@ public static class Codes
     public const string PasswordResetFailed = "password_reset_failed";
     public const string InvalidToken = "invalid_token";
     public const string UserUpdateFailed = "user_update_failed";
+    public const string ExternalLoginFailed = "external_login_failed";
+    public const string EmailNotProvided = "email_not_provided";
 }
