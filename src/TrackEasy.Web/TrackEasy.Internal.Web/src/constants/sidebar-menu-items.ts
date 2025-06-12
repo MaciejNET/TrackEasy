@@ -1,5 +1,5 @@
 import {ElementType} from "react";
-import { HomeIcon, TicketPercent, Building2, Train, Tag, Users, UserCog, Bus } from "lucide-react";
+import { HomeIcon, TicketPercent, Building2, Train, Tag, Users, UserCog, Bus, FileText, RefreshCcw, Map } from "lucide-react";
 import { Roles } from "@/lib/roles";
 
 export type SidebarItem = {
@@ -63,5 +63,23 @@ export const sidebarItems: SidebarItem[] = [
     Icon: UserCog,
     Url: "/user-management",
     requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "Connection Change Requests",
+    Icon: FileText,
+    Url: "/connection-change-requests",
+    requiredRoles: [Roles.Admin]
+  },
+  {
+    Title: "Refund Requests",
+    Icon: RefreshCcw,
+    Url: "/refund-requests",
+    requiredRoles: [Roles.Manager]
+  },
+  {
+    Title: "Connections",
+    Icon: Map,
+    Url: "/connections",
+    requiredRoles: [Roles.Manager]
   }
 ]

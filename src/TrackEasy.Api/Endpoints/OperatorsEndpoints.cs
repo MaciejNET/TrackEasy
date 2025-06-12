@@ -23,8 +23,10 @@ using TrackEasy.Application.Operators.Shared;
 using TrackEasy.Application.Operators.UpdateCoach;
 using TrackEasy.Application.Operators.UpdateOperator;
 using TrackEasy.Application.Operators.UpdateTrain;
+using TrackEasy.Application.RefundRequests.AcceptRefundRequest;
 using TrackEasy.Application.RefundRequests.FindRefundRequest;
 using TrackEasy.Application.RefundRequests.GetRefundRequests;
+using TrackEasy.Application.RefundRequests.RejectRefundRequest;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -246,7 +248,7 @@ public class OperatorsEndpoints : IEndpoints
             .WithDescription("Add a new manager to an operator.")
             .WithOpenApi();
         
-        group.MapGet("/{id:guid}/connections", async (Guid id, [FromQuery] string? name, [FromQuery] string startStation, [FromQuery] string endStation,
+        group.MapGet("/{id:guid}/connections", async (Guid id, [FromQuery] string? name, [FromQuery] string? startStation, [FromQuery] string? endStation,
                 [FromQuery] int pageNumber, [FromQuery] int pageSize, ISender sender, CancellationToken cancellationToken) =>
         {
             var query = new GetConnectionsQuery(id, name, startStation, endStation, pageNumber, pageSize);
@@ -349,6 +351,32 @@ public class OperatorsEndpoints : IEndpoints
             .Produces<RefundRequestDetailsDto>()
             .Produces(StatusCodes.Status404NotFound)
             .WithDescription("Find a refund request by id for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapPost("/{id:guid}/refund-requests/{refundRequestId:guid}/accept",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new AcceptRefundRequestCommand(refundRequestId);
+                await sender.Send(command, cancellationToken);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("AcceptOperatorRefundRequest")
+            .Produces(StatusCodes.Status204NoContent)
+            .WithDescription("Accept a refund request for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapPost("{id:guid}/refund-requests/{refundRequestId:guid}/reject",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new RejectRefundRequestCommand(refundRequestId);
+                await sender.Send(command, cancellationToken);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("RejectOperatorRefundRequest")
+            .Produces(StatusCodes.Status204NoContent)
+            .WithDescription("Reject a refund request for a specific operator.")
             .WithOpenApi();
     }
 }

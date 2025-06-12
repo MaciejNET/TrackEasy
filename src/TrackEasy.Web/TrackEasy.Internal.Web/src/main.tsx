@@ -11,6 +11,9 @@ import Operators from "@/pages/operators.tsx";
 import UserManagement from "@/pages/user-management.tsx";
 import Coaches from "@/pages/coaches.tsx";
 import Trains from "@/pages/trains.tsx";
+import ConnectionChangeRequests from "@/pages/connection-change-requests.tsx";
+import RefundRequests from "@/pages/refund-requests.tsx";
+import Connections from "@/pages/connections.tsx";
 import Layout from "@/components/layout.tsx";
 import Login from "@/pages/login.tsx";
 import TwoFactor from "@/pages/two-factor.tsx";
@@ -75,6 +78,18 @@ const router = createBrowserRouter([
       {
         path: "/trains",
         element: <ProtectedRoute requiredRoles={[Roles.Manager]}><Trains/></ProtectedRoute>
+      },
+      {
+        path: "/connection-change-requests",
+        element: <ProtectedRoute requiredRoles={[Roles.Admin]}><ConnectionChangeRequests/></ProtectedRoute>
+      },
+      {
+        path: "/refund-requests",
+        element: <ProtectedRoute requiredRoles={[Roles.Manager]}><RefundRequests/></ProtectedRoute>
+      },
+      {
+        path: "/connections",
+        element: <ProtectedRoute requiredRoles={[Roles.Manager]}><Connections/></ProtectedRoute>
       }
     ]
   }

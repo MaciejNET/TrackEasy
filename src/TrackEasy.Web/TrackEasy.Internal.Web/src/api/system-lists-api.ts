@@ -23,3 +23,7 @@ export async function fetchManagersList(operatorId: string): Promise<SystemListI
 export async function fetchAdminsList(): Promise<SystemListItemDto[]> {
   return baseAPI.get<SystemListItemDto[]>(`${URL}/admins`);
 }
+
+export async function fetchStationsList(): Promise<SystemListItemDto[]> {
+  return baseAPI.get<SystemListItemDto[]>(`${URL}/stations`);
+}
