@@ -48,6 +48,7 @@ internal sealed class PayTicketByCardCommandHandler(
         {
             Amount = totalPrice.ToMinorUnits(),
             Currency = totalPrice.GetCurrencyCode(),
+            ReturnUrl = "https://example.com/payment-complete",
             Confirm = true,
             PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
             {
