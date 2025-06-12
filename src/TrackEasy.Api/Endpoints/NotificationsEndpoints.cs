@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TrackEasy.Application.Notifications.GetNotifications;
+using TrackEasy.Application.Notifications.GetNotificationsCount;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -17,6 +18,14 @@ public class NotificationsEndpoints : IEndpoints
             .WithName("GetNotifications")
             .Produces<PaginatedResult<NotificationDto>>()
             .WithDescription("Get paginated notifications for the current user.")
+            .WithOpenApi();
+
+        group.MapGet("/count", async (ISender sender, CancellationToken ct) =>
+            await sender.Send(new GetNotificationsCountQuery(), ct))
+            .RequireAuthorization()
+            .WithName("GetNotificationsCount")
+            .Produces<int>()
+            .WithDescription("Get notifications count for the current user.")
             .WithOpenApi();
     }
 }
