@@ -9,6 +9,8 @@ using TrackEasy.Application.Tickets.GetTicketCities;
 using TrackEasy.Application.Tickets.GetTickets;
 using TrackEasy.Application.Tickets.PayTicketByCard;
 using TrackEasy.Application.Tickets.PayTicketByCash;
+using TrackEasy.Application.Tickets.CalculateTicketPrice;
+using TrackEasy.Application.Shared;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -25,6 +27,14 @@ public class TicketEndpoints : IEndpoints
             .Produces<IReadOnlyCollection<Guid>>()
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Purchase tickets for specified connections")
+            .WithOpenApi();
+
+        group.MapPost("/price", async (CalculateTicketPriceQuery query, ISender sender, CancellationToken ct) =>
+            Results.Ok(await sender.Send(query, ct)))
+            .WithName("CalculateTicketPrice")
+            .Produces<MoneyDto>()
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Calculate price for specified connections")
             .WithOpenApi();
         
         group.MapGet("/{userId:guid}", async (Guid userId, int pageNumber, int pageSize, TicketType type, ISender sender, CancellationToken ct) =>
