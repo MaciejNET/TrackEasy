@@ -114,7 +114,15 @@ public class UserEndpoints : IEndpoints
             properties.Items["firstName"] = firstName;
             properties.Items["lastName"] = lastName;
             properties.Items["dob"] = dateOfBirth.ToString("O");
-            return Results.Challenge(properties, [provider]);
+
+            var scheme = provider.ToLowerInvariant() switch
+            {
+                "google" => "Google",
+                "microsoft" => "Microsoft",
+                _ => provider
+            };
+
+            return Results.Challenge(properties, [scheme]);
         })
             .AllowAnonymous()
             .WithName("ExternalLoginChallenge")
