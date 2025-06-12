@@ -6,9 +6,6 @@ namespace TrackEasy.Domain.Tickets;
 
 public sealed class Ticket : AggregateRoot
 {
-    private List<TicketConnectionStation> _stations = [];
-    private List<Person> _passengers = [];
-
     public Guid Id { get; private set; }
     public int TicketNumber { get; private set; }
     public Guid? PassengerId { get; private set; }
@@ -22,8 +19,8 @@ public sealed class Ticket : AggregateRoot
     public string OperatorCode { get; private set; }
     public string OperatorName { get; private set; }
     public string TrainName { get; private set; }
-    public IReadOnlyList<TicketConnectionStation> Stations => _stations.AsReadOnly();
-    public IReadOnlyList<Person> Passengers => _passengers.AsReadOnly();
+    public IReadOnlyList<TicketConnectionStation> Stations { get; private set; }
+    public IReadOnlyList<Person> Passengers { get; private set; }
     public Guid? QrCodeId { get; private set; }
     public string EmailAddress { get; private set; }
     public DateOnly ConnectionDate { get; private set; }
@@ -44,8 +41,8 @@ public sealed class Ticket : AggregateRoot
             EmailAddress = emailAddress,
             ConnectionId = connectionId,
             ConnectionName = connectionName,
-            _stations = [..stations],
-            _passengers = [..passengers],
+            Stations = [..stations],
+            Passengers = [..passengers],
             SeatNumbers = seatNumbers?.ToList(),
             Price = price,
             TicketStatus = TicketStatus.PENDING,
