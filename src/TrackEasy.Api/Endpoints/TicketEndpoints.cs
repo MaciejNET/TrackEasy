@@ -6,6 +6,7 @@ using TrackEasy.Application.Tickets.FindCurrentTicketId;
 using TrackEasy.Application.Tickets.FindTicket;
 using TrackEasy.Application.Tickets.GetQrCode;
 using TrackEasy.Application.Tickets.GetTicketCities;
+using TrackEasy.Application.Tickets.GetTicketArrivalTimes;
 using TrackEasy.Application.Tickets.GetTickets;
 using TrackEasy.Application.Tickets.PayTicketByCard;
 using TrackEasy.Application.Tickets.PayTicketByCash;
@@ -60,6 +61,13 @@ public class TicketEndpoints : IEndpoints
             .WithName("GetTicketCities")
             .Produces<IEnumerable<TicketCityDto>>()
             .WithDescription("Get cities related to a ticket")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/arrivals", async (Guid id, ISender sender, CancellationToken ct) =>
+            Results.Ok(await sender.Send(new GetTicketArrivalTimesQuery(id), ct)))
+            .WithName("GetTicketArrivals")
+            .Produces<IEnumerable<TicketArrivalDto>>()
+            .WithDescription("Get arrival times with city names for a ticket")
             .WithOpenApi();
         
         group.MapGet("/qr-code/{qrCodeId:guid}", async (Guid qrCodeId, ISender sender, CancellationToken ct) =>
