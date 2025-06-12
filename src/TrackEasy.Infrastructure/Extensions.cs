@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
@@ -86,6 +87,16 @@ public static class Extensions
             options.ClientSecret = configuration["microsoft-clientsecret"]!;
             options.SignInScheme = IdentityConstants.ExternalScheme;
             options.CallbackPath = "/users/external/microsoft/callback";
+
+            // The Azure AD application is configured for personal accounts only.
+            // Default endpoints target the "/common" tenant which is not valid
+            // for that setup and results in an "invalid_request" error.
+            options.AuthorizationEndpoint =
+                MicrosoftAccountDefaults.AuthorizationEndpoint.Replace(
+                    "/common/", "/consumers/");
+            options.TokenEndpoint =
+                MicrosoftAccountDefaults.TokenEndpoint.Replace(
+                    "/common/", "/consumers/");
         });
         
         services.AddHttpContextAccessor();
