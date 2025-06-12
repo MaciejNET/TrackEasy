@@ -7,7 +7,11 @@ using TrackEasy.Shared.Application.Abstractions;
 
 namespace TrackEasy.Application.Connections.ConnectionRequestCreated;
 
-internal sealed class ConnectionRequestCreatedEventHandler(INotificationService notificationService, UserManager<User> userManager, TimeProvider timeProvider)
+internal sealed class ConnectionRequestCreatedEventHandler(
+    INotificationRepository notificationRepository,
+    INotificationService notificationService,
+    UserManager<User> userManager,
+    TimeProvider timeProvider)
     : IDomainEventHandler<ConnectionRequestCreatedEvent>
 {
     public async Task Handle(ConnectionRequestCreatedEvent notification, CancellationToken cancellationToken)
@@ -26,10 +30,13 @@ internal sealed class ConnectionRequestCreatedEventHandler(INotificationService 
                 type: NotificationType.CONNECTION_REQUEST,
                 timeProvider: timeProvider
             );
-            
+
+            notificationRepository.Add(requestNotification);
+
             notificationTasks.Add(notificationService.SendNotificationAsync(requestNotification));
         }
-        
+
         await Task.WhenAll(notificationTasks);
+        await notificationRepository.SaveChangesAsync(cancellationToken);
     }
 }

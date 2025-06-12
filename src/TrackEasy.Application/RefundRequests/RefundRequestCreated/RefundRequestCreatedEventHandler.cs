@@ -6,7 +6,11 @@ using TrackEasy.Shared.Application.Abstractions;
 
 namespace TrackEasy.Application.RefundRequests.RefundRequestCreated;
 
-internal sealed class RefundRequestCreatedEventHandler(IManagerRepository managerRepository, INotificationService notificationService, TimeProvider timeProvider) 
+internal sealed class RefundRequestCreatedEventHandler(
+    IManagerRepository managerRepository,
+    INotificationRepository notificationRepository,
+    INotificationService notificationService,
+    TimeProvider timeProvider)
     : IDomainEventHandler<RefundRequestCreatedEvent>
 {
     public async Task Handle(RefundRequestCreatedEvent notification, CancellationToken cancellationToken)
@@ -24,10 +28,13 @@ internal sealed class RefundRequestCreatedEventHandler(IManagerRepository manage
                 type: NotificationType.REFUND_REQUEST,
                 timeProvider: timeProvider
             );
-            
+
+            notificationRepository.Add(requestNotification);
+
             notificationTasks.Add(notificationService.SendNotificationAsync(requestNotification));
         }
-        
+
         await Task.WhenAll(notificationTasks);
+        await notificationRepository.SaveChangesAsync(cancellationToken);
     }
 }

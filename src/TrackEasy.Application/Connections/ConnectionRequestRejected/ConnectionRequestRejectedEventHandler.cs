@@ -6,7 +6,11 @@ using TrackEasy.Shared.Application.Abstractions;
 
 namespace TrackEasy.Application.Connections.ConnectionRequestRejected;
 
-internal sealed class ConnectionRequestRejectedEventHandler(IManagerRepository managerRepository, INotificationService notificationService, TimeProvider timeProvider) 
+internal sealed class ConnectionRequestRejectedEventHandler(
+    IManagerRepository managerRepository,
+    INotificationRepository notificationRepository,
+    INotificationService notificationService,
+    TimeProvider timeProvider)
     : IDomainEventHandler<ConnectionRequestRejectedEvent>
 {
     public async Task Handle(ConnectionRequestRejectedEvent notification, CancellationToken cancellationToken)
@@ -24,11 +28,14 @@ internal sealed class ConnectionRequestRejectedEventHandler(IManagerRepository m
                 type: NotificationType.CONNECTION_REQUEST,
                 timeProvider: timeProvider
             );
-             
+
+            notificationRepository.Add(requestNotification);
+
             notificationTasks.Add(notificationService.SendNotificationAsync(requestNotification));
         }
-         
+
         await Task.WhenAll(notificationTasks);
+        await notificationRepository.SaveChangesAsync(cancellationToken);
     }
     
     private static string GenerateMessage(ConnectionRequestType type, string name)
