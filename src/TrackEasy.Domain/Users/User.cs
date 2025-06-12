@@ -62,7 +62,7 @@ public sealed class User : IdentityUser<Guid>, IAggregateRoot
         new UserValidator(timeProvider).ValidateAndThrow(user);
         
         if (twoFactorEnabled)
-            user.AddDomainEvent(new UserCreatedEvent(user));
+            user.AddDomainEvent(new UserCreatedEvent(user.Id));
         
         return user;
     }
