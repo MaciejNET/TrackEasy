@@ -79,12 +79,16 @@ public static class Extensions
             options.ClientId = configuration["google-clientid"]!;
             options.ClientSecret = configuration["google-clientsecret"]!;
             options.SignInScheme = IdentityConstants.ExternalScheme;
+            // Use the same callback path as the endpoint handling the login
+            // callback to avoid redirect URI mismatches.
+            options.CallbackPath = "/users/external/google/callback";
         })
         .AddMicrosoftAccount(options =>
         {
             options.ClientId = configuration["microsoft-clientid"]!;
             options.ClientSecret = configuration["microsoft-clientsecret"]!;
             options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.CallbackPath = "/users/external/microsoft/callback";
         });
         
         services.AddHttpContextAccessor();
