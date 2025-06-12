@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Stripe;
 using TrackEasy.Application.Services;
 using TrackEasy.Domain.Shared;
@@ -88,7 +86,7 @@ internal sealed class PayTicketByCardCommandHandler(
         bool expiryValid;
         try
         {
-            var expiry = new DateTime(request.CardExpYear, request.CardExpMonth, 1, 0, 0, 0, DateTimeKind.Utc)
+            var expiry = new DateTime(request.CardExpYear + 2000, request.CardExpMonth, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddMonths(1)
                 .AddTicks(-1);
             expiryValid = expiry >= now;

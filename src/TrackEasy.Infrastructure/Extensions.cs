@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
@@ -79,8 +78,6 @@ public static class Extensions
             options.ClientId = configuration["google-clientid"]!;
             options.ClientSecret = configuration["google-clientsecret"]!;
             options.SignInScheme = IdentityConstants.ExternalScheme;
-            // Use the same callback path as the endpoint handling the login
-            // callback to avoid redirect URI mismatches.
             options.CallbackPath = "/users/external/google/callback";
         })
         .AddMicrosoftAccount(options =>

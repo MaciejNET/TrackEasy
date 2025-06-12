@@ -10,6 +10,7 @@ import {useUserStore} from "@/stores/user-store.ts";
 import {useAuthStore} from "@/stores/auth-store.ts";
 import {useEffect, useState} from "react";
 import {ChangePasswordModal} from "@/components/change-password-modal.tsx";
+import {NotificationsPanel} from "@/components/notifications-panel.tsx";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function Layout() {
             <header className="flex justify-between items-center border-b bg-secondary px-4 py-2">
               <h1 className="font-semibold text-xl">Dashboard</h1>
               <div className="flex items-center gap-3">
+                <NotificationsPanel />
                 <ModeToggle/>
                 <span className="text-sm">
                   {isLoading ? (

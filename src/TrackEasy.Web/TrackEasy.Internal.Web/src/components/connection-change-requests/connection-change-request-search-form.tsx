@@ -13,14 +13,6 @@ export function ConnectionChangeRequestSearchForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-end">
-          <button
-            onClick={() => resetSearchParams()}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-          >
-            Reset Filters
-          </button>
-        </div>
       </CardContent>
     </Card>
   );
