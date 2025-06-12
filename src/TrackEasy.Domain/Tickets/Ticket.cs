@@ -56,7 +56,7 @@ public sealed class Ticket : AggregateRoot
 
         if (passengerId is null)
         {
-            ticket.AddDomainEvent(new TicketCreatedForExternalUserEvent(ticket));
+            ticket.AddDomainEvent(new TicketCreatedForExternalUserEvent(ticket.Id));
         }
         
         new TicketValidator().ValidateAndThrow(ticket);
@@ -69,7 +69,7 @@ public sealed class Ticket : AggregateRoot
         PaidAt = timeProvider.GetUtcNow().DateTime;
         TransactionId = transactionId;
         new TicketValidator().ValidateAndThrow(this);
-        AddDomainEvent(new TicketPayedEvent(this));
+        AddDomainEvent(new TicketPayedEvent(Id));
     }
     
     public void Cancel(TimeProvider timeProvider)

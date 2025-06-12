@@ -172,7 +172,7 @@ public class TicketTests
         ticket.TransactionId.ShouldBe(transactionId);
         ticket.DomainEvents.Count.ShouldBe(1);
         ticket.DomainEvents.First().ShouldBeOfType<TicketPayedEvent>();
-        ((TicketPayedEvent)ticket.DomainEvents.First()).Ticket.Id.ShouldBe(ticket.Id);
+        ((TicketPayedEvent)ticket.DomainEvents.First()).TicketId.ShouldBe(ticket.Id);
     }
 
     [Fact]
