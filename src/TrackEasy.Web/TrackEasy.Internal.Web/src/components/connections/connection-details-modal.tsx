@@ -1,5 +1,5 @@
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
-import {ConnectionDetailsDto, Currency} from "@/schemas/connection-schema.ts";
+import {ConnectionDetailsDto, Currency, DayOfWeek} from "@/schemas/connection-schema.ts";
 import {Badge} from "@/components/ui/badge.tsx";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 import {CheckCircle, XCircle} from "lucide-react";
@@ -37,29 +37,28 @@ export function ConnectionDetailsModal(props: ConnectionDetailsModalProps) {
       case Currency.USD:
         return "USD";
       default:
-        return String(currency);
+        // Map numeric values to currency names
+        const currencyNames: Record<number, string> = {
+          0: "PLN",
+          1: "EUR",
+          2: "USD"
+        };
+        return currencyNames[currency as number] || String(currency);
     }
   };
 
-  const formatDaysOfWeek = (days: string[]) => {
-    const dayMap: Record<string, string> = {
-      "0": "sun",
-      "1": "mon",
-      "2": "tue",
-      "3": "wed",
-      "4": "thu",
-      "5": "fri",
-      "6": "sat",
-      "Sunday": "sun",
-      "Monday": "mon",
-      "Tuesday": "tue",
-      "Wednesday": "wed",
-      "Thursday": "thu",
-      "Friday": "fri",
-      "Saturday": "sat"
+  const formatDaysOfWeek = (days: DayOfWeek[]) => {
+    const dayMap: Record<number, string> = {
+      [DayOfWeek.Sunday]: "sun",
+      [DayOfWeek.Monday]: "mon",
+      [DayOfWeek.Tuesday]: "tue",
+      [DayOfWeek.Wednesday]: "wed",
+      [DayOfWeek.Thursday]: "thu",
+      [DayOfWeek.Friday]: "fri",
+      [DayOfWeek.Saturday]: "sat"
     };
 
-    return days.map(day => dayMap[day] || day.substring(0, 3).toLowerCase()).join(', ');
+    return days.map(day => dayMap[day] || String(day)).join(', ');
   };
 
   return (

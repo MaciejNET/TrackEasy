@@ -15,6 +15,7 @@ internal sealed class GetRefundRequestsQueryHandler(TrackEasyDbContext dbContext
         return await dbContext.RefundRequests
             .AsNoTracking()
             .Where(x => x.Ticket.OperatorId == request.OperatorId)
+            .Where(x => x.Ticket.TicketStatus == Domain.Tickets.TicketStatus.PAID)
             .OrderByDescending(x => x.CreatedAt)
             .Select(x => new RefundRequestDto(
                 x.Id,

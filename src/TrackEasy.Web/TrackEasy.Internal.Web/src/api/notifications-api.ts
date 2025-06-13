@@ -5,8 +5,8 @@ import {PaginatedResult} from "@/types/paginated-result.ts";
 const URL = `${BASE_URL}/notifications`;
 
 export enum NotificationType {
-  REFUND_REQUEST = "REFUND_REQUEST",
-  CONNECTION_REQUEST = "CONNECTION_REQUEST",
+  REFUND_REQUEST = 0,
+  CONNECTION_REQUEST = 1,
 }
 
 export interface NotificationDto {

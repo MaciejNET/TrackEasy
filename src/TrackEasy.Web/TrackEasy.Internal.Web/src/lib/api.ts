@@ -25,8 +25,8 @@ async function handleResponse<T>(res: Response): Promise<T> {
       // Clear authentication data
       removeToken();
 
-      // Clear auth and user stores
-      await useAuthStore.getState().logout();
+      // Clear user store directly without calling logout API
+      useAuthStore.getState().setUnauthenticated();
       useUserStore.getState().clearUser();
 
       // Redirect to login page

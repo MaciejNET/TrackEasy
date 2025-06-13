@@ -2,9 +2,20 @@ import {z} from "zod";
 
 // Enum for Currency
 export enum Currency {
-  PLN = "PLN",
-  EUR = "EUR",
-  USD = "USD"
+  PLN = 0,
+  EUR = 1,
+  USD = 2
+}
+
+// Enum for DayOfWeek
+export enum DayOfWeek {
+  Sunday = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6
 }
 
 // Schema for MoneyDto
@@ -21,7 +32,7 @@ export const connectionDtoSchema = z.object({
   name: z.string(),
   startStation: z.string(),
   endStation: z.string(),
-  daysOfWeek: z.array(z.string()),
+  daysOfWeek: z.array(z.nativeEnum(DayOfWeek)),
   isActive: z.boolean()
 });
 
@@ -53,7 +64,7 @@ export type ConnectionStationDetailsDto = z.infer<typeof connectionStationDetail
 export const scheduleDtoSchema = z.object({
   validFrom: z.string(),
   validTo: z.string(),
-  daysOfWeek: z.array(z.string())
+  daysOfWeek: z.array(z.nativeEnum(DayOfWeek))
 });
 
 export type ScheduleDto = z.infer<typeof scheduleDtoSchema>;
@@ -67,7 +78,7 @@ export const connectionDetailsDtoSchema = z.object({
   trainName: z.string(),
   validFrom: z.string(),
   validTo: z.string(),
-  daysOfWeek: z.array(z.string()),
+  daysOfWeek: z.array(z.nativeEnum(DayOfWeek)),
   stations: z.array(connectionStationDetailsDtoSchema),
   hasPendingRequest: z.boolean(),
   needsSeatReservation: z.boolean(),

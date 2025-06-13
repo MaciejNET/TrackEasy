@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import {getToken} from "@/lib/auth-storage.ts";
 import {BASE_URL} from "@/lib/api-constants.ts";
+import {useAuthStore} from "@/stores/auth-store.ts";
 
 // Define the callback type for notification events
 type NotificationCallback = () => void;
@@ -29,6 +30,13 @@ class NotificationHubConnection {
     this.isConnecting = true;
 
     try {
+      // Check if user is authenticated using the auth store
+      if (!useAuthStore.getState().checkAuth()) {
+        console.error("User is not authenticated. Cannot connect to notification hub.");
+        this.isConnecting = false;
+        return;
+      }
+
       const token = getToken();
       if (!token) {
         console.error("No authentication token available");

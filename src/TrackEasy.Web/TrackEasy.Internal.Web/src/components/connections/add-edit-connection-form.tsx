@@ -10,6 +10,7 @@ import {
   ConnectionDetailsDto,
   CreateConnectionCommand,
   Currency,
+  DayOfWeek,
   UpdateConnectionCommand
 } from "@/schemas/connection-schema.ts";
 import {useEffect, useState} from "react";
@@ -18,23 +19,18 @@ import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {PlusIcon, TrashIcon} from "lucide-react";
 import {toast} from "sonner";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
-
-// Mock train data - in a real app, this would come from an API
-const mockTrains = [
-  {id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", name: "Train 1"},
-  {id: "4fa85f64-5717-4562-b3fc-2c963f66afa6", name: "Train 2"},
-  {id: "5fa85f64-5717-4562-b3fc-2c963f66afa6", name: "Train 3"},
-];
+import {TrainSelector} from "@/components/connections/train-selector.tsx";
+import {TrainDto} from "@/schemas/train-schema.ts";
 
 // Days of week options
 const daysOfWeekOptions = [
-  {value: "Monday", label: "Monday"},
-  {value: "Tuesday", label: "Tuesday"},
-  {value: "Wednesday", label: "Wednesday"},
-  {value: "Thursday", label: "Thursday"},
-  {value: "Friday", label: "Friday"},
-  {value: "Saturday", label: "Saturday"},
-  {value: "Sunday", label: "Sunday"},
+  {value: DayOfWeek.Monday, label: "Monday"},
+  {value: DayOfWeek.Tuesday, label: "Tuesday"},
+  {value: DayOfWeek.Wednesday, label: "Wednesday"},
+  {value: DayOfWeek.Thursday, label: "Thursday"},
+  {value: DayOfWeek.Friday, label: "Friday"},
+  {value: DayOfWeek.Saturday, label: "Saturday"},
+  {value: DayOfWeek.Sunday, label: "Sunday"},
 ];
 
 const connectionFormSchema = z.object({
@@ -46,7 +42,7 @@ const connectionFormSchema = z.object({
   // Schedule fields (only used when creating a new connection)
   validFrom: z.string().optional(),
   validTo: z.string().optional(),
-  daysOfWeek: z.array(z.string()).optional(),
+  daysOfWeek: z.array(z.nativeEnum(DayOfWeek)).optional(),
   // Stations (only used when creating a new connection)
   stations: z.array(
     z.object({
@@ -97,7 +93,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
       needsSeatReservation: connection?.needsSeatReservation || false,
       validFrom: new Date().toISOString().split('T')[0],
       validTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      daysOfWeek: [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday],
       stations: [],
     },
   });
@@ -178,7 +174,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
           schedule: {
             validFrom: values.validFrom || new Date().toISOString().split('T')[0],
             validTo: values.validTo || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-            daysOfWeek: values.daysOfWeek || ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            daysOfWeek: values.daysOfWeek || [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday]
           },
           connectionStations: processedStations
         };
@@ -241,8 +237,8 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                   <FormItem>
                     <FormLabel>Currency</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -250,11 +246,13 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Object.values(Currency).map((currency) => (
-                          <SelectItem key={currency} value={currency}>
-                            {currency}
-                          </SelectItem>
-                        ))}
+                        {Object.entries(Currency)
+                          .filter(([key]) => isNaN(Number(key))) // Filter out numeric keys
+                          .map(([key, value]) => (
+                            <SelectItem key={value} value={value.toString()}>
+                              {key}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage/>
@@ -271,23 +269,15 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                   render={({field}) => (
                     <FormItem>
                       <FormLabel>Train</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a train"/>
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {mockTrains.map((train) => (
-                            <SelectItem key={train.id} value={train.id}>
-                              {train.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <TrainSelector
+                          operatorId={operatorId}
+                          onSelect={(train: TrainDto) => {
+                            field.onChange(train.id);
+                          }}
+                          disabled={isEditing}
+                        />
+                      </FormControl>
                       <FormMessage/>
                     </FormItem>
                   )}
