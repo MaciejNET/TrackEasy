@@ -14,6 +14,7 @@ internal sealed class GetOperatorsQueryHandler(TrackEasyDbContext dbContext) : I
         return await dbContext.Operators
             .WithName(request.Name)
             .WithCode(request.Code)
+            .OrderBy(x => x.Name)
             .Select(x => new OperatorDto(x.Id, x.Name, x.Code))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

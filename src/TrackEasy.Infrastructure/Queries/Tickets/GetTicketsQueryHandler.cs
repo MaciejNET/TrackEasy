@@ -15,6 +15,7 @@ internal sealed class GetTicketsQueryHandler(TrackEasyDbContext dbContext, TimeP
             .AsNoTracking()
             .WithTicketType(request.Type, timeProvider)
             .WithUserId(request.UserId)
+            .OrderByDescending(x => x.ConnectionDate)
             .Select(x => new TicketDto(
                 x.Id,
                 x.Stations.Single(s => s.SequenceNumber == 1).Name,

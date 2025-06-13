@@ -11,6 +11,7 @@ internal sealed class GetDiscountsListQueryHandler(TrackEasyDbContext dbContext)
     {
         var result = await dbContext.Discounts
             .AsNoTracking()
+            .OrderBy(d => d.Name)
             .Select(d => new SystemListItemDto(d.Id, d.Name))
             .ToListAsync(cancellationToken);
 
