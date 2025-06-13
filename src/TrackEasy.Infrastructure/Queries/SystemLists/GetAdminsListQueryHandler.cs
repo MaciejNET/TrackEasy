@@ -19,6 +19,7 @@ internal sealed class GetAdminsListQueryHandler(TrackEasyDbContext dbContext) : 
                 from userRole in dbContext.UserRoles
                 where userRole.RoleId == adminRoleId
                 join user in dbContext.Users on userRole.UserId equals user.Id
+                orderby user.FirstName, user.LastName
                 select new SystemListItemDto(user.Id, $"{user.FirstName} {user.LastName}")
             ).ToListAsync(cancellationToken);
     }

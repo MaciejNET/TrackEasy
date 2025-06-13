@@ -12,6 +12,7 @@ internal sealed class GetConnectionsQueryHandler(TrackEasyDbContext dbContext) :
     {
         return await dbContext.Connections
             .Where(x => x.Operator.Id == request.OperatorId)
+            .OrderBy(x => x.Name)
             .Select(x => new ConnectionDto(
                 x.Id,
                 x.Name,

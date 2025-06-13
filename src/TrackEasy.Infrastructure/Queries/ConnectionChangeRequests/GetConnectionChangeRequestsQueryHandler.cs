@@ -15,6 +15,7 @@ internal sealed class GetConnectionChangeRequestsQueryHandler(TrackEasyDbContext
         var query = dbContext.Connections
             .AsNoTracking()
             .Where(x => x.Request != null)
+            .OrderBy(x => x.Name)
             .Select(x => new ConnectionChangeRequestDto(
                 x.Id,
                 x.Name,

@@ -11,6 +11,7 @@ internal sealed class GetCitiesListQueryHandler(TrackEasyDbContext dbContext) : 
     {
         return await dbContext.Cities
             .AsNoTracking()
+            .OrderBy(c => c.Name)
             .Select(c => new SystemListItemDto(c.Id, c.Name))
             .ToListAsync(cancellationToken);
     }

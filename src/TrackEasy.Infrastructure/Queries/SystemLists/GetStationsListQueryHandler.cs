@@ -11,6 +11,7 @@ namespace TrackEasy.Infrastructure.Queries.SystemLists
         {
             var result = await dbContext.Stations
                 .AsNoTracking()
+                .OrderBy(s => s.Name)
                 .Select(s => new SystemListItemDto(s.Id, s.Name))
                 .ToListAsync(cancellationToken);
 

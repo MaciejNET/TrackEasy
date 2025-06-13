@@ -18,6 +18,7 @@ internal sealed class GetStationsQueryHandler(TrackEasyDbContext dbContext)
             .Include(s => s.City)
             .WithStationName(request.StationName)
             .WithCityName(request.CityName)
+            .OrderBy(s => s.Name)
             .Select(s => new StationDto(s.Id, s.Name, s.City.Name));
 
         return await query.PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
