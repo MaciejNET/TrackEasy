@@ -59,6 +59,7 @@ public static class Extensions
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
+        .AddCookie(IdentityConstants.ApplicationScheme)
         .AddCookie(IdentityConstants.ExternalScheme)
         .AddJwtBearer(options =>
         {
