@@ -100,7 +100,6 @@ export function NotificationsPanel() {
                   key={notification.id}
                   className="p-4 border-b last:border-b-0 hover:bg-muted cursor-pointer"
                   onClick={() => {
-                    markAsRead(notification.id);
                     handleNotificationClick(notification.type, notification.objectId);
                   }}
                 >
@@ -117,8 +116,12 @@ export function NotificationsPanel() {
                     variant="outline" 
                     size="sm" 
                     className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent onClick from firing
+                      markAsRead(notification.id);
+                    }}
                   >
-                    View Details
+                    Mark as Read
                   </Button>
                 </div>
               ))}

@@ -6,7 +6,7 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {useFieldArray, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {ConnectionDetailsDto, UpdateScheduleCommand} from "@/schemas/connection-schema.ts";
+import {ConnectionDetailsDto, DayOfWeek, UpdateScheduleCommand} from "@/schemas/connection-schema.ts";
 import {useEffect, useState} from "react";
 import {fetchStationsList, SystemListItemDto} from "@/api/system-lists-api.ts";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
@@ -16,20 +16,20 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 
 // Days of week options
 const daysOfWeekOptions = [
-  {value: "Monday", label: "Monday"},
-  {value: "Tuesday", label: "Tuesday"},
-  {value: "Wednesday", label: "Wednesday"},
-  {value: "Thursday", label: "Thursday"},
-  {value: "Friday", label: "Friday"},
-  {value: "Saturday", label: "Saturday"},
-  {value: "Sunday", label: "Sunday"},
+  {value: DayOfWeek.Monday, label: "Monday"},
+  {value: DayOfWeek.Tuesday, label: "Tuesday"},
+  {value: DayOfWeek.Wednesday, label: "Wednesday"},
+  {value: DayOfWeek.Thursday, label: "Thursday"},
+  {value: DayOfWeek.Friday, label: "Friday"},
+  {value: DayOfWeek.Saturday, label: "Saturday"},
+  {value: DayOfWeek.Sunday, label: "Sunday"},
 ];
 
 // Schema for the form
 const scheduleFormSchema = z.object({
   validFrom: z.string().min(1, {message: "Valid from date is required"}),
   validTo: z.string().min(1, {message: "Valid to date is required"}),
-  daysOfWeek: z.array(z.string()).min(1, {message: "At least one day of week must be selected"}),
+  daysOfWeek: z.array(z.nativeEnum(DayOfWeek)).min(1, {message: "At least one day of week must be selected"}),
   stations: z.array(
     z.object({
       stationId: z.string().uuid({message: "Station is required"}),
@@ -69,12 +69,46 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
   }, [open]);
 
   // Initialize form with connection data if available
+  // Log the incoming daysOfWeek to debug
+  console.log("Incoming daysOfWeek:", connection?.daysOfWeek);
+
+  // Convert daysOfWeek to DayOfWeek enum values if they're strings
+  const convertedDaysOfWeek = connection?.daysOfWeek?.map(day => {
+    // If day is already a number, return it
+    if (typeof day === 'number') {
+      return day;
+    }
+    // If day is a string, convert it to the corresponding DayOfWeek enum value
+    if (typeof day === 'string') {
+      const dayMap: Record<string, DayOfWeek> = {
+        "Sunday": DayOfWeek.Sunday,
+        "Monday": DayOfWeek.Monday,
+        "Tuesday": DayOfWeek.Tuesday,
+        "Wednesday": DayOfWeek.Wednesday,
+        "Thursday": DayOfWeek.Thursday,
+        "Friday": DayOfWeek.Friday,
+        "Saturday": DayOfWeek.Saturday,
+        "0": DayOfWeek.Sunday,
+        "1": DayOfWeek.Monday,
+        "2": DayOfWeek.Tuesday,
+        "3": DayOfWeek.Wednesday,
+        "4": DayOfWeek.Thursday,
+        "5": DayOfWeek.Friday,
+        "6": DayOfWeek.Saturday
+      };
+      return dayMap[day] !== undefined ? dayMap[day] : null;
+    }
+    return null;
+  }).filter(day => day !== null) || [];
+
+  console.log("Converted daysOfWeek:", convertedDaysOfWeek);
+
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleFormSchema),
     defaultValues: {
       validFrom: connection?.validFrom || new Date().toISOString().split('T')[0],
       validTo: connection?.validTo || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-      daysOfWeek: connection?.daysOfWeek || [],
+      daysOfWeek: convertedDaysOfWeek,
       stations: connection?.stations.map(station => ({
         stationId: station.stationId,
         arrivalTime: station.arrivalTime,

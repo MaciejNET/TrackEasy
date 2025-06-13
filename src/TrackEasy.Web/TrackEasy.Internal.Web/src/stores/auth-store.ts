@@ -14,6 +14,7 @@ interface AuthState {
   login: (credentials: LoginRequest) => Promise<boolean>;
   submitTwoFactorCode: (request: TwoFactorRequest) => Promise<boolean>;
   logout: () => Promise<void>;
+  setUnauthenticated: () => void;
   checkAuth: () => boolean;
 }
 
@@ -131,6 +132,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null
       });
     }
+  },
+
+  setUnauthenticated: () => {
+    set({
+      token: null,
+      user: null,
+      needsTwoFactor: false,
+      error: null
+    });
   },
 
   checkAuth: () => {
