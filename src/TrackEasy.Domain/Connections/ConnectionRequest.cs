@@ -7,7 +7,7 @@ public sealed record ConnectionRequest
     public ConnectionRequestType RequestType { get; private set; }
     public Guid? Id { get; private set; }
     public Schedule? Schedule { get; private set; }
-    public IReadOnlyList<ConnectionStation>? Stations { get; private set; }
+    public ICollection<ConnectionStation>? Stations { get; private set; }
 
     public static ConnectionRequest CreateAddRequest()
         => new(ConnectionRequestType.ADD, null, null, null);

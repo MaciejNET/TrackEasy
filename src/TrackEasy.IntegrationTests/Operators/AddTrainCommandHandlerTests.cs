@@ -15,12 +15,12 @@ public class AddTrainCommandHandlerTests(DatabaseFixture databaseFixture) : Inte
     {
         var operatorId = await Sender.Send(new CreateOperatorCommand("Test Operator", "TO"));
 
-        await Sender.Send(new AddCoachCommand(operatorId, "C1", [1, 2]));
-        await Sender.Send(new AddCoachCommand(operatorId, "C2", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C11", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C21", [1, 2]));
 
         var coaches = await Sender.Send(new GetCoachesQuery(operatorId, null, 1, 10));
-        var coach1 = coaches.Items.First(c => c.Code == "C1");
-        var coach2 = coaches.Items.First(c => c.Code == "C2");
+        var coach1 = coaches.Items.First(c => c.Code == "C11");
+        var coach2 = coaches.Items.First(c => c.Code == "C21");
 
         var command = new AddTrainCommand(operatorId, "Express", [(coach1.Id, 1), (coach2.Id, 2)]);
         var trainId = await Sender.Send(command);

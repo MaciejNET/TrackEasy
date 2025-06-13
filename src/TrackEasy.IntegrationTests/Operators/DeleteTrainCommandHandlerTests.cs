@@ -14,12 +14,12 @@ public class DeleteTrainCommandHandlerTests(DatabaseFixture databaseFixture) : I
     public async Task DeleteTrain_ValidRequest_ShouldDeleteTrain()
     {
         var operatorId = await Sender.Send(new CreateOperatorCommand("Test Operator", "TO"));
-        await Sender.Send(new AddCoachCommand(operatorId, "C1", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C11", [1, 2]));
 
         var coach = (await Sender.Send(new GetCoachesQuery(operatorId, null, 1, 10))).Items.First();
         var trainId = await Sender.Send(new AddTrainCommand(operatorId, "Express", [(coach.Id, 1)]));
 
-        await Sender.Send(new DeleteTrainCommand(trainId, operatorId));
+        await Sender.Send(new DeleteTrainCommand(operatorId, trainId));
 
         var trains = await Sender.Send(new GetTrainsQuery(operatorId, null, 1, 10));
         Assert.Empty(trains.Items);

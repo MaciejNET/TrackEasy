@@ -5,8 +5,7 @@ using TrackEasy.Shared.Exceptions;
 namespace TrackEasy.Application.RefundRequests.RejectRefundRequest;
 
 internal sealed class RejectRefundRequestCommandHandler(
-    IRefundRequestRepository refundRequestRepository,
-    TimeProvider timeProvider)
+    IRefundRequestRepository refundRequestRepository)
     : ICommandHandler<RejectRefundRequestCommand>
 {
     public async Task Handle(RejectRefundRequestCommand request, CancellationToken cancellationToken)
@@ -21,7 +20,7 @@ internal sealed class RejectRefundRequestCommandHandler(
         }
         
         refundRequest.Reject();
-        
+        refundRequestRepository.Delete(refundRequest);
         await refundRequestRepository.SaveChangesAsync(cancellationToken);
     }
 }

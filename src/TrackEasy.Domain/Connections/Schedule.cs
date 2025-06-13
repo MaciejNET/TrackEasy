@@ -8,7 +8,7 @@ public sealed record Schedule
     
     public DateOnly ValidFrom { get; private set; }
     public DateOnly ValidTo { get; private set; }
-    public IReadOnlyList<DayOfWeek> DaysOfWeek => _daysOfWeek.AsReadOnly();
+    public IReadOnlyCollection<DayOfWeek> DaysOfWeek => _daysOfWeek.AsReadOnly();
 
     public Schedule(DateOnly validFrom, DateOnly validTo, IEnumerable<DayOfWeek> daysOfWeek)
     {

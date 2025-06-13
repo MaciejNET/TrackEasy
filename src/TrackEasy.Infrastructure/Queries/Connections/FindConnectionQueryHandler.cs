@@ -25,8 +25,8 @@ internal sealed class FindConnectionQueryHandler(TrackEasyDbContext dbContext) :
                     s.Id,
                     s.Station.Id,
                     s.Station.Name,
-                    s.DepartureTime,
                     s.ArrivalTime,
+                    s.DepartureTime,
                     s.SequenceNumber
                 )),
                 x.Request != null,

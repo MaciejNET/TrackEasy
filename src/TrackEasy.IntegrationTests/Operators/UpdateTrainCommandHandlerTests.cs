@@ -16,14 +16,14 @@ public class UpdateTrainCommandHandlerTests(DatabaseFixture databaseFixture) : I
     {
         var operatorId = await Sender.Send(new CreateOperatorCommand("Test Operator", "TO"));
 
-        await Sender.Send(new AddCoachCommand(operatorId, "C1", [1, 2]));
-        await Sender.Send(new AddCoachCommand(operatorId, "C2", [1, 2]));
-        await Sender.Send(new AddCoachCommand(operatorId, "C3", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C11", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C21", [1, 2]));
+        await Sender.Send(new AddCoachCommand(operatorId, "C31", [1, 2]));
 
         var coaches = await Sender.Send(new GetCoachesQuery(operatorId, null, 1, 10));
-        var coach1 = coaches.Items.First(c => c.Code == "C1");
-        var coach2 = coaches.Items.First(c => c.Code == "C2");
-        var coach3 = coaches.Items.First(c => c.Code == "C3");
+        var coach1 = coaches.Items.First(c => c.Code == "C11");
+        var coach2 = coaches.Items.First(c => c.Code == "C21");
+        var coach3 = coaches.Items.First(c => c.Code == "C31");
 
         var trainId = await Sender.Send(new AddTrainCommand(operatorId, "Express", [(coach1.Id, 1), (coach2.Id, 2)]));
 
