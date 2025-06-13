@@ -28,8 +28,6 @@ internal sealed class BuyTicketCommandHandler(
             throw new TrackEasyException(SharedCodes.InvalidInput,
                 "At least one connection is required.");
 
-        var passengers = await BuildPassengerListAsync(request.Passengers, discountRepository, ct);
-
         var discountCode = await ValidateDiscountCodeAsync(
             request.DiscountCodeId, discountCodeRepository, timeProvider, ct);
 
@@ -52,7 +50,9 @@ internal sealed class BuyTicketCommandHandler(
                 await LoadAndValidateStationsAsync(dto.StartStationId, dto.EndStationId,
                     connection, stationRepository, ct);
 
-            var pricing = await ticketPriceService.CalculateAsync(
+            var passengers = await BuildPassengerListAsync(request.Passengers, discountRepository, ct);
+            
+            var (price, seats) = await ticketPriceService.CalculateAsync(
                 connection,
                 request.Passengers,
                 startStation.Id,
@@ -60,9 +60,6 @@ internal sealed class BuyTicketCommandHandler(
                 discountCode,
                 dto.ConnectionDate,
                 ct);
-
-            var seats = pricing.SeatNumbers;
-            var price = pricing.Price;
 
             var ticketStations = SliceStations(connection, startStation.Id, endStation.Id);
 

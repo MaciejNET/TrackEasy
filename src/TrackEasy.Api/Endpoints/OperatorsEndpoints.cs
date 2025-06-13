@@ -2,6 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Application.Connections.CreateConnection;
+using TrackEasy.Application.Connections.FindConnection;
+using TrackEasy.Application.Connections.GetConnections;
+using TrackEasy.Application.Connections.UpdateConnection;
+using TrackEasy.Application.Connections.UpdateSchedule;
 using TrackEasy.Application.Operators.AddCoach;
 using TrackEasy.Application.Operators.AddManager;
 using TrackEasy.Application.Operators.AddTrain;
@@ -19,6 +23,10 @@ using TrackEasy.Application.Operators.Shared;
 using TrackEasy.Application.Operators.UpdateCoach;
 using TrackEasy.Application.Operators.UpdateOperator;
 using TrackEasy.Application.Operators.UpdateTrain;
+using TrackEasy.Application.RefundRequests.AcceptRefundRequest;
+using TrackEasy.Application.RefundRequests.FindRefundRequest;
+using TrackEasy.Application.RefundRequests.GetRefundRequests;
+using TrackEasy.Application.RefundRequests.RejectRefundRequest;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -104,7 +112,7 @@ public class OperatorsEndpoints : IEndpoints
         group.MapGet("/{id:guid}/coaches/{coachId:guid}",
             async (Guid id, Guid coachId, ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new FindCoachQuery(id, coachId);
+                var query = new FindCoachQuery(coachId, id);
                 var coach = await sender.Send(query, cancellationToken);
                 return coach is null ? Results.NotFound() : Results.Ok(coach);
             })
@@ -240,6 +248,33 @@ public class OperatorsEndpoints : IEndpoints
             .WithDescription("Add a new manager to an operator.")
             .WithOpenApi();
         
+        group.MapGet("/{id:guid}/connections", async (Guid id, [FromQuery] string? name, [FromQuery] string? startStation, [FromQuery] string? endStation,
+                [FromQuery] int pageNumber, [FromQuery] int pageSize, ISender sender, CancellationToken cancellationToken) =>
+        {
+            var query = new GetConnectionsQuery(id, name, startStation, endStation, pageNumber, pageSize);
+            var connections = await sender.Send(query, cancellationToken);
+            return Results.Ok(connections);
+        })
+            .RequireManagerAccess()
+            .WithName("GetOperatorConnections")
+            .Produces<PaginatedResult<ConnectionDto>>()
+            .WithDescription("Get all connections for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapGet("/{id:guid}/connections/{connectionId:guid}",
+            async (Guid id, Guid connectionId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new FindConnectionQuery(connectionId);
+                var connection = await sender.Send(query, cancellationToken);
+                return connection is null ? Results.NotFound() : Results.Ok(connection);
+            })
+            .RequireManagerAccess()
+            .WithName("FindOperatorConnection")
+            .Produces<ConnectionDetailsDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .WithDescription("Find a connection by id for a specific operator.")
+            .WithOpenApi();
+        
         group.MapPost("/{id:guid}/connections", async (Guid id, CreateConnectionCommand command, ISender sender) =>
             {
                 command = command with { OperatorId = id };
@@ -252,6 +287,96 @@ public class OperatorsEndpoints : IEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Create a new connection between two stations with specified legs")
+            .WithOpenApi();
+
+        group.MapPatch("/{id:guid}/connections/{connectionId:guid}", async (
+                Guid id,
+                Guid connectionId,
+                UpdateConnectionCommand command,
+                ISender sender) =>
+            {
+                command = command with { Id = connectionId };
+                await sender.Send(command);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("UpdateConnection")
+            .WithSummary("Update connection basic information")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Update connection name and price")
+            .WithOpenApi();
+
+        group.MapPatch("/{id:guid}/connections/{connectionId:guid}/schedule", async (
+                Guid id,
+                Guid connectionId,
+                UpdateScheduleCommand command,
+                ISender sender) =>
+            {
+                command = command with { Id = connectionId };
+                await sender.Send(command);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("UpdateConnectionSchedule")
+            .WithSummary("Request schedule update for a connection")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Update connection schedule and stations")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/refund-requests",
+            async (Guid id, [FromQuery] int pageNumber, [FromQuery] int pageSize, ISender sender,
+                CancellationToken cancellationToken) =>
+            {
+                var query = new GetRefundRequestsQuery(id, pageNumber, pageSize);
+                var refundRequests = await sender.Send(query, cancellationToken);
+                return Results.Ok(refundRequests);
+            })
+            .RequireManagerAccess()
+            .WithName("GetOperatorRefundRequests")
+            .Produces<PaginatedResult<RefundRequestDto>>()
+            .WithDescription("Get paginated refund requests for a specific operator.")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/refund-requests/{refundRequestId:guid}",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new FindRefundRequestQuery(refundRequestId);
+                var refundRequest = await sender.Send(query, cancellationToken);
+                return refundRequest is null ? Results.NotFound() : Results.Ok(refundRequest);
+            })
+            .RequireManagerAccess()
+            .WithName("FindOperatorRefundRequest")
+            .Produces<RefundRequestDetailsDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .WithDescription("Find a refund request by id for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapPost("/{id:guid}/refund-requests/{refundRequestId:guid}/accept",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new AcceptRefundRequestCommand(refundRequestId);
+                await sender.Send(command, cancellationToken);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("AcceptOperatorRefundRequest")
+            .Produces(StatusCodes.Status204NoContent)
+            .WithDescription("Accept a refund request for a specific operator.")
+            .WithOpenApi();
+        
+        group.MapPost("{id:guid}/refund-requests/{refundRequestId:guid}/reject",
+            async (Guid id, Guid refundRequestId, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new RejectRefundRequestCommand(refundRequestId);
+                await sender.Send(command, cancellationToken);
+                return Results.NoContent();
+            })
+            .RequireManagerAccess()
+            .WithName("RejectOperatorRefundRequest")
+            .Produces(StatusCodes.Status204NoContent)
+            .WithDescription("Reject a refund request for a specific operator.")
             .WithOpenApi();
     }
 }

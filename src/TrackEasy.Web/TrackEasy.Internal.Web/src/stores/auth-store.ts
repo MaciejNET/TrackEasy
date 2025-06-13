@@ -1,6 +1,7 @@
 import {create} from "zustand/react";
 import {generateToken, generateTwoFactorToken, LoginRequest, TwoFactorRequest} from "@/api/auth-api.ts";
 import {getToken, getUserClaims, parseJwt, removeToken, saveToken, saveUserClaims, UserClaims} from "@/lib/auth-storage.ts";
+import {logout as logoutApi} from "@/api/user-api.ts";
 
 interface AuthState {
   token: string | null;
@@ -12,7 +13,7 @@ interface AuthState {
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
   submitTwoFactorCode: (request: TwoFactorRequest) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   checkAuth: () => boolean;
 }
 
@@ -114,14 +115,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  logout: () => {
-    removeToken();
-    set({
-      token: null,
-      user: null,
-      needsTwoFactor: false,
-      error: null
-    });
+  logout: async () => {
+    try {
+      // Send logout request to the server
+      await logoutApi();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      // Always clear local state even if the API call fails
+      removeToken();
+      set({
+        token: null,
+        user: null,
+        needsTwoFactor: false,
+        error: null
+      });
+    }
   },
 
   checkAuth: () => {

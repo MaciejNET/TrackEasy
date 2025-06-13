@@ -21,7 +21,7 @@ internal sealed class AcceptRefundRequestCommandHandler(
         }
         
         refundRequest.Accept(timeProvider);
-        
+        refundRequestRepository.Delete(refundRequest);
         await refundRequestRepository.SaveChangesAsync(cancellationToken);
     }
 }

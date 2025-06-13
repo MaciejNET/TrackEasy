@@ -216,14 +216,16 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
     {
         var legs = path.Legs;
 
-        var connDtos = legs.Select(l => new ConnectionDto(
+        var connDtos = legs.Select(l => new SearchConnectionDto(
                 l.ConnectionId,
                 l.ConnectionName,
                 l.OperatorName,
                 l.OperatorCode,
                 TimeOnly.FromDateTime(l.DepartureDateTime),
                 TimeOnly.FromDateTime(l.ArrivalDateTime),
+                l.FromStationId,
                 l.FromStationName,
+                l.ToStationId,
                 l.ToStationName,
                 Price: l.PricePerKilometre))      // simple: km-price only
             .ToList();

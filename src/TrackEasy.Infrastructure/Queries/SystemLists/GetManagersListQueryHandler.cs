@@ -12,6 +12,8 @@ internal sealed class GetManagersListQueryHandler(TrackEasyDbContext dbContext) 
         var result = await dbContext.Managers
             .AsNoTracking()
             .Where(x => x.OperatorId == request.OperatorId)
+            .OrderBy(m => m.User.FirstName)
+            .ThenBy(m => m.User.LastName)
             .Select(m => new SystemListItemDto(
                 m.User.Id,
                 m.User.FirstName + " " + m.User.LastName

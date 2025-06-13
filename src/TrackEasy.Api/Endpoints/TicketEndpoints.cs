@@ -6,9 +6,12 @@ using TrackEasy.Application.Tickets.FindCurrentTicketId;
 using TrackEasy.Application.Tickets.FindTicket;
 using TrackEasy.Application.Tickets.GetQrCode;
 using TrackEasy.Application.Tickets.GetTicketCities;
+using TrackEasy.Application.Tickets.GetTicketArrivalTimes;
 using TrackEasy.Application.Tickets.GetTickets;
 using TrackEasy.Application.Tickets.PayTicketByCard;
 using TrackEasy.Application.Tickets.PayTicketByCash;
+using TrackEasy.Application.Tickets.CalculateTicketPrice;
+using TrackEasy.Application.Shared;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -25,6 +28,14 @@ public class TicketEndpoints : IEndpoints
             .Produces<IReadOnlyCollection<Guid>>()
             .Produces(StatusCodes.Status400BadRequest)
             .WithDescription("Purchase tickets for specified connections")
+            .WithOpenApi();
+
+        group.MapPost("/price", async (CalculateTicketPriceQuery query, ISender sender, CancellationToken ct) =>
+            Results.Ok(await sender.Send(query, ct)))
+            .WithName("CalculateTicketPrice")
+            .Produces<MoneyDto>()
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithDescription("Calculate price for specified connections")
             .WithOpenApi();
         
         group.MapGet("/{userId:guid}", async (Guid userId, int pageNumber, int pageSize, TicketType type, ISender sender, CancellationToken ct) =>
@@ -50,6 +61,13 @@ public class TicketEndpoints : IEndpoints
             .WithName("GetTicketCities")
             .Produces<IEnumerable<TicketCityDto>>()
             .WithDescription("Get cities related to a ticket")
+            .WithOpenApi();
+
+        group.MapGet("/{id:guid}/arrivals", async (Guid id, ISender sender, CancellationToken ct) =>
+            Results.Ok(await sender.Send(new GetTicketArrivalTimesQuery(id), ct)))
+            .WithName("GetTicketArrivals")
+            .Produces<IEnumerable<TicketArrivalDto>>()
+            .WithDescription("Get arrival times with city names for a ticket")
             .WithOpenApi();
         
         group.MapGet("/qr-code/{qrCodeId:guid}", async (Guid qrCodeId, ISender sender, CancellationToken ct) =>

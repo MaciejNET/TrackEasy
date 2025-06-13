@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TrackEasy.Application.Security;
 using TrackEasy.Application.Tickets.FindCurrentTicketId;
+using TrackEasy.Application.Tickets.GetTickets;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Shared.Application.Abstractions;
 
@@ -18,19 +19,15 @@ internal sealed class FindCurrentTicketIdQueryHandler(TrackEasyDbContext dbConte
             return null;
         }
         
-        var now = timeProvider.GetUtcNow();
+        var now = timeProvider.GetLocalNow();
 
         var ticketId = await dbContext.Tickets
             .AsNoTracking()
-            .Where(x => x.ConnectionDate == DateOnly.FromDateTime(now.Date))
-            .Where(x => x.Stations.Any(s =>
-                s.SequenceNumber == 1 && s.DepartureTime >= TimeOnly.FromDateTime(now.DateTime)))
-            .Where(x => x.Stations.Any(s =>
-                s.SequenceNumber == x.Stations.Count && s.ArrivalTime <= TimeOnly.FromDateTime(now.DateTime)))
-            .Where(x => x.PassengerId == userId)
+            .WithTicketType(TicketType.CURRENT, timeProvider)
+            .WithUserId(userId.Value)
             .OrderBy(x => x.Stations.First(s => s.SequenceNumber == 1).DepartureTime)
             .Select(x => x.Id)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         
         return ticketId;
     }

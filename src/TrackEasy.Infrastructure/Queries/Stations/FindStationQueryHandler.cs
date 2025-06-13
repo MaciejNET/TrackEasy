@@ -17,6 +17,7 @@ internal sealed class FindStationQueryHandler(TrackEasyDbContext dbContext)
             .Select(st => new StationDetailsDto(
                 st.Id,
                 st.Name,
+                st.CityId,
                 st.City.Name,
                 new GeographicalCoordinatesDto(
                     st.GeographicalCoordinates.Latitude,

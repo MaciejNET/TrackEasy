@@ -16,4 +16,9 @@ internal sealed class RefundRequestRepository(TrackEasyDbContext dbContext) : Ba
     {
         _dbContext.RefundRequests.Add(refundRequest);
     }
+    
+    public void Delete(RefundRequest refundRequest)
+    {
+        _dbContext.RefundRequests.Remove(refundRequest);
+    }
 }

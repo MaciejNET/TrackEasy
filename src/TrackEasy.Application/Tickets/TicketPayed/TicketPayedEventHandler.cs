@@ -24,11 +24,11 @@ internal sealed class TicketPayedEventHandler(
     
     public async Task Handle(TicketPayedEvent notification, CancellationToken cancellationToken)
     {
-        var ticket = await ticketRepository.FindByIdAsync(notification.Ticket.Id, cancellationToken);
+        var ticket = await ticketRepository.FindByIdAsync(notification.TicketId, cancellationToken);
         
         if (ticket is null)
         {
-            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Ticket with ID {notification.Ticket.Id} was not found.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Ticket with ID {notification.TicketId} was not found.");
         }
         
         var qrCode = GenerateQrCode(ticket.Id);

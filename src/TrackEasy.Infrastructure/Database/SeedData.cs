@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TrackEasy.Domain.Cities;
 using TrackEasy.Domain.Connections;
+using TrackEasy.Domain.DiscountCodes;
 using TrackEasy.Domain.Discounts;
 using TrackEasy.Domain.Operators;
 using TrackEasy.Domain.Shared;
 using TrackEasy.Domain.Stations;
 using TrackEasy.Domain.Users;
+using ServiceProviderServiceExtensions = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions;
 
 namespace TrackEasy.Infrastructure.Database;
 
-internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedService
+internal sealed class SeedData(IServiceProvider serviceProvider, TimeProvider timeProvider) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = serviceProvider.CreateScope();
+        using var scope = ServiceProviderServiceExtensions.CreateScope(serviceProvider);
         
-        var context = scope.ServiceProvider.GetRequiredService<TrackEasyDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var context = ServiceProviderServiceExtensions.GetRequiredService<TrackEasyDbContext>(scope.ServiceProvider);
+        var userManager = ServiceProviderServiceExtensions.GetRequiredService<UserManager<User>>(scope.ServiceProvider);
+        var roleManager = ServiceProviderServiceExtensions.GetRequiredService<RoleManager<IdentityRole<Guid>>>(scope.ServiceProvider);
         
         await context.Database.MigrateAsync(cancellationToken);
 
@@ -41,7 +42,7 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
             await userManager.AddToRoleAsync(adminUser, Roles.Admin);
         }
         
-        var dbContext = scope.ServiceProvider.GetRequiredService<TrackEasyDbContext>();
+        var dbContext = ServiceProviderServiceExtensions.GetRequiredService<TrackEasyDbContext>(scope.ServiceProvider);
 
         await dbContext.Database.ExecuteSqlAsync(
             $"""
@@ -53,6 +54,7 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
              """, cancellationToken);
         
         await SeedDiscounts(dbContext, cancellationToken);
+        await SeedDiscountCodes(dbContext, cancellationToken);
         await SeedCities(dbContext, cancellationToken);
         await SeedStations(dbContext, cancellationToken);
         await SeedOperators(dbContext, cancellationToken);
@@ -79,6 +81,29 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
             if (!await context.Discounts.AnyAsync(d => d.Name == discount.Name, cancellationToken))
             {
                 context.Discounts.Add(discount);
+            }
+        }
+        
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private  async Task SeedDiscountCodes(TrackEasyDbContext context, CancellationToken cancellationToken)
+    {
+        var dateTimeNow = TimeProvider.System.GetLocalNow().DateTime;
+        
+        List<DiscountCode> discountCodes =
+        [
+            DiscountCode.Create("SUMMER2025", 25, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(5), timeProvider),
+            DiscountCode.Create("WINTER2025", 30, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(3), timeProvider),
+            DiscountCode.Create("SPRING2025", 20, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(4), timeProvider),
+            DiscountCode.Create("FALL2025", 15, dateTimeNow.AddDays(1), dateTimeNow.AddMonths(6), timeProvider)
+        ];
+        
+        foreach (var code in discountCodes)
+        {
+            if (!await context.DiscountCodes.AnyAsync(dc => dc.Code == code.Code, cancellationToken))
+            {
+                context.DiscountCodes.Add(code);
             }
         }
         
@@ -429,6 +454,69 @@ internal sealed class SeedData(IServiceProvider serviceProvider) : IHostedServic
                     ConnectionStation.Create(stations["Kielce Główne"], null, new TimeOnly(11,20), 1),
                     ConnectionStation.Create(stations["Jędrzejów"], new TimeOnly(11,55), new TimeOnly(12, 0), 2),
                     ConnectionStation.Create(stations["Sandomierz"], new TimeOnly(13,30), null,               3)
+                ],
+                needsSeatReservation: false),
+            
+            Connection.Create(
+                name: "IC STAR-WAW PM",
+                @operator: ic,
+                pricePerKilometer: new Money(0.30m, Currency.PLN),
+                train: ic.Trains.Skip(3).First(),
+                schedule: new Schedule(
+                    new DateOnly(2025, 1, 1),
+                    new DateOnly(2025, 12, 31),
+                    allDays),
+                stations: [
+                    ConnectionStation.Create(stations["Starachowice Wschodnie"], null, new TimeOnly(14, 00), 1),
+                    ConnectionStation.Create(stations["Kielce Główne"], new TimeOnly(14, 45), new TimeOnly(14, 50), 2),
+                    ConnectionStation.Create(stations["Warszawa Centralna"], new TimeOnly(17, 50), null, 3)
+                ],
+                needsSeatReservation: true),
+
+            Connection.Create(
+                name: "IC STAR-WAW EV",
+                @operator: ic,
+                pricePerKilometer: new Money(0.30m, Currency.PLN),
+                train: ic.Trains.Skip(4).First(),
+                schedule: new Schedule(
+                    new DateOnly(2025, 1, 1),
+                    new DateOnly(2025, 12, 31),
+                    allDays),
+                stations: [
+                    ConnectionStation.Create(stations["Starachowice Wschodnie"], null, new TimeOnly(18, 30), 1),
+                    ConnectionStation.Create(stations["Kielce Główne"], new TimeOnly(19, 15), new TimeOnly(19, 20), 2),
+                    ConnectionStation.Create(stations["Warszawa Centralna"], new TimeOnly(22, 20), null, 3)
+                ],
+                needsSeatReservation: true),
+
+            Connection.Create(
+                name: "PR KIE-BUS PM",
+                @operator: pr,
+                pricePerKilometer: new Money(0.20m, Currency.PLN),
+                train: pr.Trains.Skip(3).First(),
+                schedule: new Schedule(
+                    new DateOnly(2025, 1, 1),
+                    new DateOnly(2025, 12, 31),
+                    allDays),
+                stations: [
+                    ConnectionStation.Create(stations["Kielce Główne"], null, new TimeOnly(15, 00), 1),
+                    ConnectionStation.Create(stations["Busko-Zdrój"], new TimeOnly(16, 15), null, 2)
+                ],
+                needsSeatReservation: false),
+
+            Connection.Create(
+                name: "PR KIE-SAN EV",
+                @operator: pr,
+                pricePerKilometer: new Money(0.20m, Currency.PLN),
+                train: pr.Trains.Skip(4).First(),
+                schedule: new Schedule(
+                    new DateOnly(2025, 1, 1),
+                    new DateOnly(2025, 12, 31),
+                    allDays),
+                stations: [
+                    ConnectionStation.Create(stations["Kielce Główne"], null, new TimeOnly(17, 20), 1),
+                    ConnectionStation.Create(stations["Jędrzejów"], new TimeOnly(17, 55), new TimeOnly(18, 00), 2),
+                    ConnectionStation.Create(stations["Sandomierz"], new TimeOnly(19, 30), null, 3)
                 ],
                 needsSeatReservation: false)
         };

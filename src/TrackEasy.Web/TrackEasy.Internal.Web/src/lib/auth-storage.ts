@@ -13,12 +13,30 @@ export interface UserClaims {
 }
 
 export function saveToken(token: string): void {
-  const sanitizedToken = token.replace(/"/g, '');
+  // Remove only the first and last double quotes if they exist
+  let sanitizedToken = token;
+  if (sanitizedToken.startsWith('"')) {
+    sanitizedToken = sanitizedToken.substring(1);
+  }
+  if (sanitizedToken.endsWith('"')) {
+    sanitizedToken = sanitizedToken.substring(0, sanitizedToken.length - 1);
+  }
   localStorage.setItem(TOKEN_KEY, sanitizedToken);
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+
+  // Remove any quotes that might be present in the token
+  let sanitizedToken = token;
+  if (sanitizedToken.startsWith('"')) {
+    sanitizedToken = sanitizedToken.substring(1);
+  }
+  if (sanitizedToken.endsWith('"')) {
+    sanitizedToken = sanitizedToken.substring(0, sanitizedToken.length - 1);
+  }
+  return sanitizedToken;
 }
 
 export function removeToken(): void {

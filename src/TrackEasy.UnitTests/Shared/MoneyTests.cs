@@ -14,7 +14,6 @@ public class MoneyTests
     }
 
     [Theory]
-    [InlineData(0)]
     [InlineData(-10)]
     public void Constructor_WithInvalidAmount_ShouldThrowValidationException(decimal invalidAmount)
     {

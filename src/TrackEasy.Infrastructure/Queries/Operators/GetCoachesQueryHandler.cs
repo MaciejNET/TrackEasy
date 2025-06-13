@@ -15,6 +15,7 @@ internal sealed class GetCoachesQueryHandler(TrackEasyDbContext dbContext) : IQu
             .AsNoTracking()
             .WithOperatorId(request.OperatorId)
             .WithCoachCode(request.Code)
+            .OrderBy(c => c.Code)
             .Select(c => new CoachDto(c.Id, c.Code))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

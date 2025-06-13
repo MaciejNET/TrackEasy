@@ -14,6 +14,7 @@ internal sealed class PayTicketByCardCommandHandler(
     TimeProvider timeProvider) : ICommandHandler<PayTicketByCardCommand>
 {
     private readonly PaymentIntentService _paymentIntentService = new(stripeClient);
+    private readonly TimeProvider _timeProvider = timeProvider;
     
     public async Task Handle(PayTicketByCardCommand request, CancellationToken cancellationToken)
     {
@@ -44,21 +45,17 @@ internal sealed class PayTicketByCardCommandHandler(
             totalPrice += price;
         }
 
+        ValidateCard(request);
+
         var intentOps = new PaymentIntentCreateOptions
         {
             Amount = totalPrice.ToMinorUnits(),
             Currency = totalPrice.GetCurrencyCode(),
+            ReturnUrl = "https://example.com/payment-complete",
             Confirm = true,
-            PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
-            {
-                Type = "card"
-            }
+            PaymentMethod = "pm_card_visa",
+            PaymentMethodTypes = ["card"]
         };
-
-        intentOps.AddExtraParam("payment_method_data[card][number]", request.CardNumber);
-        intentOps.AddExtraParam("payment_method_data[card][exp_month]", request.CardExpMonth.ToString());
-        intentOps.AddExtraParam("payment_method_data[card][exp_year]", request.CardExpYear.ToString());
-        intentOps.AddExtraParam("payment_method_data[card][cvc]", request.CardCvc);
 
         PaymentIntent intent;
         try
@@ -75,7 +72,33 @@ internal sealed class PayTicketByCardCommandHandler(
             throw new TrackEasyException(Codes.PaymentFailed, "Payment was not successful.");
         }
 
-        tickets.ForEach(x => x.Pay(timeProvider, intent.Id));
+        tickets.ForEach(x => x.Pay(_timeProvider, intent.Id));
         await ticketRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    private void ValidateCard(PayTicketByCardCommand request)
+    {
+        bool numberValid = request.CardNumber == "4242424242424242";
+        bool cvcValid = request.CardCvc.All(char.IsDigit) &&
+                        (request.CardCvc.Length == 3 || request.CardCvc.Length == 4);
+
+        DateTimeOffset now = _timeProvider.GetUtcNow();
+        bool expiryValid;
+        try
+        {
+            var expiry = new DateTime(request.CardExpYear + 2000, request.CardExpMonth, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddMonths(1)
+                .AddTicks(-1);
+            expiryValid = expiry >= now;
+        }
+        catch (Exception)
+        {
+            expiryValid = false;
+        }
+
+        if (!numberValid || !cvcValid || !expiryValid)
+        {
+            throw new TrackEasyException(SharedCodes.InvalidInput, "Invalid card details.");
+        }
     }
 }

@@ -15,6 +15,7 @@ internal sealed class GetTrainsQueryHandler(TrackEasyDbContext dbContext) : IQue
             .AsNoTracking()
             .WithOperatorId(request.OperatorId)
             .WithTrainName(request.Name)
+            .OrderBy(x => x.Name)
             .Select(x => new TrainDto(x.Id, x.Name))
             .PaginateAsync(request.PageNumber, request.PageSize, cancellationToken);
         

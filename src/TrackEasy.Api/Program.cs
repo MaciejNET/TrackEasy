@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using TrackEasy.Api.AuthorizationHandlers;
 using TrackEasy.Api.Endpoints;
 using TrackEasy.Api.Filters;
@@ -19,10 +20,21 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials();
     });
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                               ForwardedHeaders.XForwardedProto;
+
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 builder.Services.AddOpenApi();
@@ -47,6 +59,8 @@ app.UseInfrastructure();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseForwardedHeaders();
 
 app.UseAuthentication();
 

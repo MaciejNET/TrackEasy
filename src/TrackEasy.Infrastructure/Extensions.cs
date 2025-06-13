@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
@@ -50,9 +51,15 @@ public static class Extensions
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<TrackEasyDbContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddSignInManager();
         
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddCookie(IdentityConstants.ExternalScheme)
         .AddJwtBearer(options =>
         {
             var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]!);
@@ -66,6 +73,30 @@ public static class Extensions
                 ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
+        })
+        .AddGoogle(options =>
+        {
+            options.ClientId = configuration["google-clientid"]!;
+            options.ClientSecret = configuration["google-clientsecret"]!;
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.CallbackPath = "/users/external/google/callback";
+        })
+        .AddMicrosoftAccount(options =>
+        {
+            options.ClientId = configuration["microsoft-clientid"]!;
+            options.ClientSecret = configuration["microsoft-clientsecret"]!;
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.CallbackPath = "/users/external/microsoft/callback";
+
+            // The Azure AD application is configured for personal accounts only.
+            // Default endpoints target the "/common" tenant which is not valid
+            // for that setup and results in an "invalid_request" error.
+            options.AuthorizationEndpoint =
+                MicrosoftAccountDefaults.AuthorizationEndpoint.Replace(
+                    "/common/", "/consumers/");
+            options.TokenEndpoint =
+                MicrosoftAccountDefaults.TokenEndpoint.Replace(
+                    "/common/", "/consumers/");
         });
         
         services.AddHttpContextAccessor();
@@ -108,6 +139,7 @@ public static class Extensions
         services.AddMemoryCache();
         services.AddRepositories();
         services.AddHostedService<SeedData>();
+        services.AddHostedService<OutboxProcessor>();
         services.AddSignalR();
            
         return services;

@@ -1,4 +1,4 @@
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {Button} from "@/components/ui/button.tsx";
 
 type DeleteDiscountProps = {
@@ -16,6 +16,9 @@ export function DeleteDiscount(props: DeleteDiscountProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Discount</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col">
           <p>Are you sure you want to delete this discount?</p>

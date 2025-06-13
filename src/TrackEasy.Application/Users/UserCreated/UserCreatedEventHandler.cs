@@ -11,10 +11,16 @@ internal sealed class UserCreatedEventHandler(UserManager<User> userManager, IEm
 {
     public async Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var token = await userManager.GenerateEmailConfirmationTokenAsync(notification.User);
-        
+        var user = await userManager.FindByIdAsync(notification.UserId.ToString());
+        if (user is null)
+        {
+            return;
+        }
+
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
         var url = configuration["frontend-url"]!;
-        var model = new ActivateEmailModel(notification.User.FirstName!, notification.User.LastName!, notification.User.Email!, token, url);
-        await emailSender.SendAccountConfirmationEmailAsync(notification.User.Email!, model);
+        var model = new ActivateEmailModel(user.FirstName!, user.LastName!, user.Email!, token, url);
+        await emailSender.SendAccountConfirmationEmailAsync(user.Email!, model);
     }
 }

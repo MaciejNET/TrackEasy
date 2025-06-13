@@ -1,4 +1,5 @@
-import {BASE_URL, baseAPI} from "@/lib/api.ts";
+import {baseAPI} from "@/lib/api.ts";
+import {BASE_URL} from "@/lib/api-constants.ts";
 import {Discount} from "@/schemas/discount-schema.ts";
 import {PaginatedResult} from "@/types/paginated-result.ts";
 

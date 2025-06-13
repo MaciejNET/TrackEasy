@@ -1,7 +1,7 @@
 namespace TrackEasy.Application.Connections.SearchConnections;
 
 public sealed record SearchConnectionsResponse(
-    List<ConnectionDto> Connections,
+    List<SearchConnectionDto> Connections,
     int TransfersCount,
     string StartStation,
     string EndStation,
