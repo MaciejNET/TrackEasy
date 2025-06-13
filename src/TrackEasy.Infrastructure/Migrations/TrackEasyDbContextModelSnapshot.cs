@@ -996,7 +996,7 @@ namespace TrackEasy.Infrastructure.Migrations
                     b.HasOne("TrackEasy.Domain.Operators.Operator", null)
                         .WithMany("Trains")
                         .HasForeignKey("OperatorId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.OwnsMany("TrackEasy.Domain.Trains.TrainCoach", "Coaches", b1 =>

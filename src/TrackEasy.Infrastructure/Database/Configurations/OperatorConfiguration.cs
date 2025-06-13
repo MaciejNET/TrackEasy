@@ -30,7 +30,7 @@ internal sealed class OperatorConfiguration : IEntityTypeConfiguration<Operator>
         builder.HasMany(x => x.Trains)
             .WithOne()
             .HasForeignKey(x => x.OperatorId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.ClientCascade);
 
         builder.HasMany(x => x.Managers)
             .WithOne(x => x.Operator)
