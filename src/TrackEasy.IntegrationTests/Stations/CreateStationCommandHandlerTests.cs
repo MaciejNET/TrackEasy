@@ -23,7 +23,7 @@ public class CreateStationCommandHandlerTests(DatabaseFixture databaseFixture) :
         var station = await Sender.Send(new FindStationQuery(stationId));
         station.ShouldNotBeNull();
         station!.Name.ShouldBe("Test");
-        station.City.ShouldBe("Test City");
+        station.CityName.ShouldBe("Test City");
         station.GeographicalCoordinates.Latitude.ShouldBe(62.2M);
         station.GeographicalCoordinates.Longitude.ShouldBe(48.8M);
     }
