@@ -25,7 +25,7 @@ export function DeleteManagerDialog({ open, setOpen, manager, onSuccess }: Delet
       await deleteUser(manager.id);
       toast.success("Manager deleted successfully");
       
-      // Invalidate queries to refresh the data
+      
       await queryClient.invalidateQueries({ queryKey: ['managers-list'] });
       
       setOpen(false);

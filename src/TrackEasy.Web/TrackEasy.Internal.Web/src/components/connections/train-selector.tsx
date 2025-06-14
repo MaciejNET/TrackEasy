@@ -50,20 +50,20 @@ export function TrainSelector(props: TrainSelectorProps) {
     keepPreviousData: true,
   });
 
-  // Reset page and accumulated trains when search term changes
+  
   useEffect(() => {
     setPage(1);
     setAccumulatedTrains([]);
   }, [searchTerm]);
 
-  // Update accumulated trains when data changes
+  
   useEffect(() => {
     if (data?.items && data.items.length > 0) {
       if (page === 1) {
-        // Reset accumulated trains for first page
+        
         setAccumulatedTrains(data.items);
       } else {
-        // Append new trains to accumulated trains, avoiding duplicates
+        
         setAccumulatedTrains(prev => {
           const newTrains = data.items.filter(
             newTrain => !prev.some(existingTrain => existingTrain.id === newTrain.id)
@@ -74,7 +74,7 @@ export function TrainSelector(props: TrainSelectorProps) {
     }
   }, [data, page]);
 
-  // Load more trains when scrolling to the bottom
+  
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const bottom = Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1;
     if (bottom && data && data.pageNumber < data.totalPages && !isFetching) {
@@ -112,7 +112,7 @@ export function TrainSelector(props: TrainSelectorProps) {
             className="max-h-[300px] overflow-auto" 
             onScroll={handleScroll}
             onWheel={(e) => {
-              // Ensure wheel events are properly handled for scrolling
+              
               e.currentTarget.scrollTop += e.deltaY;
               if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1 && 
                   data && data.pageNumber < data.totalPages && !isFetching) {

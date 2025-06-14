@@ -3,7 +3,7 @@ import {getToken} from "@/lib/auth-storage.ts";
 import {BASE_URL} from "@/lib/api-constants.ts";
 import {useAuthStore} from "@/stores/auth-store.ts";
 
-// Define the callback type for notification events
+
 type NotificationCallback = () => void;
 
 class NotificationHubConnection {
@@ -11,17 +11,17 @@ class NotificationHubConnection {
   private callbacks: NotificationCallback[] = [];
   private isConnecting = false;
 
-  // Register a callback to be called when a notification is received
+  
   public onNotification(callback: NotificationCallback): () => void {
     this.callbacks.push(callback);
 
-    // Return a function to unregister the callback
+    
     return () => {
       this.callbacks = this.callbacks.filter(cb => cb !== callback);
     };
   }
 
-  // Start the connection to the notification hub
+  
   public async start(): Promise<void> {
     if (this.connection || this.isConnecting) {
       return;
@@ -30,7 +30,7 @@ class NotificationHubConnection {
     this.isConnecting = true;
 
     try {
-      // Check if user is authenticated using the auth store
+      
       if (!useAuthStore.getState().checkAuth()) {
         console.error("User is not authenticated. Cannot connect to notification hub.");
         this.isConnecting = false;
@@ -51,12 +51,12 @@ class NotificationHubConnection {
         .withAutomaticReconnect()
         .build();
 
-      // Register for the "ReceiveNotification" event
+      
       this.connection.on("ReceiveNotification", () => {
         this.notifyCallbacks();
       });
 
-      // Handle connection closed event
+      
       this.connection.onclose(() => {
         console.log("SignalR connection closed");
       });
@@ -64,7 +64,7 @@ class NotificationHubConnection {
       await this.connection.start();
       console.log("SignalR connection established");
 
-      // Notify callbacks on initial connection
+      
       this.notifyCallbacks();
     } catch (error) {
       console.error("Error establishing SignalR connection:", error);
@@ -74,7 +74,7 @@ class NotificationHubConnection {
     }
   }
 
-  // Stop the connection to the notification hub
+  
   public async stop(): Promise<void> {
     if (this.connection) {
       try {
@@ -88,7 +88,7 @@ class NotificationHubConnection {
     }
   }
 
-  // Notify all registered callbacks
+  
   private notifyCallbacks(): void {
     this.callbacks.forEach(callback => {
       try {
@@ -100,5 +100,5 @@ class NotificationHubConnection {
   }
 }
 
-// Create a singleton instance
+
 export const notificationHub = new NotificationHubConnection();

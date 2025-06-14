@@ -20,22 +20,22 @@ function getHeaders(contentType = true): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    // Handle authentication errors (401 Unauthorized, 403 Forbidden)
+    
     if (res.status === 401 || res.status === 403) {
-      // Clear authentication data
+      
       removeToken();
 
-      // Clear user store directly without calling logout API
+      
       useAuthStore.getState().setUnauthenticated();
       useUserStore.getState().clearUser();
 
-      // Redirect to login page
+      
       window.location.href = '/login';
 
       throw new Error('Authentication required. Please log in.');
     }
 
-    // Handle other errors
+    
     let errorMessage = res.statusText;
     try {
       const errorData = await res.json();
@@ -54,7 +54,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
   }
 
   if (!text.startsWith('{') && !text.startsWith('[')) {
-    // For token responses, remove any quotes that might be present
+    
     let sanitizedText = text;
     if (sanitizedText.startsWith('"')) {
       sanitizedText = sanitizedText.substring(1);

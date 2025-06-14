@@ -33,7 +33,7 @@ export function ChangePasswordModal({ open, setOpen }: ChangePasswordModalProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
+    
     if (!oldPassword || !newPassword || !confirmPassword) {
       toast.error("All fields are required");
       return;
@@ -57,13 +57,13 @@ export function ChangePasswordModal({ open, setOpen }: ChangePasswordModalProps)
     setIsSubmitting(true);
 
     try {
-      // Step 1: Generate reset password token
+      
       const token = await generateResetPasswordToken({
         email: user.email,
         password: oldPassword
       });
 
-      // Step 2: Reset password with the token
+      
       await resetPassword({
         email: user.email,
         token,

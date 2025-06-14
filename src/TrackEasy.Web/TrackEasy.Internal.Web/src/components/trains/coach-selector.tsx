@@ -51,20 +51,20 @@ export function CoachSelector(props: CoachSelectorProps) {
     keepPreviousData: true,
   });
 
-  // Reset page and accumulated coaches when search term changes
+  
   useEffect(() => {
     setPage(1);
     setAccumulatedCoaches([]);
   }, [searchTerm]);
 
-  // Update accumulated coaches when data changes
+  
   useEffect(() => {
     if (data?.items && data.items.length > 0) {
       if (page === 1) {
-        // Reset accumulated coaches for first page
+        
         setAccumulatedCoaches(data.items);
       } else {
-        // Append new coaches to accumulated coaches, avoiding duplicates
+        
         setAccumulatedCoaches(prev => {
           const newCoaches = data.items.filter(
             newCoach => !prev.some(existingCoach => existingCoach.id === newCoach.id)
@@ -75,7 +75,7 @@ export function CoachSelector(props: CoachSelectorProps) {
     }
   }, [data, page]);
 
-  // Load more coaches when scrolling to the bottom
+  
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const bottom = Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1;
     if (bottom && data && data.pageNumber < data.totalPages && !isFetching) {
@@ -113,7 +113,7 @@ export function CoachSelector(props: CoachSelectorProps) {
             className="max-h-[300px] overflow-auto" 
             onScroll={handleScroll}
             onWheel={(e) => {
-              // Ensure wheel events are properly handled for scrolling
+              
               e.currentTarget.scrollTop += e.deltaY;
               if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1 && 
                   data && data.pageNumber < data.totalPages && !isFetching) {

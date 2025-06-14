@@ -18,7 +18,7 @@ export function RefundRequestDetailsModal(props: RefundRequestDetailsModalProps)
 
   if (!request) return null;
 
-  // Debug the data being received
+  
   console.log("RefundRequestDetailsModal - request:", request);
   console.log("RefundRequestDetailsModal - people:", request.people);
   console.log("RefundRequestDetailsModal - stations:", request.stations);

@@ -8,7 +8,7 @@ export function RefundRequestSearchForm() {
   const {searchParams, setSearchParams, resetSearchParams} = useRefundRequestStore();
   const {user} = useUserStore();
 
-  // Set the operator ID from the user store when the component mounts
+  
   useEffect(() => {
     if (user?.operatorId) {
       setSearchParams({operatorId: user.operatorId, pageNumber: 1});

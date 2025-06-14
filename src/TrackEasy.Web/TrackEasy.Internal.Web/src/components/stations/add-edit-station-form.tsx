@@ -32,13 +32,13 @@ type AddEditStationFormProps = {
 export function AddEditStationForm(props: AddEditStationFormProps) {
   const {open, setOpen, handleSave, modalType, station} = props;
 
-  // Warsaw coordinates as default
+  
   const [coordinates, setCoordinates] = useState<GeographicalCoordinatesDto>({
     latitude: 52.2297,
     longitude: 21.0122
   });
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? createStationCommandSchema : updateStationCommandSchema;
 
   const {
@@ -73,9 +73,9 @@ export function AddEditStationForm(props: AddEditStationFormProps) {
   });
 
   useEffect(() => {
-    // If station has coordinates, use them
+    
     if (station?.geographicalCoordinates) {
-      // Round coordinates to 2 decimal places
+      
       const roundedCoordinates = {
         latitude: Math.round(station.geographicalCoordinates.latitude * 100) / 100,
         longitude: Math.round(station.geographicalCoordinates.longitude * 100) / 100
@@ -109,7 +109,7 @@ export function AddEditStationForm(props: AddEditStationFormProps) {
   }, [station, modalType, reset]);
 
   const handleMapChange = (newCoordinates: GeographicalCoordinatesDto) => {
-    // Round coordinates to 2 decimal places
+    
     const roundedCoordinates = {
       latitude: Math.round(newCoordinates.latitude * 100) / 100,
       longitude: Math.round(newCoordinates.longitude * 100) / 100

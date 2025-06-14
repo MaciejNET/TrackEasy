@@ -25,10 +25,10 @@ type AddEditDiscountCodeFormProps = {
 export function AddEditDiscountCodeForm(props: AddEditDiscountCodeFormProps) {
   const {open, setOpen, handleSave, modalType, discountCode} = props;
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? discountCodeFormSchema : updateDiscountCodeFormSchema;
 
-  // Format date for input field - memoized to prevent recreation on each render
+  
   const formatDateForInput = useCallback((date: Date) => {
     return format(date, "yyyy-MM-dd'T'HH:mm");
   }, []);
@@ -47,7 +47,7 @@ export function AddEditDiscountCodeForm(props: AddEditDiscountCodeFormProps) {
         code: "",
         percentage: 0,
         from: formatDateForInput(new Date()),
-        to: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))) // Default to 1 month from now
+        to: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))) 
       }
       : {
         id: discountCode?.id || "",
@@ -63,7 +63,7 @@ export function AddEditDiscountCodeForm(props: AddEditDiscountCodeFormProps) {
         code: "",
         percentage: 0,
         from: formatDateForInput(new Date()),
-        to: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))) // Default to 1 month from now
+        to: formatDateForInput(new Date(new Date().setMonth(new Date().getMonth() + 1))) 
       }
       : {
         id: discountCode?.id || "",

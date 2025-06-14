@@ -19,7 +19,7 @@ export default function MainPage() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
+      {}
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Welcome, {user?.firstName || "User"}!</h1>
         <p className="text-muted-foreground">
@@ -27,7 +27,7 @@ export default function MainPage() {
         </p>
       </div>
 
-      {/* Role-specific content */}
+      {}
       {user?.role === Roles.Admin && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
@@ -138,7 +138,7 @@ export default function MainPage() {
         </div>
       )}
 
-      {/* For other roles or if role is not recognized */}
+      {}
       {(!user?.role || (user.role !== Roles.Admin && user.role !== Roles.Manager)) && (
         <div className="flex flex-col items-center justify-center p-8">
           <Card className="w-full max-w-md">

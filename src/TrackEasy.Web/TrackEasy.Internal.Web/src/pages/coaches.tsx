@@ -20,7 +20,7 @@ export default function Coaches() {
   const [selectedCoach, setSelectedCoach] = useState<CoachDto | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  // Get operatorId from user context
+  
   useEffect(() => {
     if (user && user.operatorId) {
       setOperatorId(user.operatorId);
@@ -88,7 +88,7 @@ export default function Coaches() {
   const isAddEditModalOpen = modalType === "Add" || modalType === "Edit";
   const isDeleteModalOpen = modalType === "Delete";
 
-  // Don't render anything if operatorId is not available
+  
   if (!operatorId) {
     return null;
   }

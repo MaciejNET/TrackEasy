@@ -8,7 +8,7 @@ import {
 } from "@/schemas/coach-schema.ts";
 import {PaginatedResult} from "@/types/paginated-result.ts";
 
-// Coaches API functions
+
 export async function fetchCoaches(operatorId: string, params: {
   code?: string;
   pageNumber: number;
