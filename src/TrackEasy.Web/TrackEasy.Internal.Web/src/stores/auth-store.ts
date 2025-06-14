@@ -10,7 +10,7 @@ interface AuthState {
   error: string | null;
   needsTwoFactor: boolean;
 
-  // Actions
+  
   login: (credentials: LoginRequest) => Promise<boolean>;
   submitTwoFactorCode: (request: TwoFactorRequest) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (claims) {
         saveUserClaims(claims);
 
-        // Check if 2FA is required
+        
         if (claims.isAuthenticated && claims.isTwoFactorVerified === false) {
           set({
             token,
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           return true;
         }
 
-        // User is fully authenticated
+        
         if (claims.isAuthenticated && claims.isTwoFactorVerified) {
           set({
             token,
@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
       }
 
-      // Authentication failed
+      
       set({
         isLoading: false,
         error: "Authentication failed",
@@ -100,7 +100,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return true;
       }
 
-      // 2FA failed
+      
       set({
         isLoading: false,
         error: "Two-factor authentication failed",
@@ -118,12 +118,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      // Send logout request to the server
+      
       await logoutApi();
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {
-      // Always clear local state even if the API call fails
+      
       removeToken();
       set({
         token: null,

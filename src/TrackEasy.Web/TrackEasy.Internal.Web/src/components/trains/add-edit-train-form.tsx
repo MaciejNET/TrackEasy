@@ -36,7 +36,7 @@ export function AddEditTrainForm(props: AddEditTrainFormProps) {
   const [selectedCoaches, setSelectedCoaches] = useState<Map<string, {coach: CoachDto, number: number}>>(new Map());
   const [coachNumber, setCoachNumber] = useState<string>("");
 
-  // Fetch train details if editing
+  
   const {
     data: trainDetails,
     isLoading,
@@ -47,7 +47,7 @@ export function AddEditTrainForm(props: AddEditTrainFormProps) {
     enabled: !!train && modalType === "Edit" && open,
   });
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? addTrainCommandSchema : updateTrainCommandSchema;
 
   const {
@@ -74,13 +74,13 @@ export function AddEditTrainForm(props: AddEditTrainFormProps) {
       },
   });
 
-  // Update form when train details are loaded
+  
   useEffect(() => {
     if (modalType === "Edit" && trainDetails) {
-      // Convert coaches array to Map for easier manipulation
+      
       const coachesMap = new Map();
       trainDetails.coaches.forEach((coachData) => {
-        // Handle both tuple [coach, number] and object {coach, number} formats
+        
         const [coach, number] = Array.isArray(coachData) 
           ? coachData 
           : [coachData.coach, coachData.number];
@@ -105,7 +105,7 @@ export function AddEditTrainForm(props: AddEditTrainFormProps) {
     }
   }, [trainDetails, modalType, operatorId, reset]);
 
-  // Update coaches array in form when selectedCoaches changes
+  
   useEffect(() => {
     const coachesArray = Array.from(selectedCoaches.entries()).map(([id, {number}]) => [id, number] as [string, number]);
     setValue(modalType === "Add" ? 'coaches' : 'coaches', coachesArray);

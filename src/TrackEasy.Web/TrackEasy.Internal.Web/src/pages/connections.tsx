@@ -27,7 +27,7 @@ export default function Connections() {
 
   async function handleDetails(connection: ConnectionDto) {
     try {
-      // Fetch the connection details when viewing details
+      
       const connectionDetails = await fetchConnectionDetails(searchParams.operatorId, connection.id);
       setSelectedConnection(connectionDetails);
       setIsDetailsModalOpen(true);
@@ -39,7 +39,7 @@ export default function Connections() {
 
   async function handleEdit(connection: ConnectionDto) {
     try {
-      // Fetch the connection details when editing
+      
       const connectionDetails = await fetchConnectionDetails(searchParams.operatorId, connection.id);
       setSelectedConnection(connectionDetails);
       setModalType("Edit");
@@ -52,7 +52,7 @@ export default function Connections() {
 
   async function handleEditSchedule(connection: ConnectionDto) {
     try {
-      // Fetch the connection details when editing schedule
+      
       const connectionDetails = await fetchConnectionDetails(searchParams.operatorId, connection.id);
       setSelectedConnection(connectionDetails);
       setModalType("EditSchedule");
@@ -72,23 +72,23 @@ export default function Connections() {
   async function handleSave(command: CreateConnectionCommand | UpdateConnectionCommand | UpdateScheduleCommand) {
     try {
       if ('schedule' in command) {
-        // It's an UpdateScheduleCommand
+        
         await updateConnectionSchedule(searchParams.operatorId, command as UpdateScheduleCommand);
         toast.success("Connection schedule updated successfully");
       } else if ('money' in command) {
-        // It's an UpdateConnectionCommand
+        
         await updateConnection(searchParams.operatorId, command as UpdateConnectionCommand);
         toast.success("Connection updated successfully");
       } else {
-        // It's a CreateConnectionCommand
+        
         await createConnection(searchParams.operatorId, command as CreateConnectionCommand);
         toast.success("Connection created successfully");
       }
 
-      // Invalidate queries to refresh the data
+      
       queryClient.invalidateQueries({queryKey: ['connections']});
 
-      // Close the modal
+      
       setIsAddEditModalOpen(false);
       setIsEditScheduleModalOpen(false);
     } catch (error) {

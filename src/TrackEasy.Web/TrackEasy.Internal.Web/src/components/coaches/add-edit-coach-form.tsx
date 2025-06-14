@@ -33,7 +33,7 @@ export function AddEditCoachForm(props: AddEditCoachFormProps) {
   const [seatNumber, setSeatNumber] = useState<string>("");
   const [seatsNumbers, setSeatsNumbers] = useState<number[]>([]);
 
-  // Fetch coach details if editing
+  
   const {
     data: coachDetails,
     isLoading,
@@ -44,7 +44,7 @@ export function AddEditCoachForm(props: AddEditCoachFormProps) {
     enabled: !!coach && modalType === "Edit" && open,
   });
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? createCoachCommandSchema : updateCoachCommandSchema;
 
   const {
@@ -71,13 +71,13 @@ export function AddEditCoachForm(props: AddEditCoachFormProps) {
       },
   });
 
-  // Update form when coach details are loaded
+  
   useEffect(() => {
     if (modalType === "Edit" && coachDetails) {
       reset({
         id: coachDetails.id,
         operatorId: operatorId,
-        name: coachDetails.code, // Using code as name for update
+        name: coachDetails.code, 
         seatsNumbers: coachDetails.seatsNumbers,
       });
       setSeatsNumbers(coachDetails.seatsNumbers);
@@ -91,7 +91,7 @@ export function AddEditCoachForm(props: AddEditCoachFormProps) {
     }
   }, [coachDetails, modalType, operatorId, reset]);
 
-  // Watch seatsNumbers to update the form value
+  
   useEffect(() => {
     setValue('seatsNumbers', seatsNumbers);
   }, [seatsNumbers, setValue]);

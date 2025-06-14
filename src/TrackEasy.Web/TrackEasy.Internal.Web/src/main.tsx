@@ -26,7 +26,7 @@ import ErrorBoundary from "@/components/error-boundary.tsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
-  // Public routes
+  
   {
     path: "/login",
     element: <Login/>
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     path: "/confirm",
     element: <ConfirmEmail/>
   },
-  // Protected routes
+  
   {
     element: <ProtectedRoute><Layout/></ProtectedRoute>,
     children: [

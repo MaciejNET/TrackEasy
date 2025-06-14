@@ -18,7 +18,7 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI
+    
     return { hasError: true, error };
   }
 
@@ -32,12 +32,12 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render(): ReactNode {
     if (this.state.hasError) {
-      // If a custom fallback is provided, use it
+      
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
-      // Otherwise, use the default fallback UI
+      
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-6 text-center">
           <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
@@ -49,7 +49,7 @@ class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    // If there's no error, render children normally
+    
     return this.props.children;
   }
 }

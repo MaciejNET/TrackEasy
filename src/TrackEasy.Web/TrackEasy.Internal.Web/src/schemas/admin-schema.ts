@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// Schema for Create Admin Command
+
 export const createAdminCommandSchema = z.object({
   firstName: z.string()
     .nonempty({message: 'First name cannot be empty'})
@@ -22,7 +22,7 @@ export const createAdminCommandSchema = z.object({
 
 export type CreateAdminCommand = z.infer<typeof createAdminCommandSchema>;
 
-// Schema for Update Admin Command
+
 export const updateAdminSchema = z.object({
   id: z.string().uuid(),
   firstName: z.string()

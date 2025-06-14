@@ -23,7 +23,7 @@ export default function Stations() {
 
   async function handleEdit(station: StationDto) {
     try {
-      // Fetch the station details when editing
+      
       const stationDetails = await fetchStation(station.id);
       setSelectedStation(stationDetails);
       setModalType("Edit");
@@ -34,7 +34,7 @@ export default function Stations() {
 
   async function handleDetails(station: StationDto) {
     try {
-      // Fetch the station details when viewing details
+      
       const stationDetails = await fetchStation(station.id);
       setSelectedStation(stationDetails);
       setIsDetailsModalOpen(true);
@@ -44,13 +44,13 @@ export default function Stations() {
   }
 
   function handleDeleteRequest(station: StationDto) {
-    // For delete, we only need the ID, so we can create a minimal StationDetailsDto
+    
     setSelectedStation({
       id: station.id,
       name: station.name,
-      cityId: "00000000-0000-0000-0000-000000000000", // Default UUID since we don't have it in StationDto
+      cityId: "00000000-0000-0000-0000-000000000000", 
       cityName: station.city,
-      // Add default Warsaw coordinates since we don't have them in the StationDto
+      
       geographicalCoordinates: {
         latitude: 52.2297,
         longitude: 21.0122

@@ -15,7 +15,7 @@ interface NotificationsState {
   isCountLoading: boolean;
   error: string | null;
 
-  // Actions
+  
   fetchNotifications: (pageNumber: number, pageSize: number) => Promise<void>;
   fetchCount: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
@@ -66,16 +66,16 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
 
   markAsRead: async (id: string) => {
     try {
-      // Call the API to mark the notification as read
+      
       await markNotificationAsRead(id);
 
-      // Update the local state to reduce the count
+      
       const { count } = get();
       if (count > 0) {
         set({ count: count - 1 });
       }
 
-      // Refresh the notifications list if it exists
+      
       const { notifications } = get();
       if (notifications) {
         await get().fetchNotifications(notifications.pageNumber, notifications.pageSize);
@@ -89,16 +89,16 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   },
 
   initializeHub: async () => {
-    // Start the SignalR connection
+    
     await notificationHub.start();
 
-    // Register for notification events
+    
     notificationHub.onNotification(() => {
-      // When a notification is received, update the count
+      
       get().fetchCount();
     });
 
-    // Fetch the initial count
+    
     await get().fetchCount();
   }
 }));

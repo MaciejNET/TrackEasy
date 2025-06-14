@@ -49,7 +49,7 @@ export function UpdateAdminForm({ open, setOpen, admin, onSuccess }: UpdateAdmin
       await updateUser(request);
       toast.success("Admin updated successfully");
       
-      // Invalidate queries to refresh the data
+      
       await queryClient.invalidateQueries({ queryKey: ['admins-list'] });
       
       reset();

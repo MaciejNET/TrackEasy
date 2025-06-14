@@ -37,7 +37,7 @@ export function ConnectionSearchForm(props: ConnectionSearchFormProps) {
     },
   });
 
-  // Set the operator ID from the user store when the component mounts
+  
   useEffect(() => {
     if (user?.operatorId) {
       setSearchParams({operatorId: user.operatorId, pageNumber: 1});

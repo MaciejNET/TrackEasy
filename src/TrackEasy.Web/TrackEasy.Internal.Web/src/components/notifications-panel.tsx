@@ -27,40 +27,40 @@ export function NotificationsPanel() {
   } = useNotificationsStore();
   const { user } = useUserStore();
 
-  // Initialize the notification hub and fetch notifications when the component mounts
+  
   useEffect(() => {
     initializeHub();
   }, [initializeHub]);
 
-  // Fetch notifications when the popover is opened
+  
   useEffect(() => {
     if (open) {
-      fetchNotifications(1, 10); // Fetch first page with 10 items
+      fetchNotifications(1, 10); 
     }
   }, [open, fetchNotifications]);
 
   const handleNotificationClick = (type: NotificationType, objectId: string) => {
-    // Close the popover
+    
     setOpen(false);
 
-    // Navigate to the appropriate page based on the notification type
+    
     switch (type) {
       case NotificationType.REFUND_REQUEST:
         navigate(`/refund-requests?id=${objectId}`);
         break;
       case NotificationType.CONNECTION_REQUEST:
-        // Different navigation based on user role
+        
         if (user) {
           if (user.role === 'Admin') {
             navigate(`/connection-requests?id=${objectId}`);
           } else if (user.role === 'OperatorManager') {
             navigate(`/connections?id=${objectId}`);
           } else {
-            // Default fallback for other roles
+            
             navigate(`/connection-requests?id=${objectId}`);
           }
         } else {
-          // Fallback if user is not loaded yet
+          
           navigate(`/connection-requests?id=${objectId}`);
         }
         break;
@@ -117,7 +117,7 @@ export function NotificationsPanel() {
                     size="sm" 
                     className="w-full"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent parent onClick from firing
+                      e.stopPropagation(); 
                       markAsRead(notification.id);
                     }}
                   >

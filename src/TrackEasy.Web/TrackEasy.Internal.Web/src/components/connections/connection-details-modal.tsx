@@ -15,7 +15,7 @@ export function ConnectionDetailsModal(props: ConnectionDetailsModalProps) {
 
   if (!connection) return null;
 
-  // Debug the data being received
+  
   console.log("ConnectionDetailsModal - connection:", connection);
   console.log("ConnectionDetailsModal - stations:", connection.stations);
 
@@ -37,7 +37,7 @@ export function ConnectionDetailsModal(props: ConnectionDetailsModalProps) {
       case Currency.USD:
         return "USD";
       default:
-        // Map numeric values to currency names
+        
         const currencyNames: Record<number, string> = {
           0: "PLN",
           1: "EUR",

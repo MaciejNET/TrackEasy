@@ -51,7 +51,7 @@ function InputOTPSlot({
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots?.[index] ?? {}
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Only handle numeric keys (0-9) for OTP input
+    
     if (/^[0-9]$/.test(e.key)) {
       inputOTPContext?.handleChange?.(e.key, index);
     } else if (e.key === 'Backspace') {

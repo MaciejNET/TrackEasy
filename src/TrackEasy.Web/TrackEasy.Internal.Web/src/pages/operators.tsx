@@ -23,7 +23,7 @@ export default function Operators() {
 
   async function handleEdit(operator: OperatorDto) {
     try {
-      // Fetch the operator details when editing
+      
       const operatorDetails = await fetchOperator(operator.id);
       setSelectedOperator(operatorDetails);
       setModalType("Edit");
@@ -34,7 +34,7 @@ export default function Operators() {
 
   async function handleDetails(operator: OperatorDto) {
     try {
-      // Fetch the operator details when viewing details
+      
       const operatorDetails = await fetchOperator(operator.id);
       setSelectedOperator(operatorDetails);
       setIsDetailsModalOpen(true);

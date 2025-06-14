@@ -8,7 +8,7 @@ import {
 } from "@/schemas/train-schema.ts";
 import {PaginatedResult} from "@/types/paginated-result.ts";
 
-// Trains API functions
+
 export async function fetchTrains(operatorId: string, params: {
   trainName?: string;
   pageNumber: number;

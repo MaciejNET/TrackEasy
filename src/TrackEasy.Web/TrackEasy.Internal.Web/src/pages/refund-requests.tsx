@@ -21,7 +21,7 @@ export default function RefundRequests() {
 
   async function handleDetails(request: RefundRequestDto) {
     try {
-      // Fetch the request details when viewing details
+      
       const requestDetails = await fetchRefundRequestDetails(searchParams.operatorId, request.id);
       setSelectedRequest(requestDetails);
       setIsDetailsModalOpen(true);

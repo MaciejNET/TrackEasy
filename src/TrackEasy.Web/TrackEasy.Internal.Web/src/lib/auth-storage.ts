@@ -1,8 +1,8 @@
-// Constants for storage keys
+
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
-// Interface for decoded JWT token claims
+
 export interface UserClaims {
   userId?: string;
   email?: string;
@@ -13,7 +13,7 @@ export interface UserClaims {
 }
 
 export function saveToken(token: string): void {
-  // Remove only the first and last double quotes if they exist
+  
   let sanitizedToken = token;
   if (sanitizedToken.startsWith('"')) {
     sanitizedToken = sanitizedToken.substring(1);
@@ -28,7 +28,7 @@ export function getToken(): string | null {
   const token = localStorage.getItem(TOKEN_KEY);
   if (!token) return null;
 
-  // Remove any quotes that might be present in the token
+  
   let sanitizedToken = token;
   if (sanitizedToken.startsWith('"')) {
     sanitizedToken = sanitizedToken.substring(1);
