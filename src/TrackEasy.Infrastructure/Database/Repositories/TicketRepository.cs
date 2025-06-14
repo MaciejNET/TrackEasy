@@ -14,6 +14,14 @@ internal sealed class TicketRepository(TrackEasyDbContext dbContext) : BaseRepos
             .Include(x => x.Passengers)
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
+    
+    public Task<Ticket?> FindByNumberAsync(int number, CancellationToken cancellationToken)
+    {
+        return _dbContext.Tickets
+            .Include(x => x.Stations)
+            .Include(x => x.Passengers)
+            .SingleOrDefaultAsync(x => x.TicketNumber == number, cancellationToken);
+    }
 
     public void Add(Ticket ticket)
     {

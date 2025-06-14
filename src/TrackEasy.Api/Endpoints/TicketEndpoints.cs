@@ -1,17 +1,17 @@
 using MediatR;
 using TrackEasy.Application.RefundRequests.CreateRefundRequest;
+using TrackEasy.Application.Shared;
 using TrackEasy.Application.Tickets.BuyTicket;
+using TrackEasy.Application.Tickets.CalculateTicketPrice;
 using TrackEasy.Application.Tickets.CancelTicket;
 using TrackEasy.Application.Tickets.FindCurrentTicketId;
 using TrackEasy.Application.Tickets.FindTicket;
 using TrackEasy.Application.Tickets.GetQrCode;
-using TrackEasy.Application.Tickets.GetTicketCities;
 using TrackEasy.Application.Tickets.GetTicketArrivalTimes;
+using TrackEasy.Application.Tickets.GetTicketCities;
 using TrackEasy.Application.Tickets.GetTickets;
 using TrackEasy.Application.Tickets.PayTicketByCard;
 using TrackEasy.Application.Tickets.PayTicketByCash;
-using TrackEasy.Application.Tickets.CalculateTicketPrice;
-using TrackEasy.Application.Shared;
 using TrackEasy.Shared.Pagination.Abstractions;
 
 namespace TrackEasy.Api.Endpoints;
@@ -92,9 +92,9 @@ public class TicketEndpoints : IEndpoints
             .WithDescription("Pay for tickets using card")
             .WithOpenApi();
         
-        group.MapPost("/payment/cash/{ticketId:guid}", async (Guid ticketId, ISender sender, CancellationToken ct) =>
+        group.MapPost("/payment/cash/{ticketNumber:int}", async (int ticketNumber, ISender sender, CancellationToken ct) =>
         {
-            await sender.Send(new PayTicketByCashCommand(ticketId), ct);
+            await sender.Send(new PayTicketByCashCommand(ticketNumber), ct);
             return Results.NoContent();
         })
             .WithName("PayTicketByCash")

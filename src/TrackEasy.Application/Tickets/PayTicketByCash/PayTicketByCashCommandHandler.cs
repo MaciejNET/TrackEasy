@@ -8,11 +8,11 @@ internal sealed class PayTicketByCashCommandHandler(ITicketRepository ticketRepo
 {
     public async Task Handle(PayTicketByCashCommand request, CancellationToken cancellationToken)
     {
-        var ticket = await ticketRepository.FindByIdAsync(request.TicketId, cancellationToken);
+        var ticket = await ticketRepository.FindByNumberAsync(request.TicketNumber, cancellationToken);
 
         if (ticket is null)
         {
-            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Ticket with ID {request.TicketId} was not found.");
+            throw new TrackEasyException(SharedCodes.EntityNotFound, $"Ticket with number: {request.TicketNumber} was not found.");
         }
 
         ticket.Pay(timeProvider);
