@@ -107,10 +107,10 @@ public class UserEndpoints : IEndpoints
             .WithDescription("Generate reset password token.")
             .WithOpenApi();
 
-        group.MapGet("/external/{provider}", (string provider, string firstName, string lastName, DateOnly dateOfBirth, HttpContext httpContext) =>
+        group.MapGet("/external/{provider}", (string provider, string firstName, string lastName, DateOnly dateOfBirth, SignInManager<User> signInManager) =>
         {
             var redirectUrl = $"/users/external/{provider}/callback";
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             properties.Items["firstName"] = firstName;
             properties.Items["lastName"] = lastName;
             properties.Items["dob"] = dateOfBirth.ToString("O");
