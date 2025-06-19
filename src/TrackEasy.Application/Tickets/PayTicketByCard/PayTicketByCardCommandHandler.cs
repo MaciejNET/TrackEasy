@@ -50,7 +50,7 @@ internal sealed class PayTicketByCardCommandHandler(
         var paymentMethodOps = new PaymentMethodCreateOptions
         {
             Type = "card",
-            Card = new PaymentMethodCardCreateOptions
+            Card = new PaymentMethodCardOptions
             {
                 Number = request.CardNumber,
                 ExpMonth = request.CardExpMonth,
@@ -59,7 +59,7 @@ internal sealed class PayTicketByCardCommandHandler(
             }
         };
 
-        PaymentMethod paymentMethod;
+        Stripe.PaymentMethod paymentMethod;
         try
         {
             paymentMethod = await _paymentMethodService.CreateAsync(paymentMethodOps, cancellationToken: cancellationToken);
