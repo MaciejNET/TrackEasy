@@ -6,7 +6,7 @@ interface UserState {
   isLoading: boolean;
   error: string | null;
   
-  // Actions
+  
   fetchUser: () => Promise<void>;
   clearUser: () => void;
 }

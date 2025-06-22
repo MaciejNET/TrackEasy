@@ -66,7 +66,7 @@ export function UpdateManagerForm({ open, setOpen, manager, onSuccess }: UpdateM
       await updateUser(request);
       toast.success("Manager updated successfully");
       
-      // Invalidate queries to refresh the data
+      
       if (manager.id) {
         await queryClient.invalidateQueries({ queryKey: ['managers-list'] });
       }

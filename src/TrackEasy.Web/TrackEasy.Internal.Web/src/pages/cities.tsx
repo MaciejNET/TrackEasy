@@ -23,7 +23,7 @@ export default function Cities() {
 
   async function handleEdit(city: CityDto) {
     try {
-      // Fetch the city details when editing
+      
       const cityDetails = await fetchCity(city.id);
       setSelectedCity(cityDetails);
       setModalType("Edit");
@@ -34,7 +34,7 @@ export default function Cities() {
 
   async function handleDetails(city: CityDto) {
     try {
-      // Fetch the city details when viewing details
+      
       const cityDetails = await fetchCity(city.id);
       setSelectedCity(cityDetails);
       setIsDetailsModalOpen(true);
@@ -44,11 +44,11 @@ export default function Cities() {
   }
 
   function handleDeleteRequest(city: CityDto) {
-    // For delete, we only need the ID, so we can create a minimal CityDetailsDto
+    
     setSelectedCity({
       id: city.id,
       name: city.name,
-      country: { id: 0, name: city.country }, // We don't need the actual country for delete
+      country: { id: 0, name: city.country }, 
       funFacts: []
     });
     setModalType("Delete");

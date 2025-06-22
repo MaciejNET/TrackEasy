@@ -19,7 +19,7 @@ export default function ConnectionChangeRequests() {
 
   async function handleDetails(request: ConnectionChangeRequestDto) {
     try {
-      // Fetch the request details when viewing details
+      
       const requestDetails = await fetchConnectionChangeRequestDetails(request.connectionId);
       setSelectedRequest(requestDetails);
       setIsDetailsModalOpen(true);

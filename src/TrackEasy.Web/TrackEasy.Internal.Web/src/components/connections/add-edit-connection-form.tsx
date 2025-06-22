@@ -22,7 +22,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {TrainSelector} from "@/components/connections/train-selector.tsx";
 import {TrainDto} from "@/schemas/train-schema.ts";
 
-// Days of week options
+
 const daysOfWeekOptions = [
   {value: DayOfWeek.Monday, label: "Monday"},
   {value: DayOfWeek.Tuesday, label: "Tuesday"},
@@ -39,11 +39,11 @@ const connectionFormSchema = z.object({
   currency: z.nativeEnum(Currency),
   trainId: z.string().uuid({message: 'Please select a train'}),
   needsSeatReservation: z.boolean().default(false),
-  // Schedule fields (only used when creating a new connection)
+  
   validFrom: z.string().optional(),
   validTo: z.string().optional(),
   daysOfWeek: z.array(z.nativeEnum(DayOfWeek)).optional(),
-  // Stations (only used when creating a new connection)
+  
   stations: z.array(
     z.object({
       stationId: z.string().uuid({message: "Station is required"}),
@@ -71,7 +71,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
   const [loading, setLoading] = useState(false);
   const [stations, setStations] = useState<SystemListItemDto[]>([]);
 
-  // Fetch stations list
+  
   useEffect(() => {
     if (open && !isEditing) {
       fetchStationsList()
@@ -98,16 +98,16 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
     },
   });
 
-  // Use field array for dynamic stations list (only for new connections)
+  
   const {fields, append, remove, update} = useFieldArray({
     control: form.control,
     name: "stations",
   });
 
-  // Initialize with at least two stations if none exist and we're creating a new connection
+  
   useEffect(() => {
     if (fields.length === 0 && open && !isEditing) {
-      // Add two empty stations
+      
       append([
         {
           stationId: "",
@@ -125,7 +125,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
     }
   }, [fields.length, append, open, isEditing]);
 
-  // Add a new station to the list
+  
   const addStation = () => {
     append({
       stationId: "",
@@ -139,7 +139,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
     setLoading(true);
     try {
       if (isEditing) {
-        // Update existing connection
+        
         const command: UpdateConnectionCommand = {
           id: connection.id,
           name: values.name,
@@ -150,8 +150,8 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
         };
         await onSave(command);
       } else {
-        // Create new connection with schedule and stations
-        // Process stations to ensure first station has no arrival time and last station has no departure time
+        
+        
         const processedStations = values.stations?.map((station, index, array) => {
           if (index === 0) {
             return {...station, arrivalTime: null};
@@ -247,7 +247,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                       </FormControl>
                       <SelectContent>
                         {Object.entries(Currency)
-                          .filter(([key]) => isNaN(Number(key))) // Filter out numeric keys
+                          .filter(([key]) => isNaN(Number(key))) 
                           .map(([key, value]) => (
                             <SelectItem key={value} value={value.toString()}>
                               {key}
@@ -307,7 +307,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                   )}
                 />
 
-                {/* Schedule Section */}
+                {}
                 <div className="space-y-4 mt-6">
                   <h3 className="text-lg font-medium">Schedule</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -389,7 +389,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                   />
                 </div>
 
-                {/* Stations Section */}
+                {}
                 <div className="space-y-4 mt-6">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-medium">Stations</h3>
@@ -460,7 +460,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                                           {...field}
                                           value={field.value || ""}
                                           onChange={(e) => field.onChange(e.target.value || null)}
-                                          disabled={index === 0} // Disable for first station
+                                          disabled={index === 0} 
                                         />
                                       </FormControl>
                                       <FormMessage/>
@@ -480,7 +480,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                                           {...field}
                                           value={field.value || ""}
                                           onChange={(e) => field.onChange(e.target.value || null)}
-                                          disabled={index === fields.length - 1} // Disable for last station
+                                          disabled={index === fields.length - 1} 
                                         />
                                       </FormControl>
                                       <FormMessage/>
@@ -496,7 +496,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                                   onClick={() => {
                                     if (fields.length > 2) {
                                       remove(index);
-                                      // Update sequence numbers
+                                      
                                       fields.forEach((f, i) => {
                                         if (i >= index) {
                                           update(i, {

@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// Schema for Geographical Coordinates DTO
+
 export const geographicalCoordinatesDtoSchema = z.object({
   latitude: z.number()
     .min(-90, {message: 'Latitude must be between -90 and 90'})
@@ -12,16 +12,16 @@ export const geographicalCoordinatesDtoSchema = z.object({
 
 export type GeographicalCoordinatesDto = z.infer<typeof geographicalCoordinatesDtoSchema>;
 
-// Schema for Station DTO (used in list view)
+
 export const stationDtoSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  city: z.string(), // City name as string
+  city: z.string(), 
 });
 
 export type StationDto = z.infer<typeof stationDtoSchema>;
 
-// Schema for Station Details DTO (used in detail view)
+
 export const stationDetailsDtoSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -32,7 +32,7 @@ export const stationDetailsDtoSchema = z.object({
 
 export type StationDetailsDto = z.infer<typeof stationDetailsDtoSchema>;
 
-// Schema for Create Station Command
+
 export const createStationCommandSchema = z.object({
   name: z.string()
     .nonempty({message: 'Name cannot be empty'})
@@ -44,7 +44,7 @@ export const createStationCommandSchema = z.object({
 
 export type CreateStationCommand = z.infer<typeof createStationCommandSchema>;
 
-// Schema for Update Station Command
+
 export const updateStationCommandSchema = z.object({
   id: z.string().uuid(),
   name: z.string()

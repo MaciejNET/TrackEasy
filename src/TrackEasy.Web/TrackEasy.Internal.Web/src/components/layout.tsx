@@ -19,13 +19,13 @@ export default function Layout() {
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch user data when component mounts
+    
     fetchUser();
   }, [fetchUser]);
 
   const handleLogout = async () => {
     await logout();
-    useUserStore.getState().clearUser(); // Clear user data when logging out
+    useUserStore.getState().clearUser(); 
     navigate("/login");
   };
 
@@ -75,7 +75,7 @@ export default function Layout() {
         </SidebarProvider>
       </div>
 
-      {/* Change Password Modal */}
+      {}
       <ChangePasswordModal 
         open={isChangePasswordModalOpen} 
         setOpen={setIsChangePasswordModalOpen} 

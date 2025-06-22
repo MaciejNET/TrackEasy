@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// Schema for Coach DTO (used in list view)
+
 export const coachDtoSchema = z.object({
   id: z.string().uuid(),
   code: z.string(),
@@ -8,7 +8,7 @@ export const coachDtoSchema = z.object({
 
 export type CoachDto = z.infer<typeof coachDtoSchema>;
 
-// Schema for Coach Details DTO (used in detailed view)
+
 export const coachDetailsDtoSchema = z.object({
   id: z.string().uuid(),
   code: z.string(),
@@ -17,7 +17,7 @@ export const coachDetailsDtoSchema = z.object({
 
 export type CoachDetailsDto = z.infer<typeof coachDetailsDtoSchema>;
 
-// Schema for Create Coach Command
+
 export const createCoachCommandSchema = z.object({
   operatorId: z.string().uuid(),
   code: z.string().nonempty({message: 'Code cannot be empty'}),
@@ -26,7 +26,7 @@ export const createCoachCommandSchema = z.object({
 
 export type CreateCoachCommand = z.infer<typeof createCoachCommandSchema>;
 
-// Schema for Update Coach Command
+
 export const updateCoachCommandSchema = z.object({
   id: z.string().uuid(),
   operatorId: z.string().uuid(),

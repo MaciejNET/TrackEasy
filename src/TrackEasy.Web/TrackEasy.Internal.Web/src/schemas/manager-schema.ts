@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// Schema for Create Manager Command
+
 export const createManagerCommandSchema = z.object({
   operatorId: z.string().uuid({message: 'Valid operator ID is required'}),
   firstName: z.string()

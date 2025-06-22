@@ -59,7 +59,7 @@ export function TrainDetailsModal(props: TrainDetailsModalProps) {
                     </thead>
                     <tbody>
                       {trainDetails.coaches.map((coachData) => {
-                        // Handle both tuple [coach, number] and object {coach, number} formats
+                        
                         const [coach, number] = Array.isArray(coachData) 
                           ? coachData 
                           : [coachData.coach, coachData.number];

@@ -34,7 +34,7 @@ export function AddEditCityForm(props: AddEditCityFormProps) {
   const [newFunFact, setNewFunFact] = useState("");
   const [charCount, setCharCount] = useState(0);
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? createCityCommandSchema : updateCityCommandSchema;
 
   const {

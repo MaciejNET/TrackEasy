@@ -24,7 +24,7 @@ type AddEditOperatorFormProps = {
 export function AddEditOperatorForm(props: AddEditOperatorFormProps) {
   const {open, setOpen, handleSave, modalType, operator} = props;
 
-  // Use the appropriate schema based on modalType
+  
   const formSchema = modalType === "Add" ? createOperatorCommandSchema : updateOperatorCommandSchema;
 
   const {

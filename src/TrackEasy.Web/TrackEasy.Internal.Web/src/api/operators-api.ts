@@ -38,7 +38,7 @@ export async function deleteOperator(id: string): Promise<void> {
 }
 
 export async function createManager(operatorId: string, manager: CreateManagerCommand): Promise<void> {
-  // Create a new object without the operatorId property
+  
   const managerData = {...manager, operatorId};
   return baseAPI.post<void>(`${URL}/${operatorId}/managers`, managerData);
 }

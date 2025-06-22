@@ -13,7 +13,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Use useEffect for navigation instead of doing it during render
+  
   useEffect(() => {
     if (needsTwoFactor) {
       navigate("/two-factor");

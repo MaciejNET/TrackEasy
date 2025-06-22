@@ -1,13 +1,13 @@
 import {z} from "zod";
 
-// Enum for ConnectionRequestType
+
 export enum ConnectionRequestType {
   ADD = "ADD",
   UPDATE = "UPDATE",
   DELETE = "DELETE"
 }
 
-// Schema for ConnectionChangeRequestDto (used in list view)
+
 export const connectionChangeRequestDtoSchema = z.object({
   connectionId: z.string().uuid(),
   name: z.string(),
@@ -19,7 +19,7 @@ export const connectionChangeRequestDtoSchema = z.object({
 
 export type ConnectionChangeRequestDto = z.infer<typeof connectionChangeRequestDtoSchema>;
 
-// Schema for ConnectionStationDto
+
 export const connectionStationDtoSchema = z.object({
   stationId: z.string().uuid(),
   arrivalTime: z.string().nullable(),
@@ -29,7 +29,7 @@ export const connectionStationDtoSchema = z.object({
 
 export type ConnectionStationDto = z.infer<typeof connectionStationDtoSchema>;
 
-// Schema for ScheduleDto
+
 export const scheduleDtoSchema = z.object({
   validFrom: z.string(),
   validTo: z.string(),
@@ -38,7 +38,7 @@ export const scheduleDtoSchema = z.object({
 
 export type ScheduleDto = z.infer<typeof scheduleDtoSchema>;
 
-// Schema for ConnectionChangeRequestDetailsDto (used in detail view)
+
 export const connectionChangeRequestDetailsDtoSchema = z.object({
   connectionId: z.string().uuid(),
   name: z.string(),

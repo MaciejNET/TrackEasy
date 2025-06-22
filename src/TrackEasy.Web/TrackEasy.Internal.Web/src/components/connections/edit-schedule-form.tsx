@@ -14,7 +14,7 @@ import {PlusIcon, TrashIcon} from "lucide-react";
 import {toast} from "sonner";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 
-// Days of week options
+
 const daysOfWeekOptions = [
   {value: DayOfWeek.Monday, label: "Monday"},
   {value: DayOfWeek.Tuesday, label: "Tuesday"},
@@ -25,7 +25,7 @@ const daysOfWeekOptions = [
   {value: DayOfWeek.Sunday, label: "Sunday"},
 ];
 
-// Schema for the form
+
 const scheduleFormSchema = z.object({
   validFrom: z.string().min(1, {message: "Valid from date is required"}),
   validTo: z.string().min(1, {message: "Valid to date is required"}),
@@ -56,7 +56,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
   const [loading, setLoading] = useState(false);
   const [stations, setStations] = useState<SystemListItemDto[]>([]);
 
-  // Fetch stations list
+  
   useEffect(() => {
     if (open) {
       fetchStationsList()
@@ -68,14 +68,17 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     }
   }, [open]);
 
-  // Initialize form with connection data if available
-  // Convert daysOfWeek to DayOfWeek enum values if they're strings
+  
+  
+  console.log("Incoming daysOfWeek:", connection?.daysOfWeek);
+
+  
   const convertedDaysOfWeek = connection?.daysOfWeek?.map(day => {
-    // If day is already a number, return it
+    
     if (typeof day === 'number') {
       return day;
     }
-    // If day is a string, convert it to the corresponding DayOfWeek enum value
+    
     if (typeof day === 'string') {
       const dayMap: Record<string, DayOfWeek> = {
         "Sunday": DayOfWeek.Sunday,
@@ -98,6 +101,8 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     return null;
   }).filter(day => day !== null) || [];
 
+  console.log("Converted daysOfWeek:", convertedDaysOfWeek);
+
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleFormSchema),
     defaultValues: {
@@ -113,30 +118,13 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     },
   });
 
-  // Reset form when connection changes
-  useEffect(() => {
-    if (connection) {
-      form.reset({
-        validFrom: connection.validFrom || new Date().toISOString().split('T')[0],
-        validTo: connection.validTo || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-        daysOfWeek: convertedDaysOfWeek,
-        stations: connection.stations.map(station => ({
-          stationId: station.stationId,
-          arrivalTime: station.arrivalTime,
-          departureTime: station.departureTime,
-          sequenceNumber: station.sequenceNumber,
-        })) || [],
-      });
-    }
-  }, [connection, form]);
-
-  // Use field array for dynamic stations list
+  
   const {fields, append, remove, update} = useFieldArray({
     control: form.control,
     name: "stations",
   });
 
-  // Add a new station to the list
+  
   const addStation = () => {
     append({
       stationId: "",
@@ -146,10 +134,10 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     });
   };
 
-  // Initialize with at least two stations if none exist
+  
   useEffect(() => {
     if (fields.length === 0 && open) {
-      // Add two empty stations
+      
       append([
         {
           stationId: "",
@@ -167,11 +155,11 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     }
   }, [fields.length, append, open]);
 
-  // Handle form submission
+  
   const onSubmit = async (values: ScheduleFormValues) => {
     setLoading(true);
     try {
-      // Ensure first station has no arrival time and last station has no departure time
+      
       const processedStations = values.stations.map((station, index, array) => {
         if (index === 0) {
           return {...station, arrivalTime: null};
@@ -183,7 +171,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
       });
 
       const command: UpdateScheduleCommand = {
-        connectionId: connection?.id || "",
+        id: connection?.id || "",
         schedule: {
           validFrom: values.validFrom,
           validTo: values.validTo,
@@ -212,7 +200,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Schedule Section */}
+            {}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Schedule</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -294,7 +282,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
               />
             </div>
 
-            {/* Stations Section */}
+            {}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Stations</h3>
@@ -365,7 +353,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
                                       {...field}
                                       value={field.value || ""}
                                       onChange={(e) => field.onChange(e.target.value || null)}
-                                      disabled={index === 0} // Disable for first station
+                                      disabled={index === 0} 
                                     />
                                   </FormControl>
                                   <FormMessage/>
@@ -385,7 +373,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
                                       {...field}
                                       value={field.value || ""}
                                       onChange={(e) => field.onChange(e.target.value || null)}
-                                      disabled={index === fields.length - 1} // Disable for last station
+                                      disabled={index === fields.length - 1} 
                                     />
                                   </FormControl>
                                   <FormMessage/>
@@ -401,7 +389,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
                               onClick={() => {
                                 if (fields.length > 2) {
                                   remove(index);
-                                  // Update sequence numbers
+                                  
                                   fields.forEach((f, i) => {
                                     if (i >= index) {
                                       update(i, {

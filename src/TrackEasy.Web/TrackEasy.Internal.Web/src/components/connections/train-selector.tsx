@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {useQuery} from "@tanstack/react-query";
-import {fetchTrains, fetchTrain} from "@/api/trains-api.ts";
+import {fetchTrains} from "@/api/trains-api.ts";
 import {TrainDto} from "@/schemas/train-schema.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Loader} from "@/components/loader.tsx";
@@ -25,44 +25,15 @@ type TrainSelectorProps = {
   operatorId: string;
   onSelect: (train: TrainDto) => void;
   disabled?: boolean;
-  value?: string; // Add value prop for the selected trainId
 };
 
 export function TrainSelector(props: TrainSelectorProps) {
-  const {operatorId, onSelect, disabled, value} = props;
+  const {operatorId, onSelect, disabled} = props;
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [accumulatedTrains, setAccumulatedTrains] = useState<TrainDto[]>([]);
-  const [selectedTrain, setSelectedTrain] = useState<TrainDto | null>(null);
   const pageSize = 10;
-
-  // Reset selectedTrain when value changes
-  useEffect(() => {
-    if (!value) {
-      setSelectedTrain(null);
-    } else if (selectedTrain && selectedTrain.id !== value) {
-      setSelectedTrain(null);
-    }
-  }, [value, selectedTrain]);
-
-  // Fetch selected train details when value changes
-  const { data: trainDetails } = useQuery({
-    queryKey: ['train-details', operatorId, value],
-    queryFn: () => value ? fetchTrain(operatorId, value) : Promise.resolve(null),
-    enabled: !!value && !selectedTrain,
-    onSuccess: (data) => {
-      if (data) {
-        // Create a TrainDto from the TrainDetailsDto
-        const train: TrainDto = {
-          id: data.id,
-          name: data.name,
-          operatorId: data.operatorId
-        };
-        setSelectedTrain(train);
-      }
-    }
-  });
 
   const {
     data,
@@ -79,20 +50,20 @@ export function TrainSelector(props: TrainSelectorProps) {
     keepPreviousData: true,
   });
 
-  // Reset page and accumulated trains when search term changes
+  
   useEffect(() => {
     setPage(1);
     setAccumulatedTrains([]);
   }, [searchTerm]);
 
-  // Update accumulated trains when data changes
+  
   useEffect(() => {
     if (data?.items && data.items.length > 0) {
       if (page === 1) {
-        // Reset accumulated trains for first page
+        
         setAccumulatedTrains(data.items);
       } else {
-        // Append new trains to accumulated trains, avoiding duplicates
+        
         setAccumulatedTrains(prev => {
           const newTrains = data.items.filter(
             newTrain => !prev.some(existingTrain => existingTrain.id === newTrain.id)
@@ -103,17 +74,7 @@ export function TrainSelector(props: TrainSelectorProps) {
     }
   }, [data, page]);
 
-  // Check if the selected train is in the accumulated trains
-  useEffect(() => {
-    if (value && accumulatedTrains.length > 0 && !selectedTrain) {
-      const foundTrain = accumulatedTrains.find(train => train.id === value);
-      if (foundTrain) {
-        setSelectedTrain(foundTrain);
-      }
-    }
-  }, [value, accumulatedTrains, selectedTrain]);
-
-  // Load more trains when scrolling to the bottom
+  
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const bottom = Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1;
     if (bottom && data && data.pageNumber < data.totalPages && !isFetching) {
@@ -122,7 +83,6 @@ export function TrainSelector(props: TrainSelectorProps) {
   };
 
   const handleSelect = (train: TrainDto) => {
-    setSelectedTrain(train);
     onSelect(train);
     setOpen(false);
   };
@@ -137,7 +97,7 @@ export function TrainSelector(props: TrainSelectorProps) {
           className="w-full justify-between"
           disabled={disabled}
         >
-          {selectedTrain ? selectedTrain.name : "Select a train"}
+          Select a train
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -152,7 +112,7 @@ export function TrainSelector(props: TrainSelectorProps) {
             className="max-h-[300px] overflow-auto" 
             onScroll={handleScroll}
             onWheel={(e) => {
-              // Ensure wheel events are properly handled for scrolling
+              
               e.currentTarget.scrollTop += e.deltaY;
               if (Math.abs(e.currentTarget.scrollHeight - e.currentTarget.scrollTop - e.currentTarget.clientHeight) < 1 && 
                   data && data.pageNumber < data.totalPages && !isFetching) {

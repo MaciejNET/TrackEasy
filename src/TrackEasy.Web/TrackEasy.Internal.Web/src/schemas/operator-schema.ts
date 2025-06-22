@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-// Schema for Operator DTO (used in list view and details)
+
 export const operatorDtoSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -9,7 +9,7 @@ export const operatorDtoSchema = z.object({
 
 export type OperatorDto = z.infer<typeof operatorDtoSchema>;
 
-// Schema for Create Operator Command
+
 export const createOperatorCommandSchema = z.object({
   name: z.string()
     .nonempty({message: 'Name cannot be empty'})
@@ -23,7 +23,7 @@ export const createOperatorCommandSchema = z.object({
 
 export type CreateOperatorCommand = z.infer<typeof createOperatorCommandSchema>;
 
-// Schema for Update Operator Command
+
 export const updateOperatorCommandSchema = z.object({
   id: z.string().uuid(),
   name: z.string()

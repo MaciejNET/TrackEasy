@@ -1,13 +1,13 @@
 import {z} from "zod";
 
-// Enum for Currency
+
 export enum Currency {
   PLN = 0,
   EUR = 1,
   USD = 2
 }
 
-// Enum for DayOfWeek
+
 export enum DayOfWeek {
   Sunday = 0,
   Monday = 1,
@@ -18,7 +18,7 @@ export enum DayOfWeek {
   Saturday = 6
 }
 
-// Schema for MoneyDto
+
 export const moneyDtoSchema = z.object({
   amount: z.number(),
   currency: z.nativeEnum(Currency)
@@ -26,7 +26,7 @@ export const moneyDtoSchema = z.object({
 
 export type MoneyDto = z.infer<typeof moneyDtoSchema>;
 
-// Schema for ConnectionDto (used in list view)
+
 export const connectionDtoSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -38,7 +38,7 @@ export const connectionDtoSchema = z.object({
 
 export type ConnectionDto = z.infer<typeof connectionDtoSchema>;
 
-// Schema for ConnectionStationDto
+
 export const connectionStationDtoSchema = z.object({
   stationId: z.string().uuid(),
   arrivalTime: z.string().nullable(),
@@ -48,7 +48,7 @@ export const connectionStationDtoSchema = z.object({
 
 export type ConnectionStationDto = z.infer<typeof connectionStationDtoSchema>;
 
-// Schema for ConnectionStationDetailsDto
+
 export const connectionStationDetailsDtoSchema = z.object({
   id: z.string().uuid(),
   stationId: z.string().uuid(),
@@ -60,7 +60,7 @@ export const connectionStationDetailsDtoSchema = z.object({
 
 export type ConnectionStationDetailsDto = z.infer<typeof connectionStationDetailsDtoSchema>;
 
-// Schema for ScheduleDto
+
 export const scheduleDtoSchema = z.object({
   validFrom: z.string(),
   validTo: z.string(),
@@ -69,7 +69,7 @@ export const scheduleDtoSchema = z.object({
 
 export type ScheduleDto = z.infer<typeof scheduleDtoSchema>;
 
-// Schema for ConnectionDetailsDto (used in detail view)
+
 export const connectionDetailsDtoSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -87,7 +87,7 @@ export const connectionDetailsDtoSchema = z.object({
 
 export type ConnectionDetailsDto = z.infer<typeof connectionDetailsDtoSchema>;
 
-// Schema for CreateConnectionCommand
+
 export const createConnectionCommandSchema = z.object({
   name: z.string().min(3, {message: 'Name must be at least 3 characters'}).max(100, {message: 'Name must be at most 100 characters'}),
   operatorId: z.string().uuid(),
@@ -100,7 +100,7 @@ export const createConnectionCommandSchema = z.object({
 
 export type CreateConnectionCommand = z.infer<typeof createConnectionCommandSchema>;
 
-// Schema for UpdateConnectionCommand
+
 export const updateConnectionCommandSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(3, {message: 'Name must be at least 3 characters'}).max(100, {message: 'Name must be at most 100 characters'}),
@@ -109,7 +109,7 @@ export const updateConnectionCommandSchema = z.object({
 
 export type UpdateConnectionCommand = z.infer<typeof updateConnectionCommandSchema>;
 
-// Schema for UpdateScheduleCommand
+
 export const updateScheduleCommandSchema = z.object({
   connectionId: z.string().uuid(),
   schedule: scheduleDtoSchema,

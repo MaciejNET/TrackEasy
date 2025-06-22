@@ -59,13 +59,13 @@ export async function logout(): Promise<void> {
   try {
     return await baseAPI.post<void>(`${URL}/logout`, {});
   } catch (error) {
-    // If we get a 401 error, it means the user is already logged out
-    // or the token is invalid, so we can ignore the error
+    
+    
     if (error instanceof Error && error.message === 'Authentication required. Please log in.') {
       console.log('User already logged out or token invalid');
       return;
     }
-    // Re-throw other errors
+    
     throw error;
   }
 }

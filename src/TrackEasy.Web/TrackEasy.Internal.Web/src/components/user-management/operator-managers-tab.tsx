@@ -19,7 +19,7 @@ export function OperatorManagersTab() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedManager, setSelectedManager] = useState<SystemListItemDto | null>(null);
 
-  // Fetch operators list
+  
   const { 
     data: operators, 
     isLoading: isLoadingOperators, 
@@ -29,7 +29,7 @@ export function OperatorManagersTab() {
     queryFn: fetchOperatorsList,
   });
 
-  // Fetch managers list for selected operator
+  
   const { 
     data: managers, 
     isLoading: isLoadingManagers, 
@@ -59,9 +59,9 @@ export function OperatorManagersTab() {
   };
 
   const handleOperationSuccess = () => {
-    // Refresh the managers list
+    
     if (selectedOperatorId) {
-      // The query will be invalidated by the form components
+      
     }
   };
 

@@ -22,7 +22,7 @@ export function AdminsTab() {
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
-  // Fetch admins list
+  
   const {
     data: admins,
     isLoading,
@@ -48,7 +48,7 @@ export function AdminsTab() {
   };
 
   const handleOperationSuccess = () => {
-    // Refresh the admins list
+    
     refetch();
   };
 
@@ -60,7 +60,7 @@ export function AdminsTab() {
       await deleteUser(selectedAdmin.id);
       toast.success("Admin deleted successfully");
 
-      // Invalidate queries to refresh the data
+      
       await queryClient.invalidateQueries({queryKey: ['admins-list']});
       await refetch();
 
@@ -103,7 +103,7 @@ export function AdminsTab() {
         </CardContent>
       </Card>
 
-      {/* Delete Admin Dialog */}
+      {}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -133,14 +133,14 @@ export function AdminsTab() {
         </DialogContent>
       </Dialog>
 
-      {/* Add Admin Form */}
+      {}
       <AddAdminForm 
         open={isAddFormOpen} 
         setOpen={setIsAddFormOpen} 
         onSuccess={handleOperationSuccess}
       />
 
-      {/* Update Admin Form */}
+      {}
       <UpdateAdminForm
         open={isUpdateFormOpen}
         setOpen={setIsUpdateFormOpen}

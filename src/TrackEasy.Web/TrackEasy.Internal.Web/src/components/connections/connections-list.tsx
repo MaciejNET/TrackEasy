@@ -57,7 +57,7 @@ export function ConnectionsList(props: ConnectionsListProps) {
       if (typeof day === 'string') {
         return dayMap[day] || day.substring(0, 3).toLowerCase();
       }
-      // Handle non-string values by converting them to string
+      
       return dayMap[String(day)] || String(day);
     }).join(', ');
   };

@@ -14,7 +14,7 @@ export const sidebarItems: SidebarItem[] = [
     Title: "Home",
     Icon: HomeIcon,
     Url: "/"
-    // No requiredRoles means all authenticated users can access
+    
   },
   {
     Title: "Coaches",
