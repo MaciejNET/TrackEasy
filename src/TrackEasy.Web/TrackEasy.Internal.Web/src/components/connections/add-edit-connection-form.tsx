@@ -89,7 +89,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
       name: connection?.name || "",
       priceAmount: connection?.pricePerKilometer.amount || 0,
       currency: connection?.pricePerKilometer.currency || Currency.PLN,
-      trainId: connection?.trainId || "",
+      trainId: connection?.trainId || undefined,
       needsSeatReservation: connection?.needsSeatReservation || false,
       validFrom: new Date().toISOString().split('T')[0],
       validTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
@@ -272,6 +272,7 @@ export function AddEditConnectionForm(props: AddEditConnectionFormProps) {
                       <FormControl>
                         <TrainSelector
                           operatorId={operatorId}
+                          value={field.value}
                           onSelect={(train: TrainDto) => {
                             field.onChange(train.id);
                           }}

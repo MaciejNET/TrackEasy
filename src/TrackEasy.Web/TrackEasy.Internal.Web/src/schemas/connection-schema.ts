@@ -111,7 +111,7 @@ export type UpdateConnectionCommand = z.infer<typeof updateConnectionCommandSche
 
 // Schema for UpdateScheduleCommand
 export const updateScheduleCommandSchema = z.object({
-  id: z.string().uuid(),
+  connectionId: z.string().uuid(),
   schedule: scheduleDtoSchema,
   connectionStations: z.array(connectionStationDtoSchema)
 });

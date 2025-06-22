@@ -39,5 +39,5 @@ export async function updateConnection(operatorId: string, connection: UpdateCon
 }
 
 export async function updateConnectionSchedule(operatorId: string, schedule: UpdateScheduleCommand): Promise<void> {
-  return baseAPI.post<void>(`${BASE_URL}/operators/${operatorId}/connections`, schedule);
+  return baseAPI.patch<void>(`${BASE_URL}/operators/${operatorId}/connections/${schedule.connectionId}/schedule`, schedule);
 }

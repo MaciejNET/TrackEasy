@@ -69,9 +69,6 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
   }, [open]);
 
   // Initialize form with connection data if available
-  // Log the incoming daysOfWeek to debug
-  console.log("Incoming daysOfWeek:", connection?.daysOfWeek);
-
   // Convert daysOfWeek to DayOfWeek enum values if they're strings
   const convertedDaysOfWeek = connection?.daysOfWeek?.map(day => {
     // If day is already a number, return it
@@ -101,8 +98,6 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
     return null;
   }).filter(day => day !== null) || [];
 
-  console.log("Converted daysOfWeek:", convertedDaysOfWeek);
-
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleFormSchema),
     defaultValues: {
@@ -117,6 +112,23 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
       })) || [],
     },
   });
+
+  // Reset form when connection changes
+  useEffect(() => {
+    if (connection) {
+      form.reset({
+        validFrom: connection.validFrom || new Date().toISOString().split('T')[0],
+        validTo: connection.validTo || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+        daysOfWeek: convertedDaysOfWeek,
+        stations: connection.stations.map(station => ({
+          stationId: station.stationId,
+          arrivalTime: station.arrivalTime,
+          departureTime: station.departureTime,
+          sequenceNumber: station.sequenceNumber,
+        })) || [],
+      });
+    }
+  }, [connection, form]);
 
   // Use field array for dynamic stations list
   const {fields, append, remove, update} = useFieldArray({
@@ -171,7 +183,7 @@ export function EditScheduleForm(props: EditScheduleFormProps) {
       });
 
       const command: UpdateScheduleCommand = {
-        id: connection?.id || "",
+        connectionId: connection?.id || "",
         schedule: {
           validFrom: values.validFrom,
           validTo: values.validTo,

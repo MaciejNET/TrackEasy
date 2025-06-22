@@ -4,7 +4,13 @@ import {ConnectionDetailsModal} from "@/components/connections/connection-detail
 import {ConnectionSearchForm} from "@/components/connections/connection-search-form.tsx";
 import {AddEditConnectionForm} from "@/components/connections/add-edit-connection-form.tsx";
 import {EditScheduleForm} from "@/components/connections/edit-schedule-form.tsx";
-import {ConnectionDetailsDto, ConnectionDto, CreateConnectionCommand, UpdateConnectionCommand, UpdateScheduleCommand} from "@/schemas/connection-schema.ts";
+import {
+  ConnectionDetailsDto,
+  ConnectionDto,
+  CreateConnectionCommand,
+  UpdateConnectionCommand,
+  UpdateScheduleCommand
+} from "@/schemas/connection-schema.ts";
 import {useConnectionStore} from "@/stores/connection-store.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {
@@ -71,11 +77,11 @@ export default function Connections() {
 
   async function handleSave(command: CreateConnectionCommand | UpdateConnectionCommand | UpdateScheduleCommand) {
     try {
-      if ('schedule' in command) {
+      if (modalType === "EditSchedule") {
         // It's an UpdateScheduleCommand
         await updateConnectionSchedule(searchParams.operatorId, command as UpdateScheduleCommand);
         toast.success("Connection schedule updated successfully");
-      } else if ('money' in command) {
+      } else if (modalType === "Edit") {
         // It's an UpdateConnectionCommand
         await updateConnection(searchParams.operatorId, command as UpdateConnectionCommand);
         toast.success("Connection updated successfully");
@@ -100,8 +106,8 @@ export default function Connections() {
   return (
     <>
       <div className="container mx-auto py-6">
-        <ConnectionSearchForm onAdd={handleAdd} />
-        <ConnectionsList 
+        <ConnectionSearchForm onAdd={handleAdd}/>
+        <ConnectionsList
           onDetails={handleDetails}
           onEdit={handleEdit}
           onEditSchedule={handleEditSchedule}
