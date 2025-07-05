@@ -62,6 +62,8 @@ app.UseCors("AllowAll");
 
 app.UseForwardedHeaders();
 
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();

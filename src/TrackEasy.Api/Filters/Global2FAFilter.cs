@@ -11,7 +11,8 @@ public sealed class Global2FAFilter : IEndpointFilter
         "/users/token-2fa",
         "/swagger",
         "/swagger/index.html",
-        "/health"
+        "/health",
+        "/users/external"
     ];
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)

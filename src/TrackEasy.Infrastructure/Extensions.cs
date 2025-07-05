@@ -1,11 +1,14 @@
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -54,13 +57,21 @@ public static class Extensions
             .AddDefaultTokenProviders()
             .AddSignInManager();
         
+        services.ConfigureExternalCookie(options => {
+            options.Cookie.Name = ".AspNetCore.Identity.External";
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+        
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         })
         .AddCookie(IdentityConstants.ApplicationScheme)
         .AddCookie(IdentityConstants.ExternalScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
             var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]!);
@@ -79,25 +90,36 @@ public static class Extensions
         {
             options.ClientId = configuration["google-clientid"]!;
             options.ClientSecret = configuration["google-clientsecret"]!;
-            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.CallbackPath = "/users/external/google/callback";
+            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.SaveTokens = true;
         })
         .AddMicrosoftAccount(options =>
         {
             options.ClientId = configuration["microsoft-clientid"]!;
             options.ClientSecret = configuration["microsoft-clientsecret"]!;
-            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.CallbackPath = "/users/external/microsoft/callback";
+            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.SaveTokens = true;
 
-            // The Azure AD application is configured for personal accounts only.
-            // Default endpoints target the "/common" tenant which is not valid
-            // for that setup and results in an "invalid_request" error.
             options.AuthorizationEndpoint =
                 MicrosoftAccountDefaults.AuthorizationEndpoint.Replace(
                     "/common/", "/consumers/");
             options.TokenEndpoint =
                 MicrosoftAccountDefaults.TokenEndpoint.Replace(
                     "/common/", "/consumers/");
+        });
+
+        services.AddScoped<IDistributedCache, MemoryDistributedCache>();
+        services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(30);
+            options.Cookie.HttpOnly = false;
+            options.Cookie.IsEssential = true;
         });
         
         services.AddHttpContextAccessor();

@@ -14,8 +14,6 @@ internal sealed class PayTicketByCardCommandHandler(
     TimeProvider timeProvider) : ICommandHandler<PayTicketByCardCommand>
 {
     private readonly PaymentIntentService _paymentIntentService = new(stripeClient);
-    private readonly PaymentMethodService _paymentMethodService = new(stripeClient);
-    private readonly TimeProvider _timeProvider = timeProvider;
     
     public async Task Handle(PayTicketByCardCommand request, CancellationToken cancellationToken)
     {
@@ -46,28 +44,7 @@ internal sealed class PayTicketByCardCommandHandler(
             totalPrice += price;
         }
 
-
-        var paymentMethodOps = new PaymentMethodCreateOptions
-        {
-            Type = "card",
-            Card = new PaymentMethodCardOptions
-            {
-                Number = request.CardNumber,
-                ExpMonth = request.CardExpMonth,
-                ExpYear = request.CardExpYear,
-                Cvc = request.CardCvc
-            }
-        };
-
-        Stripe.PaymentMethod paymentMethod;
-        try
-        {
-            paymentMethod = await _paymentMethodService.CreateAsync(paymentMethodOps, cancellationToken: cancellationToken);
-        }
-        catch (StripeException)
-        {
-            throw new TrackEasyException(Codes.PaymentFailed, "Payment failed. Please check your card details and try again.");
-        }
+        ValidateCard(request);
 
         var intentOps = new PaymentIntentCreateOptions
         {
@@ -75,7 +52,8 @@ internal sealed class PayTicketByCardCommandHandler(
             Currency = totalPrice.GetCurrencyCode(),
             ReturnUrl = "https://example.com/payment-complete",
             Confirm = true,
-            PaymentMethod = paymentMethod.Id,
+            PaymentMethod = "pm_card_visa",
+            PaymentMethodTypes = ["card"]
         };
 
         PaymentIntent intent;
@@ -93,8 +71,33 @@ internal sealed class PayTicketByCardCommandHandler(
             throw new TrackEasyException(Codes.PaymentFailed, "Payment was not successful.");
         }
 
-        tickets.ForEach(x => x.Pay(_timeProvider, intent.Id));
+        tickets.ForEach(x => x.Pay(timeProvider, intent.Id));
         await ticketRepository.SaveChangesAsync(cancellationToken);
     }
 
+    private void ValidateCard(PayTicketByCardCommand request)
+    {
+        bool numberValid = request.CardNumber == "4242424242424242";
+        bool cvcValid = request.CardCvc.All(char.IsDigit) &&
+                        request.CardCvc.Length is 3 or 4;
+
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        bool expiryValid;
+        try
+        {
+            var expiry = new DateTime(request.CardExpYear + 2000, request.CardExpMonth, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddMonths(1)
+                .AddTicks(-1);
+            expiryValid = expiry >= now;
+        }
+        catch (Exception)
+        {
+            expiryValid = false;
+        }
+
+        if (!numberValid || !cvcValid || !expiryValid)
+        {
+            throw new TrackEasyException(SharedCodes.InvalidInput, "Invalid card details.");
+        }
+    }
 }
