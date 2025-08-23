@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using TrackEasy.Application.Connections.SearchConnections;
+using TrackEasy.Application.Shared;
+using TrackEasy.Domain.Shared;
 using TrackEasy.Infrastructure.Database;
 using TrackEasy.Shared.Application.Abstractions;
 using TrackEasy.Shared.Pagination.Abstractions;
@@ -99,18 +101,18 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
     #region Path / leg domain -------------------------------------------------
 
     private sealed record Leg(
-        Guid       LegId,
-        Guid       ConnectionId,
-        string     ConnectionName,
-        string     OperatorName,
-        string     OperatorCode,
-        Guid       FromStationId,
-        string     FromStationName,
-        Guid       ToStationId,
-        string     ToStationName,
-        DateTime   DepartureDateTime,
-        DateTime   ArrivalDateTime,
-        decimal    PricePerKilometre);
+        Guid     LegId,
+        Guid     ConnectionId,
+        string   ConnectionName,
+        string   OperatorName,
+        string   OperatorCode,
+        Guid     FromStationId,
+        string   FromStationName,
+        Guid     ToStationId,
+        string   ToStationName,
+        DateTime DepartureDateTime,
+        DateTime ArrivalDateTime,
+        Money    Price);
 
     private sealed class PathCandidate
     {
@@ -200,7 +202,7 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
                     ToStationName:     to.Station.Name,
                     DepartureDateTime: Combine(date, from.DepartureTime.Value),
                     ArrivalDateTime:   Combine(date, to.ArrivalTime.Value),
-                    PricePerKilometre: conn.PricePerKilometer.Amount);
+                    Price:             conn.CalculatePrice(from.StationId, to.StationId, null));
             }
         }
     }
@@ -216,22 +218,33 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
     {
         var legs = path.Legs;
 
-        var connDtos = legs.Select(l => new SearchConnectionDto(
-                l.ConnectionId,
-                l.ConnectionName,
-                l.OperatorName,
-                l.OperatorCode,
-                TimeOnly.FromDateTime(l.DepartureDateTime),
-                TimeOnly.FromDateTime(l.ArrivalDateTime),
-                l.FromStationId,
-                l.FromStationName,
-                l.ToStationId,
-                l.ToStationName,
-                Price: l.PricePerKilometre))      // simple: km-price only
-            .ToList();
+        var connDtos = new List<SearchConnectionDto>();
 
-        var first  = legs[0];
-        var last   = legs[^1];
+        var start = legs[0];
+        var end   = start;
+        var price = start.Price;
+
+        for (var i = 1; i < legs.Count; i++)
+        {
+            var leg = legs[i];
+            if (leg.ConnectionId == start.ConnectionId)
+            {
+                end   = leg;
+                price += leg.Price;
+            }
+            else
+            {
+                connDtos.Add(ToDto(start, end, price));
+                start = leg;
+                end   = leg;
+                price = leg.Price;
+            }
+        }
+
+        connDtos.Add(ToDto(start, end, price));
+
+        var first = legs[0];
+        var last  = legs[^1];
 
         return new SearchConnectionsResponse(
             Connections:    connDtos,
@@ -240,6 +253,20 @@ internal sealed class SearchConnectionsQueryHandler(TrackEasyDbContext dbContext
             EndStation:     last.ToStationName,
             DepartureTime:  TimeOnly.FromDateTime(first.DepartureDateTime),
             ArrivalTime:    TimeOnly.FromDateTime(last.ArrivalDateTime));
+
+        static SearchConnectionDto ToDto(Leg startLeg, Leg endLeg, Money price)
+            => new(
+                startLeg.ConnectionId,
+                startLeg.ConnectionName,
+                startLeg.OperatorName,
+                startLeg.OperatorCode,
+                TimeOnly.FromDateTime(startLeg.DepartureDateTime),
+                TimeOnly.FromDateTime(endLeg.ArrivalDateTime),
+                startLeg.FromStationId,
+                startLeg.FromStationName,
+                endLeg.ToStationId,
+                endLeg.ToStationName,
+                new MoneyDto(price.Amount, price.Currency));
     }
 
     #endregion
