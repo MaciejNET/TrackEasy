@@ -1,3 +1,5 @@
+using TrackEasy.Application.Shared;
+
 namespace TrackEasy.Application.Connections.SearchConnections;
 
 public sealed record SearchConnectionDto(
@@ -11,7 +13,7 @@ public sealed record SearchConnectionDto(
     string DepartureStation,
     Guid ArrivalStationId,
     string ArrivalStation,
-    decimal Price)
+    MoneyDto Price)
 {
     public TimeOnly Duration => TimeOnly.FromTimeSpan(ArrivalTime - DepartureTime);
 }
