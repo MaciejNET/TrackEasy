@@ -107,9 +107,9 @@ public class UserEndpoints : IEndpoints
             .WithDescription("Generate reset password token.")
             .WithOpenApi();
 
-        group.MapGet("/external/{provider}", (string provider, string firstName, string lastName, DateOnly dateOfBirth, SignInManager<User> signInManager) =>
+        group.MapGet("/external/{provider}", (string provider, string firstName, string lastName, DateOnly dateOfBirth, SignInManager<User> signInManager, HttpContext httpContext) =>
         {
-            var redirectUrl = $"/users/external/{provider}/callback";
+            var redirectUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/users/external/{provider}/callback";
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             properties.Items["firstName"] = firstName;
             properties.Items["lastName"] = lastName;
@@ -130,9 +130,9 @@ public class UserEndpoints : IEndpoints
             .WithDescription("Initiate external login.")
             .WithOpenApi();
 
-        group.MapGet("/external/{provider}/callback", async (string provider, ISender sender, HttpContext httpContext) =>
+        group.MapGet("/external/{provider}/callback", async (string provider, ISender sender, HttpContext httpContext, SignInManager<User> signInManager) =>
         {
-            var info = await httpContext.RequestServices.GetRequiredService<SignInManager<User>>().GetExternalLoginInfoAsync();
+            var info = await signInManager.GetExternalLoginInfoAsync();
             if (info is null || !string.Equals(info.LoginProvider, provider, StringComparison.OrdinalIgnoreCase))
             {
                 return Results.BadRequest();
